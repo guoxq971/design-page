@@ -1,0 +1,316 @@
+import { ProdStore } from '@/designApplication/store/prodStore';
+import { ProdItem, ProdType, ProdUtil } from '@/designApplication/interface/prodItem';
+import { sleep } from '@/designApplication/core/utils/sleep';
+import { parse3dConfigByCommon } from '@/designApplication/mock/config3d/get3dConfigDispose';
+import { Config } from '@/designApplication/core/config';
+import { loadCanvas } from '@/designApplication/core/canvas/loadCanvas';
+import { loadThree } from '@/designApplication/core/three/loadThree';
+import { gerRefineProdConfig3dByTemplateNoWithSizeApi, getProd3dConfigByCommonApi, getProd3dConfigByRefineListApi, getRefineProdDetailByTemplateNoWithSizeApi } from '@/designApplication/apis/common';
+import { config3dUtil } from '@/designApplication/interface/Config3d/config3dOfCommonResponse';
+import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
+import { Message } from 'element-ui';
+import packingGlsl from 'three/src/renderers/shaders/ShaderChunk/packing.glsl';
+
+/**
+ * designApplication store
+ * @class State
+ * @property {Config} config 配置
+ * @property {boolean} konvaCustomMouse konva的自定鼠标事件进行中
+ * @property {boolean} loading_prod 是否正在加载产品
+ * @property {boolean} loading_2d 是否正在加载2d canvas
+ * @property {boolean} loading_3d 是否正在加载3d three
+ * @property {number|null} activeColorId 选中的颜色
+ * @property {string|null} activeSizeId 选中的尺码
+ * @property {number|null} activeViewId 选中的视图
+ * @property {number|null} activeType 1-通用产品 2-精细产品
+ * @property {ProdStore} prodStore 产品仓库
+ * */
+class State {
+  config = new Config();
+  konvaCustomMouse = false; //konva的自定鼠标事件进行中
+  show3d = false;
+  loading_prod = false;
+  loading_2d = false;
+  loading_3d = false;
+  activeColorId = null;
+  activeSizeId = null;
+  activeViewId = null;
+  activeType = null;
+  prodStore = new ProdStore();
+}
+
+/**
+ * designApplication
+ * @namespace designApplication
+ * @property {State} state
+ * @property {object} getters
+ * @property {object} mutations
+ * @property {object} actions
+ * @property {boolean} namespaced
+ * */
+export default {
+  namespaced: true,
+  state: new State(),
+  getters: {
+    /**
+     * 获取激活产品的静态资源数据 (改数据不能用来修改)
+     * @returns {ActiveData|null} 当前激活的产品的静态资源数据
+     * */
+    activeProdStatic(state) {
+      return state.prodStore.getStatic();
+    },
+    /**
+     * 获取激活产品
+     * @returns {ProdItem} 当前激活的产品
+     * */
+    activeProd(state) {
+      return state.prodStore.get();
+    },
+    /**
+     * 展示的尺码列表 SizeList
+     * @returns {Array<any>} 展示的尺码列表
+     * */
+    activeSizeList(state, getters) {
+      let sizeList;
+
+      switch (getters.activeProdStatic.prod.type) {
+        // 通用产品
+        case ProdType.common:
+          sizeList = getters.activeProdStatic.prod.sizeList;
+          break;
+        // 精细产品
+        case ProdType.refine:
+          const refineSizeIdList = state.prodStore.list.filter((e) => e.type === ProdType.refine).map((e) => e.sizeId);
+          sizeList = getters.activeProdStatic.prod.sizeList.filter((e) => refineSizeIdList.includes(e.id));
+          break;
+      }
+
+      return sizeList;
+    },
+  },
+  mutations: {
+    setShow3d(state, flag) {
+      state.show3d = flag;
+    },
+    setKonvaCustomMouse(state, flag) {
+      state.konvaCustomMouse = flag;
+    },
+    setLoading2d(state, loading) {
+      state.loading_2d = loading;
+    },
+    setLoading3d(state, loading) {
+      state.loading_3d = loading;
+    },
+    setActiveType(state, type) {
+      state.activeType = type;
+    },
+    setActiveViewId(state, viewId) {
+      state.activeViewId = viewId;
+    },
+    setActiveColorId(state, colorId) {
+      state.activeColorId = colorId;
+    },
+    setActiveSizeId(state, sizeId) {
+      state.activeSizeId = sizeId;
+    },
+  },
+  actions: {
+    /**
+     * 设置尺码id
+     * @param {*} vuex context
+     * @param {number} sizeId 尺码id
+     * */
+    setActiveSizeId({ state, commit, dispatch, getters }, sizeId) {
+      const curProd = getters.activeProd;
+
+      switch (curProd.type) {
+        // 通用产品
+        case ProdType.common:
+          commit('setActiveSizeId', sizeId);
+          break;
+
+        // 精细产品
+        case ProdType.refine:
+          dispatch('changeProd', { type: ProdType.refine, sizeId: sizeId });
+          break;
+
+        default:
+          break;
+      }
+    },
+    /**
+     * 设置激活产品 (这个方法只会在切换模板号的时候调用)
+     * @param {*} vuex context
+     * @param {ParseProdItem} detail 产品详情
+     * @returns {ProdItem} 当前激活的产品
+     * */
+    async setProd({ state, commit, dispatch, getters }, detail) {
+      try {
+        state.loading_prod = true;
+
+        commit('setShow3d', false);
+
+        // 清空已有的canvas / three
+        state.prodStore.clearAll();
+        // await sleep(0);
+
+        // 获取价格列表
+
+        // 获取3d配置 - 通用
+        const config3d = await getProd3dConfigByCommonApi(detail.templateNo);
+
+        // 获取3d配置 - 精细
+        const refineList = await getProd3dConfigByRefineListApi(detail.templateNo);
+        const refineListFilter = config3dUtil.getOpenRefineList(refineList);
+        refineListFilter.forEach((refine) => {
+          const prodItem = ProdUtil.disposeRefine(refine, detail);
+          state.prodStore.add(prodItem);
+        });
+
+        // 初始化产品 - 通用
+        const prod = ProdUtil.disposeCommon(detail, config3d);
+
+        // 并添加到仓库
+        state.prodStore.add(prod);
+
+        // 切换的产品和当前产品不一致时，重置激活的颜色、尺码、视图
+        commit('setActiveType', prod.type);
+        commit('setActiveColorId', prod.colorList[0].id);
+        commit('setActiveSizeId', prod.sizeList[0].id);
+        commit('setActiveViewId', prod.viewList[0].id);
+
+        // 加载2d canvas
+        await loadCanvas();
+
+        // 加载3d three
+        if (config3dUtil.isLoad3d(prod.config3d)) {
+          await loadThree({ prodItem: prod });
+        }
+
+        console.log('仓库列表', state.prodStore.list);
+      } finally {
+        state.loading_prod = false;
+      }
+    },
+    /**
+     * 切换模板类型
+     * @param {*} vuex context
+     * @param {object} param 参数
+     * @param {ProdItem} param.prodItem 产品
+     * @param {ProdType} param.type 模板类型(要切换的类型)
+     * @param {number} param.sizeId 尺码id
+     * @param {number} param.colorId 颜色id
+     * */
+    async changeProd({ state, commit, dispatch, getters }, param) {
+      const type = param.type;
+
+      // 当前产品
+      const curProdItem = param.prodItem || state.prodStore.get();
+      let resultProdItem;
+
+      // 当前产品和要切换的产品一致时，不做任何操作
+      if (curProdItem.type === type && !param.sizeId) {
+        Message.warning(`当前已经是${DesignerUtil.getProdTypeName(type)}模板`);
+        return;
+      }
+
+      // 要切换的颜色、尺码
+      let sizeId = param.sizeId || state.activeSizeId;
+      let colorId = param.colorId || state.activeColorId;
+
+      switch (type) {
+        // 要切换到通用模板
+        case ProdType.common:
+          // 通用模板的ProdItem
+          const commonProdItem = state.prodStore.get(ProdType.common);
+
+          resultProdItem = commonProdItem;
+          break;
+
+        // 要切换到精细模板
+        case ProdType.refine:
+          let refineProdItem;
+
+          // 精细模板的ProdItem
+          refineProdItem = state.prodStore.get(ProdType.refine, sizeId);
+
+          // 可能不存在, 将当前激活的sizeId设置为第一个精细模板的id
+          if (!refineProdItem) {
+            refineProdItem = state.prodStore.list.find((e) => e.type === ProdType.refine);
+
+            // 如果还是没有, 是错误的
+            if (!refineProdItem) {
+              Message.warning('精细模板不存在, 请联系管理员');
+              return;
+            }
+          }
+
+          // 如果切换的 精细模板 的产品数据不存在, 则【调用接口获取】
+          if (!refineProdItem.detail) {
+            try {
+              state.loading_prod = true;
+              const templateNo = refineProdItem.config3d.templateNo;
+              const size = refineProdItem.size;
+
+              // 获取产品详情
+              const parseProdItem = await getRefineProdDetailByTemplateNoWithSizeApi(templateNo, size);
+
+              // 获取3d配置 (viewList, colorList)
+              const config3d = await gerRefineProdConfig3dByTemplateNoWithSizeApi(templateNo, size);
+
+              // 补充产品详情
+              refineProdItem.detail = parseProdItem;
+              refineProdItem.viewList = parseProdItem.viewList;
+              refineProdItem.colorList = parseProdItem.colorList;
+              refineProdItem.sizeList = parseProdItem.sizeList;
+
+              // 补充3d配置
+              refineProdItem.config3d = config3d;
+            } finally {
+              state.loading_prod = false;
+            }
+          }
+
+          console.log('refineProdItem', refineProdItem);
+
+          sizeId = refineProdItem.sizeId;
+          resultProdItem = refineProdItem;
+          break;
+
+        // 其他
+        default:
+          break;
+      }
+
+      if (resultProdItem) {
+        // 设置激活之前，先清空已有的canvas / three
+        DesignerUtil.clearProd(curProdItem);
+
+        // 如果当前激活的颜色、尺码不在模板中，将当前激活的颜色、尺码设置为第一个的id
+        if (!DesignerUtil.hasColor(colorId, resultProdItem)) {
+          colorId = resultProdItem.colorList[0].id;
+        }
+        if (!DesignerUtil.hasSize(sizeId, resultProdItem)) {
+          sizeId = resultProdItem.sizeList[0].id;
+        }
+
+        // 设置激活的sizeId
+        commit('setActiveSizeId', sizeId);
+        // 设置产品类型
+        commit('setActiveType', resultProdItem.type);
+        // 设置视图id
+        commit('setActiveViewId', resultProdItem.viewList[0].id);
+        // 设置颜色id
+        commit('setActiveColorId', colorId);
+
+        // 加载2d canvas
+        await loadCanvas();
+
+        // 加载3d three
+        if (config3dUtil.isLoad3d(resultProdItem.config3d)) {
+          await loadThree({ prodItem: resultProdItem });
+        }
+      }
+    },
+  },
+};
