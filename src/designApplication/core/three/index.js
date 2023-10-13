@@ -62,6 +62,20 @@ export class MyThree extends Core {
   }
 
   /**
+   * 所有设计图是否有一个是选中的
+   * */
+  isAnyDesignSelected() {
+    return this.meshPlusList.some((e) => e.view?.canvas.hasSelected());
+  }
+
+  /**
+   * 退出所有设计图的选中状态
+   * */
+  exitAllDesignSelected() {
+    this.meshPlusList.forEach((e) => e.view?.canvas.hideAllTransformer());
+  }
+
+  /**
    * 模型与canvas的鼠标位置映射
    * @param {string} materialName 材质名称
    * @param {uv} uv uv坐标

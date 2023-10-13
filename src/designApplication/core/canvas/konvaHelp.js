@@ -8,5 +8,6 @@ import store from '@/store';
  * */
 export function isContinue(event) {
   const cm = store.state.designApplication.konvaCustomMouse;
+
   return cm && event.isTrusted;
 }

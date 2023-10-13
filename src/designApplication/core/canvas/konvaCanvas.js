@@ -113,7 +113,7 @@ export class KonvaCanvas {
 
     // 监听点击的位置是否有元素
     this.stage.on('mousedown', (e) => {
-      this.beforeSelected = this.hasSelected();
+      this.beforeDownSelected = this.hasSelected();
 
       // 如果点击的是舞台或者path, 则隐藏所有的transformer
       if (e.target === this.stage || e.target.attrs.type === 'path') {
@@ -124,7 +124,7 @@ export class KonvaCanvas {
     // 监听单击事件
     this.stage.on('click', (e) => {
       // 选中非设计图 && 没有选中元素 && 事件是用户触发的
-      if (e.target.attrs.type !== 'image' && !this.beforeSelected && e.evt.isTrusted) {
+      if (e.target.attrs.type !== 'image' && !this.beforeDownSelected && e.evt.isTrusted) {
         DesignerUtil.showThree();
       }
     });
@@ -172,6 +172,9 @@ export class KonvaCanvas {
     // 设计图的事件
     designImage.image.on('dragmove', (e) => {
       this.updateTexture(3);
+    });
+    designImage.image.on('dragend', (e) => {
+      this.updateTexture(33);
     });
 
     // 锚点的事件

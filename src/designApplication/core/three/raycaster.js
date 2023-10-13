@@ -28,7 +28,7 @@ export class Raycaster {
    * @param {MyThree} three three
    * */
   constructor(three, param) {
-    let isSelected = false;
+    // 鼠标按下前的坐标
     let downMousePos = {
       x: 0,
       y: 0,
@@ -36,6 +36,7 @@ export class Raycaster {
 
     param = {
       beforeMouseDown: (uv, object, evt) => {
+        // 记录鼠标按下的坐标
         downMousePos.x = evt.clientX;
         downMousePos.y = evt.clientY;
 
@@ -51,7 +52,7 @@ export class Raycaster {
         const meshItem = three.getMeshItemByMaterialName(object.material.name);
 
         // 没有视图 || 没有canvas || 没有选中的设计图
-        if (!meshItem.view || !meshItem.canvas || !isSelected) {
+        if (!meshItem.view || !meshItem.canvas || !meshItem?.view?.canvas.hasSelected()) {
           this.setStatus('up'); // 设置状态为抬起
         }
       },
@@ -59,10 +60,16 @@ export class Raycaster {
       afterMouseMove: () => {},
       beforeMouseUp: () => true,
       afterMouseUp: (object, evt) => {
-        // this.isSameClick = downMousePos.x === evt.clientX && downMousePos.y === evt.clientY;
-        // if (this.isSameClick && !isSelected) {
-        //   DesignerUtil.showThree();
-        // }
+        // 如果点击的是空白地方，并且是同一个地方按下和抬起, 就退出3d模式
+        this.isSameClick = downMousePos.x === evt.clientX && downMousePos.y === evt.clientY;
+        if (this.isSameClick && !object) {
+          // 所有设计图存在一个选中的，就先退出所有设计图的选中状态
+          if (three.isAnyDesignSelected()) {
+            three.exitAllDesignSelected();
+          } else {
+            DesignerUtil.showThree();
+          }
+        }
       },
       setPos: (materialName, uv, event) => three.setPos(materialName, uv, event),
       getMaterialList: () => three.getMaterialList() || [],
@@ -174,10 +181,10 @@ export class Raycaster {
     if (!this.beforeMouseUp()) return;
 
     // 射线交互
-    this.raycasterFn(evt);
+    const { object } = this.raycasterFn(evt);
 
     // 鼠标抬起后
-    this.afterMouseUp(evt);
+    this.afterMouseUp(object, evt);
   }
 
   /**
