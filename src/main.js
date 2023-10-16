@@ -8,7 +8,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 Vue.use(ElementUI, { size: 'small' });
 
 // 自适应盒子
-import boxAdaptive from '@/designApp/view/components/boxAdaptive';
+import boxAdaptive from '@/designApplication/components/boxContainer.vue';
 Vue.component('boxAdaptive', boxAdaptive);
 
 // canvas konva
