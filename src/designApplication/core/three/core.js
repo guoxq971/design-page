@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { Raycaster } from './raycaster.js';
 import store from '@/store';
+import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 
 export class Core {
   container; // 容器
@@ -44,6 +45,16 @@ export class Core {
 
     // 监听窗口变化
     window.addEventListener('resize', this.resize.bind(this));
+
+    // 监听双击事件
+    this.renderer.domElement.addEventListener('dblclick', this.addEvent_dblclick.bind(this));
+  }
+
+  /**
+   * 双击事件
+   * */
+  addEvent_dblclick() {
+    DesignerUtil.showThree();
   }
 
   /**
@@ -55,6 +66,9 @@ export class Core {
 
     // 销毁监听窗口
     window.removeEventListener('resize', this.resize.bind(this));
+
+    // 销毁双击事件
+    this.renderer.domElement.removeEventListener('dblclick', this.addEvent_dblclick.bind(this));
 
     // 销毁射线
     this.raycaster.destroy();

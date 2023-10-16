@@ -49,7 +49,7 @@ export function initProdArea(staticView, view) {
     data: d,
     fill: canvasConfig.clipStoreFill,
     stroke: canvasConfig.clipStoreColor, //'magenta',
-    strokeWidth: canvasConfig.clipStoreWidth,
+    strokeWidth: 0, //canvasConfig.clipStoreWidth,
     type: 'path',
     scaleX: canvasSize.ratio,
     scaleY: canvasSize.ratio,
