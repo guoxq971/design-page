@@ -19,6 +19,9 @@ export default {
 };
 </script>
 
+<style lang="less">
+@import url('src/designApplication/components/layout/leftTabs/commomStyle.less');
+</style>
 <style scoped lang="less">
 @paddingBottom: 35px; // 底部留白(为了能滚动到顶部刚好灰色线条)
 .design-application-container {

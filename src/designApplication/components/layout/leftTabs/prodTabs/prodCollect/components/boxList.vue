@@ -56,6 +56,9 @@ export default {
     onSetProd(item) {
       // 如果一样的产品，不做处理
       if (this.$store.state.designApplication.prodStore.has(item)) return;
+      // 设置选中产品的样式
+      this.list.forEach((item) => this.$set(item, 'isActive', false));
+      this.$set(item, 'isActive', true);
       // 设置选中产品 vuex
       this.$store.dispatch('designApplication/setProd', item);
     },

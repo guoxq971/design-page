@@ -1,4 +1,4 @@
-<!--盒子-->
+<!--设计图/产品-盒子-->
 <template>
   <boxAdaptive class="box-container">
     <div class="img-wrap" :class="{ active: active }" @mouseenter="mouseenter" @mouseleave="mouseleave">
@@ -60,6 +60,7 @@ export default {
     .image {
       position: absolute;
       width: 100%;
+      height: 100%;
     }
   }
 }

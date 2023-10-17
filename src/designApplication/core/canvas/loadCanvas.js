@@ -57,8 +57,7 @@ function createCanvas(staticView) {
   });
 
   // 设计图
-  view.canvas.createImage(image3).then((design) => view.canvas.add(design));
-
+  // view.canvas.createImage(image3).then((design) => view.canvas.add(design));
   // 设计图
   // const design2 = await view.canvas.createImage(image3);
   // view.canvas.add(design2);

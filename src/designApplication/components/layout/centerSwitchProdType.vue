@@ -39,11 +39,8 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
-// import { ModelEnum, useThree } from '@/pages/designApp/designPlatform/productDesign/useThree';
-// import { setModelAttr } from '@/pages/designApp/designPlatform/productDesign/useThree/model';
-// import { initVuexProd, setVuexProd2 } from '@/pages/designApp/designPlatform/productDesign/useThree/design';
+import { ProdType } from '@/designApplication/interface/prodItem';
 
 export default {
   data() {
@@ -54,17 +51,9 @@ export default {
   },
   watch: {},
   computed: {
-    ...mapState({
-      // prod: (state) => state.design.prod,
-    }),
     // 是否开启3d true-禁用 false-启用
     disabled() {
-      let flag = false;
-      // if (useThree()) {
-      //   const openList = useThree().modelList.filter((e) => e.type === ModelEnum.complex && e.config.hasUpload2d && e.config.openflag2d === 0);
-      //   return openList.length === 0;
-      // }
-      return flag;
+      return !this.$store.state.designApplication.prodStore.list.find((e) => e.type === ProdType.refine);
     },
     activeTypeName() {
       return DesignerUtil.getProdTypeName();

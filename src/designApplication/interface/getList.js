@@ -1,3 +1,5 @@
+import { ImageListByMyImage } from '@/designApplication/interface/image/imageList';
+
 /**
  * 请取列表
  * @class GetList
@@ -16,6 +18,17 @@ export class GetList {
  * @param {Number} total 总数
  * */
 export class GetListByCommonProd extends GetList {
+  list = [];
+  total = 0;
+}
+
+/**
+ * 我的图库列表
+ * @class GetListByMyImage
+ * @param {ImageListByMyImage[]} list 列表
+ * @param {Number} total 总数
+ * */
+export class GetListByMyImage extends GetList {
   list = [];
   total = 0;
 }

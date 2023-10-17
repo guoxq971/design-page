@@ -5,6 +5,7 @@ import { getDesignImage } from './designImage';
 import store from '@/store';
 import { KonvaCanvasParam } from '@/designApplication/interface/konvaCanvasParam';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
+import { config3dUtil } from '@/designApplication/interface/Config3d/config3dOfCommonResponse';
 
 /**
  * 创建 konva canvas
@@ -125,7 +126,9 @@ export class KonvaCanvas {
     this.stage.on('dblclick', (e) => {
       // 选中非设计图 && 没有选中元素 && 事件是用户触发的
       if (e.target.attrs.type !== 'image' && !this.beforeDownSelected && e.evt.isTrusted) {
-        DesignerUtil.showThree();
+        if (config3dUtil.isLoad3d(store.getters['designApplication/activeProd'].config3d)) {
+          DesignerUtil.showThree();
+        }
       }
     });
   }

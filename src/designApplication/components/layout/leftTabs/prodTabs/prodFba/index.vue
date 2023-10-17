@@ -1,0 +1,49 @@
+<!--FBA专用产品-->
+<template>
+  <div>
+    <headerContainer :params="params" :loading="loading" :getList="getList" />
+    <boxList :list="list" v-loading="loading" />
+    <pageContainer :get-list="getList" :param="params" :total="total" />
+  </div>
+</template>
+
+<script>
+import headerContainer from './components/header.vue';
+import pageContainer from './components/page.vue';
+import boxList from './components/boxList.vue';
+import { FbaProdParams } from '@/designApplication/interface/commonProdParams';
+import { fetchProdListApi } from '@/designApplication/apis/prod';
+
+export default {
+  components: {
+    headerContainer,
+    pageContainer,
+    boxList,
+  },
+  data() {
+    return {
+      loading: false,
+      total: 0,
+      params: new FbaProdParams(),
+      list: [],
+    };
+  },
+  methods: {
+    async getList() {
+      try {
+        this.loading = true;
+        const { list, total } = await fetchProdListApi(this.params);
+        this.list = list;
+        this.total = total;
+      } finally {
+        this.loading = false;
+      }
+    },
+  },
+  mounted() {
+    this.getList();
+  },
+};
+</script>
+
+<style scoped lang="less"></style>

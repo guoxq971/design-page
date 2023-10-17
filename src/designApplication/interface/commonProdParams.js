@@ -23,3 +23,23 @@ export class CommonProdParams {
   category2;
   tempalteNoOrName;
 }
+
+/**
+ * 产品列表 - 接口参数 - FBA产品
+ * @class FbaProdParams
+ * */
+export class FbaProdParams extends CommonProdParams {
+  isFbaTemplate = 1;
+}
+
+/**
+ * 产品列表 - 接口参数 - 收藏产品
+ * @class FbaProdParams
+ * @param {String} custom_category - 自定义分类
+ * */
+export class CollectProdParams extends CommonProdParams {
+  custom_category = 0;
+  isFull = 0;
+  isNew = 0;
+  collectFlag = 1;
+}

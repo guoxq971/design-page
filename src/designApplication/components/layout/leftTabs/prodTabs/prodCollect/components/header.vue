@@ -32,13 +32,14 @@
 </template>
 
 <script>
-import { fetchProdCategoryList } from '@/designApplication/mock/prod/prodCategoryList';
+import { fetchCollectSelectListApi } from '@/designApplication/apis/prod';
+import { CollectProdParams } from '@/designApplication/interface/commonProdParams';
 
 export default {
   props: {
     /**
      * 请求参数
-     * @type {CommonProdParams}
+     * @type {CollectProdParams}
      * */
     params: Object,
     loading: Boolean,
@@ -74,20 +75,19 @@ export default {
     },
     // 获取下拉列表 - 一二级分类
     async getSelectListByCategory() {
-      const result = await fetchProdCategoryList();
-      if (result.retState !== '0') return;
-      this.category.options = result.productTypeDepartments.map((item) => {
-        let { name, id, categories } = item;
+      const list = await fetchCollectSelectListApi();
+      this.category.options = list.map((item) => {
+        let { label, value, childs } = item;
         let children = [];
-        if (categories) {
-          children = categories.map((e) => {
+        if (childs) {
+          children = childs.map((e) => {
             return {
-              label: e.name,
-              value: e.id,
+              label: e.label,
+              value: e.value,
             };
           });
         }
-        return { label: name, value: id, children };
+        return { label, value, children };
       });
     },
   },

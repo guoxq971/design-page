@@ -90,7 +90,11 @@ export class ProdStore {
     for (const view of prod.viewList) {
       const color = activeColor.views.find((e) => e.id === view.id);
       const printout = printoutList.find((e) => e.id === view.id);
-      const print = printList.find((e) => e.id === view.id);
+      const print = printList.find((e) => e.viewId === view.id);
+
+      if (!print) {
+        console.warn('prodStore.getStatic: print is null');
+      }
 
       const staticViewItem = new StaticViewItem();
       staticViewItem.id = view.id;

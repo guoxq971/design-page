@@ -10,7 +10,7 @@ import { GetListByCommonProd } from '@/designApplication/interface/getList';
 
 /**
  * 解析通用产品的数据
- * @param {Object|null} params 参数
+ * @param {CommonProdParams|null} params 参数
  * @returns {Promise<GetListByCommonProd>} 通用产品的数据
  * */
 export async function parseCommonProd(params) {
@@ -67,7 +67,7 @@ export function parseProdItemDetail(row) {
   parseProdItem.sizeList = parseSizeList(prodItemDetail.sizes);
 
   // 印刷区域列表
-  parseProdItem.printList = parsePrintList(prodItemDetail.printAreas);
+  parseProdItem.printList = parsePrintList(prodItemDetail.printAreas, prodItemDetail.views, prodItemDetail);
 
   // 印刷指定区域列表
   parseProdItem.printoutList = parsePrintoutList(prodItemDetail.pointoutPrintAreas);
@@ -82,12 +82,17 @@ export function parseProdItemDetail(row) {
 /**
  * 解析印刷区域列表
  * @param {Array} printAreas 印刷区域列表的数据
+ * @param views
+ * @param detail
  * @returns {Array<ParsePrintItem>} 印刷区域列表的数据
  * */
-function parsePrintList(printAreas) {
+function parsePrintList(printAreas, views, detail) {
   const list = [];
   for (let row of printAreas) {
+    const view = views.find((e) => e.viewMaps[0].printArea.id === row.id);
+    if (!view) continue;
     const parsePrintItem = new ParsePrintItem();
+    parsePrintItem.viewId = view.id;
     parsePrintItem.id = row.id;
     parsePrintItem.d = row.boundary.soft.content?.svg.path.d; //车线
     parsePrintItem.width = row.boundary.size.width;

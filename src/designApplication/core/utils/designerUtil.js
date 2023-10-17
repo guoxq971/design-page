@@ -61,6 +61,16 @@ export class DesignerUtil {
   }
 
   /**
+   * 获取产品的view
+   * @returns {ParseViewItem|null} 视图
+   * @param {prodItem|null} prodItem 产品
+   * */
+  static getView(prodItem = null) {
+    prodItem = prodItem || this.getActiveProd();
+    return prodItem?.viewList.find((e) => e.id === store.state.designApplication.activeViewId);
+  }
+
+  /**
    * 判断传入的颜色id在prodItem中是否存在
    * @param {string|number|null} colorId 颜色id
    * @param {ProdItem} prodItem 产品

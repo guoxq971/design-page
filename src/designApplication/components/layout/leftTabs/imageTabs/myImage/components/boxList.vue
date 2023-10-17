@@ -1,4 +1,4 @@
-<!--通用产品-列表-->
+<!--我的图库-列表-->
 <template>
   <div class="list-container">
     <div class="box-list">
@@ -9,34 +9,34 @@
 
       <!--数据盒子-->
       <div class="list" v-else>
-        <div class="box-wrap" v-for="item in list" :key="'commonProd' + item.seqId" @click="onSetProd(item)">
-          <boxContainer @mouseleave="mouseleave" @mouseenter="mouseenter" :detail="item" :active="isActive(item)" :prod="item.showImage.thumbImg" :bg="item.showImage.texture" />
+        <div class="box-wrap" v-for="item in list" :key="'myImage' + item.id" @click="onSetImage(item)">
+          <boxContainer @mouseleave="mouseleave" @mouseenter="mouseenter" :detail="item" :src="item.previewImg" />
         </div>
         <div v-for="item in 4" class="box-wrap" />
       </div>
     </div>
 
     <!--hover 详情-->
-    <hoverDetailProd v-if="hoverActive" :detail="hoverActive" @mouseleave.native="mouseleave" @mouseenter.native="mouseenter" />
+    <hoverDetailImage v-if="hoverActive" :detail="hoverActive" @mouseleave.native="mouseleave" @mouseenter.native="mouseenter" />
   </div>
 </template>
 
 <script>
 import boxContainer from '@/designApplication/components/boxContainer.vue';
-import hoverDetailProd from '@/designApplication/components/hoverDetailProd.vue';
+import hoverDetailImage from '@/designApplication/components/hoverDetailImage.vue';
 import { ParseProdItem } from '@/designApplication/interface/commonProdParse';
 
 export default {
   components: {
     boxContainer,
-    hoverDetailProd,
+    hoverDetailImage,
   },
   props: {
-    // 获取产品列表
+    // 获取设计图列表
     getList: { type: Function, default: () => {} },
     /**
-     * 产品列表
-     * @type {ParseProdItem[]}
+     * 设计图列表
+     * @class {ImageListByMyImage[]}
      * */
     list: { type: Array, default: () => [] },
   },
@@ -46,23 +46,15 @@ export default {
       hoverActive: null, // 鼠标悬浮的产品
     };
   },
-  computed: {
-    isActive() {
-      return (item) => this.$store.state.designApplication.prodStore.has(item);
-    },
-  },
   methods: {
-    // 选中产品
-    onSetProd(item) {
-      // 如果一样的产品，不做处理
-      if (this.$store.state.designApplication.prodStore.has(item)) return;
-      // 设置选中产品 vuex
-      this.$store.dispatch('designApplication/setProd', item);
+    // 选中设计图
+    onSetImage(item) {
+      this.$store.dispatch('designApplication/setImage', item);
     },
     // 鼠标进入
     mouseenter(item) {
       clearTimeout(this.hoverTimer);
-      if (item && item.seqId) this.hoverActive = item;
+      if (item && item.id) this.hoverActive = item;
     },
     // 鼠标离开
     mouseleave(item) {

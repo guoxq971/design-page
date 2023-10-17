@@ -33,12 +33,13 @@
 
 <script>
 import { fetchProdCategoryList } from '@/designApplication/mock/prod/prodCategoryList';
+import { FbaProdParams } from '@/designApplication/interface/commonProdParams';
 
 export default {
   props: {
     /**
      * 请求参数
-     * @type {CommonProdParams}
+     * @type {FbaProdParams}
      * */
     params: Object,
     loading: Boolean,

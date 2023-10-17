@@ -1,0 +1,30 @@
+@num: 4; // 每行显示个数
+.list-container {
+  position: relative;
+  .box-list {
+    min-height: 580px;
+    overflow: auto;
+
+    .list {
+      height: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      justify-content: space-between;
+      overflow: auto;
+      padding: 3px 4.5px 8px 4.5px;
+
+      .box-wrap {
+        width: calc(100% / @num);
+        padding: 1px;
+      }
+    }
+
+    .empty {
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+}
