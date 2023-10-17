@@ -1,8 +1,8 @@
-<!--共享图库-头部搜索-->
+<!--管理图库-头部搜索-->
 <template>
   <div class="header-container">
     <div class="header-top">
-      <el-input class="ipt-wrap" placeholder="请输入图片标题/编号" v-model="params.query" @keyup.enter.native="getList(true)">
+      <el-input class="ipt-wrap" placeholder="请输入图片标题/编号" v-model="params.queryinput" @keyup.enter.native="getList(true)">
         <el-button slot="append" icon="el-icon-search" :loading="loading" @click="getList(true)" />
       </el-input>
 
@@ -18,14 +18,14 @@
       <!--分类-->
       <el-cascader
         style="width: 90px"
-        ref="cascaderShare"
+        ref="cascader"
         filterable
         clearable
         popper-class="pc-sel-area-cascader"
-        :props="share"
+        :props="props"
         placeholder="分类"
-        v-model="shareValue"
-        @change="(e) => share_change(e)"
+        v-model="propsValue"
+        @change="(e) => categoryChange(e)"
       />
     </div>
   </div>
@@ -33,7 +33,9 @@
 
 <script>
 import filterPop from './filterPop.vue';
-import { getImageCategoryByShareApi, getImageCategoryByShareOfTwoApi } from '@/designApplication/apis/image';
+import { fetchAdminImageSelectApi } from '@/designApplication/apis/image';
+import { AdminImageListParams } from '@/designApplication/interface/image/imageListParams';
+
 export default {
   components: {
     filterPop,
@@ -41,7 +43,7 @@ export default {
   props: {
     /**
      * 请求参数
-     * @class {ShareImageListParams}
+     * @class {AdminImageListParams}
      * */
     params: Object,
     loading: Boolean,
@@ -49,8 +51,8 @@ export default {
   },
   data() {
     return {
-      shareValue: [],
-      share: {
+      propsValue: [],
+      props: {
         lazy: true,
         lazyLoad: this.getSelectList,
         checkStrictly: true,
@@ -59,50 +61,69 @@ export default {
   },
   methods: {
     /*
-     * 共享图库-change
+     * 分类-change
      * */
-    async share_change(e) {
+    async categoryChange(e) {
       // change事件调用二级分类接口
-      const store = this.$refs.cascaderShare.$refs.panel.store;
+      const store = this.$refs.cascader.$refs.panel.store;
       let i = store.nodes.findIndex((node) => node.value == e[0]);
       let d = store.nodes[i];
-      let el = this.$refs.cascaderShare.$refs.panel.$refs.menu[d.level - 1].$el;
+      let el = this.$refs.cascader.$refs.panel.$refs.menu[d.level - 1].$el;
       el.querySelectorAll('.el-cascader-node__label')[i].click();
 
       // 分页
       this.getList(true);
     },
     /**
-     * 获取设计图分类的下拉列表 - 共享图库
+     * 获取下拉列表
      * */
     async getSelectList(node, resolve) {
-      const { level } = node;
+      const { level, data } = node;
       // 一级
       if (level === 0) {
-        let list = await getImageCategoryByShareApi();
+        this.params.queryAll = 1;
         let tempList = [];
-        tempList = list.map((item) => {
-          return {
-            label: item.name,
-            value: item.seqId,
-            leaf: false,
-          };
-        });
-        tempList.unshift({ label: '分类', value: '', leaf: true });
-        resolve(tempList);
+        try {
+          let list = await fetchAdminImageSelectApi({ parentId: 0, typeName: '' });
+          if (list) {
+            tempList = list.map((item) => {
+              let seqId = item.seqId;
+              let queryAll = 0;
+              return {
+                label: item.typeName,
+                value: seqId,
+                queryAll: queryAll,
+                leaf: seqId === '',
+              };
+            });
+          }
+          tempList.unshift({ label: '分类', value: '', leaf: true });
+        } finally {
+          resolve(tempList);
+        }
       }
       // 二级
       else if (level === 1) {
-        let list = await getImageCategoryByShareOfTwoApi(node.value);
-        console.log(list);
-        let tempList = list.map((item) => {
-          return {
-            label: item.name,
-            value: item.seqId,
-            leaf: true,
-          };
-        });
-        resolve(tempList);
+        let parentId = data.value;
+        if (data.value == '') parentId = 0;
+        let tempList = [];
+        try {
+          let list = await fetchAdminImageSelectApi({ parentId: parentId, typeName: '' });
+          if (list) {
+            tempList = list.map((item) => {
+              let seqId = item.seqId;
+              let queryAll = 0;
+              return {
+                label: item.typeName,
+                value: seqId,
+                queryAll: queryAll,
+                leaf: true,
+              };
+            });
+          }
+        } finally {
+          resolve(tempList);
+        }
       } else {
         resolve([]);
       }

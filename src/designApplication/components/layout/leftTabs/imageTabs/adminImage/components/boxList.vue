@@ -1,4 +1,4 @@
-<!--我的图库-列表-->
+<!--管理图库-列表-->
 <template>
   <div class="list-container">
     <div class="box-list">
@@ -24,7 +24,6 @@
 <script>
 import boxContainer from '@/designApplication/components/boxContainer.vue';
 import hoverDetailImage from '@/designApplication/components/hoverDetailImage.vue';
-import { ParseProdItem } from '@/designApplication/interface/commonProdParse';
 
 export default {
   components: {

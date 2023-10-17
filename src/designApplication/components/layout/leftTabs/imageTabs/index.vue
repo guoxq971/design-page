@@ -7,19 +7,27 @@
     <el-tab-pane label="共享图库" name="share">
       <shareImage :parentLoading="loading" :share="share" />
     </el-tab-pane>
-    <el-tab-pane label="管理图库"></el-tab-pane>
-    <el-tab-pane label="收藏图库"></el-tab-pane>
+    <el-tab-pane label="管理图库" name="admin">
+      <adminImage />
+    </el-tab-pane>
+    <el-tab-pane label="收藏图片" name="collect">
+      <collectImage />
+    </el-tab-pane>
   </el-tabs>
 </template>
 
 <script>
 import myImage from './myImage';
 import shareImage from './shareImage';
+import adminImage from './adminImage';
+import collectImage from './collectImage';
 import { getImageCategoryApi } from '@/designApplication/apis/image';
 export default {
   components: {
     myImage,
     shareImage,
+    adminImage,
+    collectImage,
   },
   data() {
     return {

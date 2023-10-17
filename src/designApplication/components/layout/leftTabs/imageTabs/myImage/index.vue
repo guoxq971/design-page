@@ -11,7 +11,7 @@
 import headerContainer from './components/header.vue';
 import pageContainer from './components/page.vue';
 import boxList from './components/boxList.vue';
-import { getAccountListApi, getImageCategory, getImageListApi } from '@/designApplication/apis/image';
+import { getAccountListApi, getImageListApi } from '@/designApplication/apis/image';
 import { ImageListParams } from '@/designApplication/interface/image/imageListParams';
 
 export default {

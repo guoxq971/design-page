@@ -8,6 +8,9 @@ import { fetchImageCategory } from '@/designApplication/mock/image/fetchImageCat
 import { fetchImageCategoryMock } from '@/designApplication/mock/image/fetchImageCategoryMock';
 import { fetchImageCategoryByShare, fetchImageCategoryByShareOfTwo } from '@/designApplication/mock/image/fetchImageCategoryByShare';
 import { FetchImageCategoryByShareMock, FetchImageCategoryByShareOfTwoMock } from '@/designApplication/mock/image/fetchImageCategoryByShareMock';
+import { fetchAdminImageList } from '@/designApplication/mock/image/fetchAdminImageList';
+import { fetchAdminImageSelect } from '@/designApplication/mock/image/fetchAdminImageSelect';
+import { fetchCollectImageList } from '@/designApplication/mock/image/fetchCollectImageList';
 
 /**
  * 获取设计图列表
@@ -88,4 +91,56 @@ export async function getImageCategoryByShareOfTwoApi(parentId) {
   }
 
   return Promise.resolve(res.CMDesignImageGxtypes);
+}
+
+/**
+ *  获取管理员图库列表
+ *  @param {Object} params 参数
+ *  @returns {Promise<any[]>} 管理员图库列表
+ * */
+export async function fetchAdminImageListApi(params) {
+  const res = await fetchAdminImageList(params);
+  const msg = '获取管理员图库列表';
+  if (res.code !== 0) {
+    Message.warning(msg + ' 失败');
+    return Promise.reject(msg + ' 失败');
+  }
+
+  const result = {
+    total: res.data.total,
+    list: res.data.records,
+  };
+
+  return Promise.resolve(result);
+}
+
+/**
+ * 管理员图库 - 下拉列表
+ * @param {Object} params 参数
+ * @returns {Promise<any[]>} 下拉列表
+ * */
+export async function fetchAdminImageSelectApi(params) {
+  const res = await fetchAdminImageSelect(params);
+  const msg = '获取管理员图库下拉列表';
+  if (res.code !== 0) {
+    Message.warning(msg + ' 失败');
+    return Promise.reject(msg + ' 失败');
+  }
+
+  return Promise.resolve(res.data);
+}
+
+/**
+ * 获取列表 - 收藏图片
+ * @returns {Promise<any[]>} 列表
+ * */
+export async function fetchCollectImageListApi() {
+  const res = await fetchCollectImageList();
+  const msg = '获取收藏图片列表';
+  if (res.retState !== '0') {
+    Message.warning(msg + ' 失败');
+    return Promise.reject(msg + ' 失败');
+  }
+
+  return Promise.resolve(res.list);
 }

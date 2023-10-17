@@ -3,7 +3,8 @@
   <el-card class="hover-container image-group">
     <!--图片-->
     <div class="image-wrap">
-      <img class="image" :src="detail.previewImg" alt="" />
+      <img v-if="detail.previewImg" class="image" :src="detail.previewImg" alt="" />
+      <img v-else :src="detail.designImg" alt="" />
     </div>
 
     <div class="title">{{ title }}</div>

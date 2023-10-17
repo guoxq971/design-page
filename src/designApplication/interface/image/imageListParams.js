@@ -40,9 +40,12 @@ class NoUseImageListParams {
  * @param {String} customerId - 子账号 (-1=专享共享图)
  * @param {String} designerId - 插画师  -1全部 1无风险 2微风险 3较风险 4高风险
  * @param {String} tort_type - 风险等级   -1全部 1无风险 2微风险 3较风险 4高风险
+ *
  * @param {String} isAll - 是否全幅 ''-全部 1-是 0-否
+ * @param {String} copyright - 是否侵权 ''-全部 1-侵权 0-非侵权 2-漂白
+ * @param {String} imageType - 图片格式 ''-全部 .png-.png .jpg-.jpg
+ *
  * @param {String} quality - 图片质量 0-未分类 1-精品 2-良
- * @param {String} imageType - 图片格式 -1全部
  * @param {String} qty[from] - 出单次数开始
  * @param {String} qty[to] - 出单次数开始
  * @param {String} width[from] - 宽度范围开始
@@ -58,7 +61,6 @@ class NoUseImageListParams {
  * @param {String} gxtype2 - 共享类-二级下拉
  * @param {String} gxsx - 共享类-属性下拉
  * @param {String} templateNo - 模板编号
- * @param {String} gxcopyright - 共享类-是否侵权 ''-全部 1-是 0-否 2-漂白
  * @param {String} gxImgQuality - 共享类-图片质量 0-未分类 1-精品 2-良
  * @param {number} limit - 每页条数
  * @param {number} offset - 页码偏移量
@@ -88,4 +90,36 @@ export class ShareImageListParams extends ImageListParams {
   typeId = '';
   gxtype1 = '';
   gxtype2 = '';
+}
+
+/**
+ * 管理员图库
+ * @class AdminImageListParams
+ * @constructor
+ * @param {String} pageNum - 当前页码
+ * @param {String} pageSize - 每页条数
+ * @param {String} queryinput - 标题、编号
+ * @param {String} adminType - 图片类型
+ * @param {String} isAll - 是否全幅 ''-全部 1-是 0-否
+ * @param {String} copyright - 是否侵权 ''-全部 1-侵权 0-非侵权 2-漂白
+ * @param {String} imageType - 图片格式 ''-全部 .png-.png .jpg-.jpg
+ * @param {String} sortMode - 查询单数;
+ *
+ * @param {String} query - 标题、编号
+ * @param {String} total -
+ * @param {String} offset -
+ * */
+export class AdminImageListParams {
+  pageNum = 1;
+  pageSize = 24;
+  queryinput = '';
+  adminType = '';
+  isAll = '';
+  copyright = '';
+  imageType = '';
+  sortMode = 1;
+
+  query;
+  total;
+  offset;
 }
