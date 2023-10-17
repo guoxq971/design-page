@@ -1,5 +1,5 @@
 /**
- * 没有用到的字段
+ * 列表参数 - 没有用到的字段
  * */
 class NoUseImageListParams {
   designerId = ''; //插画师  -1全部 1无风险 2微风险 3较风险 4高风险
@@ -30,7 +30,7 @@ class NoUseImageListParams {
 }
 
 /**
- * 我的图库 - 图片列表参数
+ * 列表参数 - 我的图库
  * @class ImageListParams
  * @constructor
  * @param {String} query - 标题、编号
@@ -83,13 +83,22 @@ export class ImageListParams extends NoUseImageListParams {
 }
 
 /**
- * 共享图库 - 图片列表参数
+ * 列表参数 - 共享图库
  * */
 export class ShareImageListParams extends ImageListParams {
   tort_type = '';
   typeId = '';
   gxtype1 = '';
   gxtype2 = '';
+}
+
+/**
+ * 列表参数 - 小组图库
+ * */
+export class GroupImageListParams extends ImageListParams {
+  queryAll = '';
+  tort_type = -1;
+  gxsx = 0;
 }
 
 /**

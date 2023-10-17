@@ -3,6 +3,7 @@
   <el-card class="hover-container image-group">
     <!--图片-->
     <div class="image-wrap">
+      <!--previewImg or designImg-->
       <img v-if="detail.previewImg" class="image" :src="detail.previewImg" alt="" />
       <img v-else :src="detail.designImg" alt="" />
     </div>
@@ -28,7 +29,9 @@
       <span class="font-color">{{ detail.size.height }}</span>
       {{ detail.size.unit }}
       <span v-if="detail.dpi">({{ detail.dpi }}dpi)</span>
-      <span>(.{{ detail.previewImg.split('.').pop() }})</span>
+      <!--previewImg or designImg-->
+      <span v-if="detail.previewImg">(.{{ detail.previewImg.split('.').pop() }})</span>
+      <span v-else>(.{{ detail.designImg.split('.').pop() }})</span>
     </div>
     <div class="label-wrap" v-if="detail.description">
       <span style="white-space: nowrap">标签:</span>
@@ -71,11 +74,12 @@ export default {
   computed: {
     title() {
       let title = '';
-      if (this.detail.name) {
-        title = this.detail.name;
-      }
       if (this.detail.description) {
         title = this.detail.description;
+      } else if (this.detail.name) {
+        title = this.detail.name;
+      } else if (this.detail.imageName) {
+        title = this.detail.imageName;
       }
       return title;
     },

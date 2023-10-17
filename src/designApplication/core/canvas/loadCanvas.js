@@ -1,6 +1,5 @@
 import { KonvaCanvas } from '@/designApplication/core/canvas/konvaCanvas';
 import store from '@/store';
-import image3 from '@/assets/test.jpg';
 import { sleep } from '@/designApplication/core/utils/sleep';
 
 /**

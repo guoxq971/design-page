@@ -3,7 +3,9 @@
     <el-tab-pane label="我的图库" name="my">
       <myImage :parentLoading="loading" :exclusive="exclusive" />
     </el-tab-pane>
-    <el-tab-pane label="小组图库"></el-tab-pane>
+    <el-tab-pane label="小组图库" name="group">
+      <groupImage />
+    </el-tab-pane>
     <el-tab-pane label="共享图库" name="share">
       <shareImage :parentLoading="loading" :share="share" />
     </el-tab-pane>
@@ -21,6 +23,7 @@ import myImage from './myImage';
 import shareImage from './shareImage';
 import adminImage from './adminImage';
 import collectImage from './collectImage';
+import groupImage from './groupImage';
 import { getImageCategoryApi } from '@/designApplication/apis/image';
 export default {
   components: {
@@ -28,6 +31,7 @@ export default {
     shareImage,
     adminImage,
     collectImage,
+    groupImage,
   },
   data() {
     return {

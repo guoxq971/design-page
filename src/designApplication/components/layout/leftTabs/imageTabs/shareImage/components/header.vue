@@ -59,7 +59,7 @@ export default {
   },
   methods: {
     /*
-     * 共享图库-change
+     * 分类-change
      * */
     async share_change(e) {
       // change事件调用二级分类接口
@@ -73,7 +73,7 @@ export default {
       this.getList(true);
     },
     /**
-     * 获取设计图分类的下拉列表 - 共享图库
+     * 获取分类的下拉列表
      * */
     async getSelectList(node, resolve) {
       const { level } = node;
@@ -94,7 +94,6 @@ export default {
       // 二级
       else if (level === 1) {
         let list = await getImageCategoryByShareOfTwoApi(node.value);
-        console.log(list);
         let tempList = list.map((item) => {
           return {
             label: item.name,

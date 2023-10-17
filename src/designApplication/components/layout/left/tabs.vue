@@ -2,7 +2,7 @@
   <div class="tabs-container">
     <prodTabs v-show="active === leftTabsList[0].value" />
     <imageTabs v-show="active === leftTabsList[1].value" />
-    <div v-show="active === leftTabsList[2].value">background</div>
+    <backgroundTabs v-show="active === leftTabsList[2].value" />
     <div v-show="active === leftTabsList[3].value">text</div>
   </div>
 </template>
@@ -10,11 +10,13 @@
 <script>
 import prodTabs from '@/designApplication/components/layout/leftTabs/prodTabs';
 import imageTabs from '@/designApplication/components/layout/leftTabs/imageTabs';
+import backgroundTabs from '@/designApplication/components/layout/leftTabs/backgroundTabs';
 import { leftTabsList } from '@/designApplication/core/utils/defineData';
 export default {
   components: {
     prodTabs,
     imageTabs,
+    backgroundTabs,
   },
   props: {
     active: { type: String, default: '' },

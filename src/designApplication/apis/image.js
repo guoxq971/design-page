@@ -2,7 +2,7 @@ import { fetchImageListMock } from '@/designApplication/mock/image/fetchImageLis
 import { fetchImageList } from '@/designApplication/mock/image/fetchImageList';
 import { Message } from 'element-ui';
 import { GetList, GetListByMyImage } from '@/designApplication/interface/getList';
-import { ImageListParams } from '@/designApplication/interface/image/imageListParams';
+import { GroupImageListParams, ImageListParams } from '@/designApplication/interface/image/imageListParams';
 import { fetchAccountList } from '@/designApplication/mock/image/fetchAccountList';
 import { fetchImageCategory } from '@/designApplication/mock/image/fetchImageCategory';
 import { fetchImageCategoryMock } from '@/designApplication/mock/image/fetchImageCategoryMock';
@@ -11,6 +11,7 @@ import { FetchImageCategoryByShareMock, FetchImageCategoryByShareOfTwoMock } fro
 import { fetchAdminImageList } from '@/designApplication/mock/image/fetchAdminImageList';
 import { fetchAdminImageSelect } from '@/designApplication/mock/image/fetchAdminImageSelect';
 import { fetchCollectImageList } from '@/designApplication/mock/image/fetchCollectImageList';
+import { fetchGroupImageList } from '@/designApplication/mock/image/fetchGroupImageList';
 
 /**
  * 获取设计图列表
@@ -143,4 +144,42 @@ export async function fetchCollectImageListApi() {
   }
 
   return Promise.resolve(res.list);
+}
+
+/**
+ * 获取列表 - 小组图库
+ * @param {GroupImageListParams} params 参数
+ * @returns {Promise<any[]>} 列表
+ * */
+export async function fetchGroupImageListApi(params) {
+  const res = await fetchGroupImageList(params);
+  const msg = '获取小组图库列表';
+  if (res.retState !== '0') {
+    Message.warning(msg + ' 失败');
+    return Promise.reject(msg + ' 失败');
+  }
+
+  const result = {
+    total: res.count,
+    list: res.designs,
+  };
+
+  return Promise.resolve(result);
+}
+
+/**
+ * 获取下拉列表 - 小组图库
+ * @param {GroupImageListParams} params 参数
+ * @returns {Promise<any[]>} 列表
+ * */
+export async function fetchGroupImageSelectApi(params = null) {
+  const msg = '获取下拉列表 - 小组图库';
+
+  const res = await fetchGroupImageList(params);
+  if (res.retState !== '0') {
+    Message.warning(msg + ' 失败');
+    return Promise.reject(msg + ' 失败');
+  }
+
+  return Promise.resolve(res.designCategories);
 }
