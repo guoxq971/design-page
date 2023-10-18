@@ -12,6 +12,34 @@ export class DesignerUtil {
   static prodType = ProdType;
 
   /**
+   * 设置背景色
+   * */
+  static setBgc(color, prodItem = null) {
+    prodItem = prodItem || this.getActiveProd();
+    for (let view of prodItem.viewList) {
+      if (view.canvas) {
+        view.canvas.setBgc(color);
+      }
+    }
+  }
+
+  /**
+   * 移除背景色
+   * */
+  static removeBgc(prodItem = null) {
+    prodItem = prodItem || this.getActiveProd();
+    for (let view of prodItem.viewList) {
+      if (view.canvas) {
+        view.canvas.getImageList().forEach((e) => {
+          if (e.attrs.name === 'bgc') {
+            e.attrs.remove();
+          }
+        });
+      }
+    }
+  }
+
+  /**
    * 是否是玻璃材质
    * @param {String} colorCode 颜色编码
    * */

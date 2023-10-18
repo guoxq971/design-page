@@ -3,7 +3,9 @@
     <el-tab-pane label="背景图" name="image">
       <imageBackground />
     </el-tab-pane>
-    <el-tab-pane label="背景色" name="color"></el-tab-pane>
+    <el-tab-pane label="背景色" name="color">
+      <colorBackground />
+    </el-tab-pane>
     <el-tab-pane label="收藏背景" name="collect">
       <collectBackground />
     </el-tab-pane>
@@ -13,10 +15,12 @@
 <script>
 import imageBackground from './imageBackground';
 import collectBackground from './collectBackground';
+import colorBackground from './colorBackground';
 export default {
   components: {
     imageBackground,
     collectBackground,
+    colorBackground,
   },
   data() {
     return {

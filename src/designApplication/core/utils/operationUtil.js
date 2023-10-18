@@ -36,7 +36,6 @@ export class OperationUtil {
         case false:
           // 隐藏3d，将2d canvas的底色设置为 null
           for (let view of prodItem.viewList) {
-            // TODO: 设置为已选择的背景色, 未选择则为null
             const color = null;
             if (view.canvas) {
               view.canvas.changeBgc(color);

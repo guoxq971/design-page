@@ -7,6 +7,7 @@ import { KonvaCanvasParam } from '@/designApplication/interface/konvaCanvasParam
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import { config3dUtil } from '@/designApplication/interface/Config3d/config3dOfCommonResponse';
 import { OperationUtil } from '@/designApplication/core/utils/operationUtil';
+import { loadImage } from '@/designApplication/core/utils/loadImage';
 
 /**
  * 创建 konva canvas
@@ -38,6 +39,36 @@ export class KonvaCanvas {
     this._initClip(); // 初始化裁剪区域
     this._initV(); // 初始化车线
     this._init();
+  }
+
+  /**
+   * 添加背景色
+   * */
+  setBgc(color) {
+    let rect = this.clip.children.find((e) => e.name() === 'bgc');
+    if (!rect) {
+      rect = new Konva.Rect({
+        x: 0,
+        y: 0,
+        width: this.stage.width(),
+        height: this.stage.height(),
+        fill: color,
+        draggable: false,
+        name: 'bgc',
+      });
+      rect.setAttrs({
+        remove: () => {
+          this.clip.children = this.clip.children.filter((item) => item !== rect);
+          this.updateTexture();
+          this.layer.draw();
+        },
+      });
+      this.clip.add(rect);
+    } else {
+      rect.setAttrs('fill', color);
+    }
+
+    this.updateTexture();
   }
 
   /**
@@ -126,7 +157,7 @@ export class KonvaCanvas {
     // 监听点击的位置是否有元素
     this.stage.on('mousedown', (e) => {
       // 如果点击的是舞台或者path, 则隐藏所有的transformer
-      if (e.target === this.stage || e.target.attrs.type === 'path') {
+      if (e.target === this.stage || e.target.attrs.type === 'path' || e.target.attrs.name === 'bgc') {
         this.hideAllTransformer();
       }
     });
@@ -174,10 +205,26 @@ export class KonvaCanvas {
   /**
    * 创建图片
    * @param {string} image 图片地址
+   * @param {object} param 参数
    * @returns {Promise<{image: Konva.Image, width: number, height: number}>
    * */
-  async createImage(image) {
-    const designImage = await getDesignImage(image, this.layer, this.hideAllTransformer);
+  async createImage(image, param = {}) {
+    const img = await loadImage(image);
+
+    param = Object.assign(
+      {
+        width: img.width,
+        height: img.height,
+        x: 0,
+        y: 0,
+        scaleX: 1,
+        scaleY: 1,
+        rotation: 0,
+      },
+      param,
+    );
+
+    const designImage = await getDesignImage(img, this.layer, this.hideAllTransformer, param);
 
     // 设计图的事件
     designImage.image.on('dragmove', (e) => {
@@ -199,9 +246,21 @@ export class KonvaCanvas {
     });
 
     designImage.image.setAttrs({
-      x: 0,
-      y: 0,
+      width: param.width,
+      height: param.height,
+      x: param.x,
+      y: param.y,
+      scaleX: param.scaleX,
+      scaleY: param.scaleY,
+      rotation: param.rotation,
       type: 'image',
+      konvaCanvas: this,
+      remove: () => {
+        this.clip.children = this.clip.children.filter((item) => item !== designImage.image);
+        this.layer.children = this.layer.children.filter((item) => item !== designImage.transformer);
+        this.updateTexture();
+        this.layer.draw();
+      },
     });
     return designImage;
   }
@@ -212,6 +271,13 @@ export class KonvaCanvas {
    * */
   add(design) {
     this.clip.add(design.image); //添加设计图
-    this.updateTexture();
+    setTimeout(() => this.updateTexture(), 50);
+  }
+
+  /**
+   * 获取当前设计图列表
+   * */
+  getImageList() {
+    return this.clip.children;
   }
 }

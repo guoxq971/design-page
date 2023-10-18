@@ -18,9 +18,9 @@ export const konvaRectConfig = (param) => {
     // 坐标,旋转,缩放 --start
     x: 0, // 距离左边的距离
     y: 0, // 距离上边的距离
-    scale: { x: 1, y: 1 }, // 缩放比例
-    // scaleX: 1, // 缩放比例
-    // scaleY: 1, // 缩放比例
+    // scale: { x: 1, y: 1 }, // 缩放比例
+    scaleX: 1, // 缩放比例
+    scaleY: 1, // 缩放比例
     rotation: 0, // 旋转角度
     // 坐标,旋转,缩放 --end
 

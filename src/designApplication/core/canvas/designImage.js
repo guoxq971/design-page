@@ -6,18 +6,18 @@ import { loadImage } from '@/designApplication/core/utils/loadImage';
 
 /**
  * 获取设计图
- * @param {String} image 图片地址
+ * @param {Object} image 图片对象
  * @param {Object} layer 图层
  * @param {Function} hideAllTransformer 隐藏所有选中框
+ * @param {Object} param 参数
  * @returns {Promise<{image: Konva.Rect, transformer: Konva.Transformer}>}
  * */
-export async function getDesignImage(image, layer, hideAllTransformer) {
-  const img = await loadImage(image);
+export async function getDesignImage(image, layer, hideAllTransformer, param) {
   // 选中框
   const transformer = initTransformer();
   transformer.visible(false);
 
-  const rect = new Konva.Image(konvaRectConfig({ image: img }));
+  const rect = new Konva.Image(konvaRectConfig({ image: image }));
   transformer.nodes([rect]);
   layer.add(transformer);
 

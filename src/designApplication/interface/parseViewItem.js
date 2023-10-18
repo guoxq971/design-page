@@ -9,6 +9,7 @@
  * @param {three.Texture} texture 视图项纹理
  * @param {Function} updateTexture 更新纹理
  * @param {ViewRect} rect 视图项的矩形区域
+ * @param {Array} imageList 设计图列表
  * */
 export class ParseViewItem {
   id;
@@ -18,6 +19,7 @@ export class ParseViewItem {
   texture;
   updateTexture;
   rect;
+  imageList = [];
 }
 
 /**

@@ -122,9 +122,6 @@ export class MyThree extends Core {
       }
 
       canvas.dispatchEvent(event);
-
-      // 更新纹理
-      // view.canvas.hasSelected() && view.updateTexture(6);
     }
   }
 }
