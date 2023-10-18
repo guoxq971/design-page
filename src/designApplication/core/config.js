@@ -50,7 +50,7 @@ class CanvasConfig {
   isClip = true;
   clipStoreWidth = 1.5;
   clipStoreColor = 'red';
-  clipStoreFill = '#fff';
+  clipStoreFill = null; //'#fff'; //背景色
 
   isV = false;
   vStoreWidth = 1.5;

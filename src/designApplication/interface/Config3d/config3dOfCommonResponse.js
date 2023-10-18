@@ -14,7 +14,7 @@ export class config3dUtil {
 
     // 视图配置已不存在
     if (!config3d.viewList || config3d.viewList.length === 0) {
-      console.error('视图配置已不存在', config3d);
+      console.error('加载3d失败；视图配置已不存在', config3d);
       flag = false;
     }
 

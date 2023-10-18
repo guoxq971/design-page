@@ -1,7 +1,5 @@
 import { ProdStore } from '@/designApplication/store/prodStore';
 import { ProdItem, ProdType, ProdUtil } from '@/designApplication/interface/prodItem';
-import { sleep } from '@/designApplication/core/utils/sleep';
-import { parse3dConfigByCommon } from '@/designApplication/mock/config3d/get3dConfigDispose';
 import { Config } from '@/designApplication/core/config';
 import { loadCanvas } from '@/designApplication/core/canvas/loadCanvas';
 import { loadThree } from '@/designApplication/core/three/loadThree';
@@ -9,9 +7,7 @@ import { gerRefineProdConfig3dByTemplateNoWithSizeApi, getProd3dConfigByCommonAp
 import { config3dUtil } from '@/designApplication/interface/Config3d/config3dOfCommonResponse';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import { Message } from 'element-ui';
-import packingGlsl from 'three/src/renderers/shaders/ShaderChunk/packing.glsl';
-import image3 from '@/assets/test.jpg';
-import { loadImage } from '@/designApplication/core/utils/loadImage';
+import store from '@/store';
 
 /**
  * designApplication store
@@ -265,7 +261,7 @@ const actionsProd = {
           }
         }
 
-        console.log('refineProdItem', refineProdItem);
+        // console.log('refineProdItem', refineProdItem);
 
         sizeId = refineProdItem.sizeId;
         resultProdItem = refineProdItem;
@@ -277,14 +273,15 @@ const actionsProd = {
     }
 
     if (resultProdItem) {
+      commit('setShow3d', false);
       // 设置激活之前，先清空已有的canvas / three
       DesignerUtil.clearProd(curProdItem);
 
       // 如果当前激活的颜色、尺码不在模板中，将当前激活的颜色、尺码设置为第一个的id
-      if (!DesignerUtil.hasColor(colorId, resultProdItem)) {
+      if (!resultProdItem.colorList.some((e) => e.id === colorId)) {
         colorId = resultProdItem.colorList[0].id;
       }
-      if (!DesignerUtil.hasSize(sizeId, resultProdItem)) {
+      if (!resultProdItem.sizeList.some((e) => e.id === sizeId)) {
         sizeId = resultProdItem.sizeList[0].id;
       }
 
@@ -335,7 +332,7 @@ export default {
      * @param {ImageListByMyImage} detail 设计图详情
      * */
     async setImage({ state, commit, dispatch, getters }, detail) {
-      const view = DesignerUtil.getView();
+      const view = state.prodStore.get()?.viewList.find((e) => e.id === store.state.designApplication.activeViewId);
       if (!view) {
         Message.warning('设计图需要加载到的view获取失败!');
         return;

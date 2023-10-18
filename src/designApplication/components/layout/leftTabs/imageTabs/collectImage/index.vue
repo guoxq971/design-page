@@ -30,7 +30,6 @@ export default {
       try {
         this.loading = true;
         this.list = await fetchCollectImageListApi();
-        console.log(JSON.parse(JSON.stringify(this.list)));
       } finally {
         this.loading = false;
       }

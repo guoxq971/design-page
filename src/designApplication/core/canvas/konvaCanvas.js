@@ -6,6 +6,7 @@ import store from '@/store';
 import { KonvaCanvasParam } from '@/designApplication/interface/konvaCanvasParam';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import { config3dUtil } from '@/designApplication/interface/Config3d/config3dOfCommonResponse';
+import { OperationUtil } from '@/designApplication/core/utils/operationUtil';
 
 /**
  * 创建 konva canvas
@@ -17,7 +18,7 @@ export class KonvaCanvas {
   stage; // 舞台
   layer; // 图层
   clip; // 裁剪区域
-  beforeDownSelected = false; //按下前是否选中了设计图
+  konvaPath; // 裁剪区域
 
   constructor(_param = '') {
     if (_param === '') return;
@@ -37,6 +38,17 @@ export class KonvaCanvas {
     this._initClip(); // 初始化裁剪区域
     this._initV(); // 初始化车线
     this._init();
+  }
+
+  /**
+   * 改变背景色
+   * @param {any} color 颜色
+   * */
+  changeBgc(color = -1) {
+    if (color === -1) return;
+    this.konvaPath.setAttr('fill', color);
+    this.updateTexture();
+    this.layer.draw();
   }
 
   _init() {}
@@ -80,6 +92,7 @@ export class KonvaCanvas {
     // 绘制区域 (裁剪区域, 超出隐藏)
     const { clip, konvaPath } = initProdArea(this.param.staticView, this.param.view);
     this.clip = clip;
+    this.konvaPath = konvaPath;
 
     this.layer.add(konvaPath);
     this.layer.add(this.clip);
@@ -107,15 +120,11 @@ export class KonvaCanvas {
       height: canvasSize.height,
     });
 
-    // Konva.pixelRatio = window.devicePixelRatio; // 画布的像素比例
-
     this.layer = new Konva.Layer();
     this.stage.add(this.layer);
 
     // 监听点击的位置是否有元素
     this.stage.on('mousedown', (e) => {
-      // this.beforeDownSelected = this.hasSelected();
-
       // 如果点击的是舞台或者path, 则隐藏所有的transformer
       if (e.target === this.stage || e.target.attrs.type === 'path') {
         this.hideAllTransformer();
@@ -125,10 +134,8 @@ export class KonvaCanvas {
     // 监听双击事件
     this.stage.on('dblclick', (e) => {
       // 选中非设计图 && 没有选中元素 && 事件是用户触发的
-      if (e.target.attrs.type !== 'image' && !this.beforeDownSelected && e.evt.isTrusted) {
-        if (config3dUtil.isLoad3d(store.getters['designApplication/activeProd'].config3d)) {
-          DesignerUtil.showThree();
-        }
+      if (e.target.attrs.type !== 'image' && e.evt.isTrusted) {
+        OperationUtil.doubleClickCanvas();
       }
     });
   }
@@ -205,5 +212,6 @@ export class KonvaCanvas {
    * */
   add(design) {
     this.clip.add(design.image); //添加设计图
+    this.updateTexture();
   }
 }

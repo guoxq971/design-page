@@ -4,6 +4,7 @@ import { MeshItem } from '@/designApplication/interface/meshItem';
 import store from '@/store';
 import * as THREE from 'three';
 import { ProdItem } from '@/designApplication/interface/prodItem';
+import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 
 /**
  * 加载three参数
@@ -14,9 +15,9 @@ import { ProdItem } from '@/designApplication/interface/prodItem';
  * @property {ProdItem} prodItem 产品
  * */
 class LoadThreeParam {
-  id;
+  id = 'three-container';
   path;
-  loading;
+  loading = false;
   prodItem;
 }
 
@@ -25,23 +26,17 @@ class LoadThreeParam {
  * @function loadThree
  * @param {LoadThreeParam} param 参数
  * */
-export async function loadThree(param = {}) {
-  const _param = new LoadThreeParam();
-  param = Object.assign(_param, param);
-  let { id, path, loading } = param;
-  // TODO: 这里要做真实数据
-  id = id || 'three-container';
-  path = path || '/2424.glb';
-  loading = loading || false;
+export async function loadThree(param = new LoadThreeParam()) {
+  param = Object.assign(new LoadThreeParam(), param);
   if (param.prodItem) {
-    path = 'http://file.testcustomwe.com/' + param.prodItem.config3d.glbPath;
+    param.path = 'http://file.testcustomwe.com/' + param.prodItem.config3d.glbPath;
   }
 
   try {
-    loading && loading3dOpen();
+    param.loading && loading3dOpen();
 
     // 初始化three
-    const t = new MyThree({ id: id, templateNo: param.prodItem.detail.templateNo });
+    const t = new MyThree({ id: param.id, templateNo: param.prodItem.detail.templateNo });
 
     // 保存到prodItem
     if (param.prodItem) {
@@ -49,7 +44,7 @@ export async function loadThree(param = {}) {
     }
 
     // 加载模型
-    const result = await loadModel(path);
+    const result = await loadModel(param.path);
     t.scene.add(result.model);
     t.model = result.model;
     t.meshList = result.meshList;
@@ -61,10 +56,10 @@ export async function loadThree(param = {}) {
       return meshItem;
     });
 
-    // 加载canvas材质
+    // 加载canvas材质 and 模型底色
     loadCanvasTexture(t.meshPlusList);
   } finally {
-    loading && loading3dClose();
+    param.loading && loading3dClose();
   }
 }
 
@@ -97,9 +92,19 @@ function getViewByMaterialName(materialName, prodItem) {
  * @param {MeshItem[]} meshPlusList 模型的材质列表
  * */
 function loadCanvasTexture(meshPlusList) {
+  const config = DesignerUtil.getConfig();
+
   meshPlusList.forEach((item) => {
     const { mesh, view } = item;
-    if (!view) return;
+    const color3dItem = config.get3dColorItemByMaterialName(mesh.name);
+
+    // 如果是玻璃材质，不需要处理
+    if (DesignerUtil.hasGlass(color3dItem.colorCode)) return;
+    // 这是没有canvas的mesh, 要设置底色
+    if (!view) {
+      mesh.material.color.set(color3dItem.colorCode);
+      return;
+    }
 
     const canvas = view.canvas.stage.content.querySelectorAll('canvas');
     const targetCanvas = canvas[0];

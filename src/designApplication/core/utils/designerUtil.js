@@ -12,12 +12,64 @@ export class DesignerUtil {
   static prodType = ProdType;
 
   /**
-   * 显示/隐藏 3d
-   * @param {boolean|null} isShow 是否显示
+   * 是否是玻璃材质
+   * @param {String} colorCode 颜色编码
    * */
-  static showThree(isShow = null) {
-    if (isShow === null) isShow = !store.state.designApplication.show3d;
-    store.commit('designApplication/setShow3d', isShow);
+  static hasGlass(colorCode) {
+    return colorCode === '';
+  }
+
+  /**
+   * 获取产品配置
+   * @param {Object} param 参数
+   * @param {ProdItem|null} prodItem 产品
+   * @returns {Object} 配置
+   * */
+  static getConfig(param = {}, prodItem = null) {
+    param = Object.assign(
+      {
+        colorId: store.state.designApplication.activeColorId,
+        viewId: store.state.designApplication.activeViewId,
+        sizeId: store.state.designApplication.activeSizeId,
+      },
+      param,
+    );
+
+    prodItem = prodItem || this.getActiveProd();
+
+    // colorId 获取对应颜色的id
+    const colorId = param.colorId;
+
+    // 获取 colorId 对应的 2d配置;
+    const colorConfig2d = prodItem.colorList.find((e) => e.id === colorId);
+
+    // 获取 colorId 对应的 3d配置;
+    const colorConfig3d = prodItem.config3d.colorList.find((e) => e.colorName === colorConfig2d.name);
+
+    /**
+     * 根据viewId获取颜色
+     * @param {String} viewId 视图id
+     * @returns {Object} 颜色
+     * */
+    function get3dColorItemByViewId(viewId) {
+      return colorConfig3d.list.find((e) => e.viewId == viewId);
+    }
+    /**
+     * 根据materialName获取颜色
+     * @param {String} materialName 材质名称
+     * @returns {Object} 颜色
+     * */
+    function get3dColorItemByMaterialName(materialName) {
+      return colorConfig3d.list.find((e) => e.materialName == materialName);
+    }
+
+    return {
+      colorConfig2d,
+      colorConfig3d,
+      colorId,
+      get3dColorItemByViewId,
+      get3dColorItemByMaterialName,
+    };
   }
 
   /**
@@ -59,36 +111,6 @@ export class DesignerUtil {
   static getActiveProd() {
     return store.state.designApplication.prodStore.get();
   }
-
-  /**
-   * 获取产品的view
-   * @returns {ParseViewItem|null} 视图
-   * @param {prodItem|null} prodItem 产品
-   * */
-  static getView(prodItem = null) {
-    prodItem = prodItem || this.getActiveProd();
-    return prodItem?.viewList.find((e) => e.id === store.state.designApplication.activeViewId);
-  }
-
-  /**
-   * 判断传入的颜色id在prodItem中是否存在
-   * @param {string|number|null} colorId 颜色id
-   * @param {ProdItem} prodItem 产品
-   * */
-  static hasColor(colorId, prodItem) {
-    return prodItem.colorList.some((e) => e.id === colorId);
-  }
-
-  /**
-   * 判断传入的尺码id在prodItem中是否存在
-   * @param {string|number|null} sizeId 尺码id
-   * @param {ProdItem} prodItem 产品
-   */
-  static hasSize(sizeId, prodItem) {
-    return prodItem.sizeList.some((e) => e.id === sizeId);
-  }
-
-  static getProdItem() {}
 }
 
 /**
