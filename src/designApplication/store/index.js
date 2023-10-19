@@ -8,6 +8,7 @@ import { config3dUtil } from '@/designApplication/interface/Config3d/config3dOfC
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import { Message } from 'element-ui';
 import store from '@/store';
+import { loadImage } from '@/designApplication/core/utils/loadImage';
 
 /**
  * designApplication store
@@ -332,12 +333,99 @@ export default {
      * @param {ImageListByMyImage} detail 设计图详情
      * */
     async setImage({ state, commit, dispatch, getters }, detail) {
-      const view = state.prodStore.get()?.viewList.find((e) => e.id === store.state.designApplication.activeViewId);
+      const viewId = store.state.designApplication.activeViewId;
+      const view = state.prodStore.get()?.viewList.find((e) => e.id === viewId);
+      const staticView = state.prodStore.getStatic().viewList.find((e) => e.id === viewId);
+
       if (!view) {
         Message.warning('设计图需要加载到的view获取失败!');
         return;
       }
-      view.canvas.createImage(detail.designImg).then((design) => view.canvas.add(design));
+
+      // 画布的参数配置
+      const canvasSize = DesignerUtil.getVuexConfig().canvasSize;
+      const canvasWidth = canvasSize.width;
+      const canvasHeight = canvasSize.height;
+      const canvasRatio = canvasSize.ratio;
+
+      // 设计图单位转换(原图）
+      const inch = inchToPx(detail.size, getters.activeProd.detail.dpi);
+      // 设计图与产品dpi的换算
+      const result = printAreaToImageRatio(inch, staticView.print);
+      // 图片展示的宽高
+      const width = result.size.width;
+      const height = result.size.height;
+
+      // 加载的远程图片（使用的图片）
+      const imageDOM = await loadImage(detail.designImg);
+
+      // 图片在画布展示的比例
+      const scaleX = width / imageDOM.width;
+      const scaleY = height / imageDOM.height;
+
+      // 图片在画布展示的位置
+      const x = canvasWidth / 2 / canvasRatio - width / 2;
+      const y = canvasHeight / 2 / canvasRatio - height / 2;
+
+      // 图片展示的参数
+      const param = {
+        width,
+        height,
+        scaleX,
+        scaleY,
+        x,
+        y,
+      };
+
+      view.canvas.createImage(imageDOM, param).then((design) => view.canvas.add(design));
     },
   },
 };
+
+/**
+ * px转换为mm
+ * */
+function inchToPx(size, dpi) {
+  // const dpi = getters.activeProd.detail.dpi; // 当前产品的dpi
+  //全局的
+  // px -> mm
+  let a = function (size, dpi) {
+    return (25.4 * size) / dpi;
+  };
+  return {
+    height: a(size.height, dpi),
+    width: a(size.width, dpi),
+  };
+}
+
+/**
+ * 获取图片在打印区域的比例
+ * */
+function printAreaToImageRatio(imageSize, printAreaSize) {
+  // 宽高的比例
+  let widthRatio = '';
+  let heightRatio = '';
+  if (imageSize.width > printAreaSize.width) {
+    widthRatio = printAreaSize.width / imageSize.width;
+  } else {
+    widthRatio = 1;
+  }
+  if (imageSize.height * widthRatio > printAreaSize.height) {
+    heightRatio = printAreaSize.height / (imageSize.height * widthRatio);
+  } else {
+    heightRatio = 1;
+  }
+  return {
+    widthRatio: widthRatio,
+    heightRatio: heightRatio,
+    ratio: {
+      value: widthRatio * heightRatio,
+      width: widthRatio,
+      height: heightRatio,
+    },
+    size: {
+      width: imageSize.width * widthRatio * heightRatio,
+      height: imageSize.height * widthRatio * heightRatio,
+    },
+  };
+}

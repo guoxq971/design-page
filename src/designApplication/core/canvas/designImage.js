@@ -9,10 +9,9 @@ import { loadImage } from '@/designApplication/core/utils/loadImage';
  * @param {Object} image 图片对象
  * @param {Object} layer 图层
  * @param {Function} hideAllTransformer 隐藏所有选中框
- * @param {Object} param 参数
  * @returns {Promise<{image: Konva.Rect, transformer: Konva.Transformer}>}
  * */
-export async function getDesignImage(image, layer, hideAllTransformer, param) {
+export async function getDesignImage(image, layer, hideAllTransformer) {
   // 选中框
   const transformer = initTransformer();
   transformer.visible(false);

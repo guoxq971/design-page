@@ -151,6 +151,10 @@ export class KonvaCanvas {
       height: canvasSize.height,
     });
 
+    // 设置舞台的缩放
+    // this.stage.scaleX(3);
+    // this.stage.scaleY(3);
+
     this.layer = new Konva.Layer();
     this.stage.add(this.layer);
 
@@ -204,17 +208,15 @@ export class KonvaCanvas {
 
   /**
    * 创建图片
-   * @param {string} image 图片地址
+   * @param {HTMLImageElement} image 图片对象
    * @param {object} param 参数
    * @returns {Promise<{image: Konva.Image, width: number, height: number}>
    * */
   async createImage(image, param = {}) {
-    const img = await loadImage(image);
-
     param = Object.assign(
       {
-        width: img.width,
-        height: img.height,
+        width: image.width,
+        height: image.height,
         x: 0,
         y: 0,
         scaleX: 1,
@@ -224,7 +226,7 @@ export class KonvaCanvas {
       param,
     );
 
-    const designImage = await getDesignImage(img, this.layer, this.hideAllTransformer, param);
+    const designImage = await getDesignImage(image, this.layer, this.hideAllTransformer, param);
 
     // 设计图的事件
     designImage.image.on('dragmove', (e) => {
@@ -245,11 +247,15 @@ export class KonvaCanvas {
       setTimeout(() => this.updateTexture(5), 50);
     });
 
+    designImage.transformer.setAttrs({
+      // x: param.x,
+      // y: param.y,
+      // rotation: param.rotation,
+    });
+
     designImage.image.setAttrs({
-      width: param.width,
-      height: param.height,
-      x: param.x,
-      y: param.y,
+      x: -this.clip.attrs.x + param.x,
+      y: -this.clip.attrs.y + param.y,
       scaleX: param.scaleX,
       scaleY: param.scaleY,
       rotation: param.rotation,
@@ -262,6 +268,7 @@ export class KonvaCanvas {
         this.layer.draw();
       },
     });
+    console.log('designImage.image', designImage.image);
     return designImage;
   }
 

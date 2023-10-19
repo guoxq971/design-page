@@ -1,6 +1,7 @@
 import { ProdType } from '@/designApplication/interface/prodItem';
 import store from '@/store';
 import { disposeThree } from '@/designApplication/core/utils/clearThree';
+import { Config } from '@/designApplication/core/config';
 
 /**
  * 设计器工具类
@@ -10,6 +11,14 @@ import { disposeThree } from '@/designApplication/core/utils/clearThree';
  * */
 export class DesignerUtil {
   static prodType = ProdType;
+
+  /**
+   * 获取canvas配置
+   * @returns {Config} 配置
+   * */
+  static getVuexConfig() {
+    return store.state.designApplication.config;
+  }
 
   /**
    * 设置背景色

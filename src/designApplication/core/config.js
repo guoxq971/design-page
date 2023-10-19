@@ -15,19 +15,26 @@ const CANVAS_RATIO = 1.3;
  * @property {CanvasConfig} canvas canvas配置
  * */
 export class Config {
+  // 一些容器的id
   workerContainerId = 'worker-container';
   threeContainerId = 'three-container';
   canvasContainerId = 'canvas-container';
+
+  // 左侧预览图的尺寸配置
   previewSize = {
     width: 73,
     gapRight: 10,
     positionLeft: 73 + 10,
   };
+
+  // canvas的尺寸配置
   canvasSize = {
     width: CANVAS_WIDTH * CANVAS_RATIO,
     height: CANVAS_HEIGHT * CANVAS_RATIO,
     ratio: CANVAS_RATIO,
   };
+
+  // konva canvas的配置
   canvas = new CanvasConfig();
 }
 
@@ -48,7 +55,7 @@ export class Config {
  * */
 class CanvasConfig {
   isClip = true;
-  clipStoreWidth = 1.5;
+  clipStoreWidth = 0;
   clipStoreColor = 'red';
   clipStoreFill = null; //'#fff'; //背景色
 

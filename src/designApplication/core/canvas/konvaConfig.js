@@ -10,6 +10,7 @@ export const konvaRectConfig = (param) => {
 
   const width = image.width;
   const height = image.height;
+  console.log('image', [image]);
 
   return {
     width: width, // 宽度
@@ -58,16 +59,16 @@ export const konvaRectConfig = (param) => {
 
     //  图片 --start
     fillPatternImage: image, // 填充图片 (与fill互斥)
-    fillPatternX: 0, // 图片的x坐标 (类似于background-position-x)
-    fillPatternY: 0, // 图片的y坐标 (类似于background-position-y)
-    fillPatternOffset: { x: 0, y: 0 }, // 图片的偏移量
+    // fillPatternX: 0, // 图片的x坐标 (类似于background-position-x)
+    // fillPatternY: 0, // 图片的y坐标 (类似于background-position-y)
+    // fillPatternOffset: { x: 0, y: 0 }, // 图片的偏移量
     // fillPatternOffsetX: 0, // 图片的x偏移量
     // fillPatternOffsetY: 0, // 图片的y偏移量
-    fillPatternScale: { x: 1, y: 1 }, // 图片的缩放比例
+    // fillPatternScale: { x: 1, y: 1 }, // 图片的缩放比例
     // fillPatternScaleX: 1, // 图片的x缩放比例
     // fillPatternScaleY: 1, // 图片的y缩放比例
-    fillPatternRotation: 0, // 图片的旋转角度
-    fillPatternRepeat: 'no-repeat', // 图片的重复方式 (no-repeat:不重复 repeat-x:水平重复 repeat-y:垂直重复 repeat:水平垂直重复)
+    // fillPatternRotation: 0, // 图片的旋转角度
+    // fillPatternRepeat: 'no-repeat', // 图片的重复方式 (no-repeat:不重复 repeat-x:水平重复 repeat-y:垂直重复 repeat:水平垂直重复)
     //  图片 --end
 
     // 填充色 --start
@@ -76,45 +77,45 @@ export const konvaRectConfig = (param) => {
 
     // 渐变色 --start  (对image无效)
     // fillLinearGradientColorStops: [0, 'red', 0.5, 'green', 1, 'blue'], // 渐变的颜色
-    fillLinearGradientStartPoint: { x: 0, y: 0 }, // 渐变的起点
+    // fillLinearGradientStartPoint: { x: 0, y: 0 }, // 渐变的起点
     // fillLinearGradientStartPointX: 0, // 渐变的起点x坐标
     // fillLinearGradientStartPointY: 0, // 渐变的起点y坐标
-    fillLinearGradientEndPoint: { x: 100, y: 100 }, // 渐变的终点
+    // fillLinearGradientEndPoint: { x: 100, y: 100 }, // 渐变的终点
     // fillLinearGradientEndPointX: 0, // 渐变的终点x坐标
     // fillLinearGradientEndPointY: 0, // 渐变的终点y坐标
     // 渐变色 --end
 
     // 圆形渐变色 --start  (对image无效)
     // fillRadialGradientColorStops: [0, 'red', 0.5, 'green', 1, 'blue'], // 渐变的颜色
-    fillRadialGradientStartRadius: 0, // 渐变的起始半径
-    fillRadialGradientEndRadius: 200, // 渐变的终止半径
-    fillRadialGradientStartPoint: { x: 100, y: 100 }, // 渐变的起点
+    // fillRadialGradientStartRadius: 0, // 渐变的起始半径
+    // fillRadialGradientEndRadius: 200, // 渐变的终止半径
+    // fillRadialGradientStartPoint: { x: 100, y: 100 }, // 渐变的起点
     // fillRadialGradientStartPointX: 0, // 渐变的起点x坐标
     // fillRadialGradientStartPointY: 0, // 渐变的起点y坐标
-    fillRadialGradientEndPoint: { x: 50, y: 50 }, // 渐变的终点
+    // fillRadialGradientEndPoint: { x: 50, y: 50 }, // 渐变的终点
     // fillRadialGradientEndPointX: 0, // 渐变的终点x坐标
     // fillRadialGradientEndPointY: 0, // 渐变的终点y坐标
     // 圆形渐变色 --end
 
     // 阴影--start
-    shadowEnabled: false, // 是否启用阴影 (true: 启用, false: 禁用)
-    shadowColor: 'red', // 阴影颜色
-    shadowBlur: 10, // 阴影模糊度
-    shadowOffset: { x: 10, y: 10 }, // 阴影偏移量
+    // shadowEnabled: false, // 是否启用阴影 (true: 启用, false: 禁用)
+    // shadowColor: 'red', // 阴影颜色
+    // shadowBlur: 10, // 阴影模糊度
+    // shadowOffset: { x: 10, y: 10 }, // 阴影偏移量
     // shadowOffsetX: 10, // 阴影水平偏移量
     // shadowOffsetY: 10, // 阴影垂直偏移量
-    shadowOpacity: 0.5, // 阴影透明度
-    shadowForStrokeEnabled: true, // 是否启用描边阴影 (true: 启用, false: 禁用)
+    // shadowOpacity: 0.5, // 阴影透明度
+    // shadowForStrokeEnabled: true, // 是否启用描边阴影 (true: 启用, false: 禁用)
     // 阴影--end
 
     // 描边--start
-    strokeEnabled: false, // 是否启用描边 (true: 启用, false: 禁用)
-    stroke: 'red', // 描边颜色 (null: 无描边)
-    strokeWidth: 20, // 描边宽度
-    fillAfterStrokeEnabled: false, // 描边后填充 (true: 描边后填充, false: 描边前填充)
-    hitStrokeWidth: 0, // 点击描边宽度 (0: 不可点击描边, >0: 可点击描边)
+    // strokeEnabled: false, // 是否启用描边 (true: 启用, false: 禁用)
+    // stroke: 'red', // 描边颜色 (null: 无描边)
+    // strokeWidth: 20, // 描边宽度
+    // fillAfterStrokeEnabled: false, // 描边后填充 (true: 描边后填充, false: 描边前填充)
+    // hitStrokeWidth: 0, // 点击描边宽度 (0: 不可点击描边, >0: 可点击描边)
     // strokeHitEnabled: true, // 是否启用描边点击 (true: 启用, false: 禁用)
-    strokeScaleEnabled: false, // 是否启用描边缩放 (true: 启用, false: 禁用)
+    // strokeScaleEnabled: false, // 是否启用描边缩放 (true: 启用, false: 禁用)
     // 描边--end
   };
 };
