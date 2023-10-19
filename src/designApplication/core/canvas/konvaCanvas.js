@@ -83,6 +83,150 @@ export class KonvaCanvas {
     this.layer.draw();
   }
 
+  /**
+   * 更新模型的材质
+   * @param {number|string} num console.log用的
+   * @param {number|null} timeout 是否使用延时器
+   * @param isUpdate
+   * */
+  updateTexture(num = '', timeout = null, isUpdate = false) {
+    if (this.param.view.texture && (store.state.designApplication.show3d || isUpdate)) {
+      // console.log('执行了更新模型');
+      if (timeout !== null) {
+        this.param.view.updateTexture(num);
+      } else {
+        setTimeout(() => this.param.view.updateTexture(num), timeout);
+      }
+    }
+  }
+
+  /**
+   * 是否有选中的元素
+   * @returns {boolean} 是否有选中的元素 true-有 false-没有
+   * */
+  hasSelected() {
+    let flag = false;
+    this.layer.children.forEach((item) => {
+      if (item.className === 'Transformer' && item.visible()) {
+        flag = true;
+      }
+    });
+    return flag;
+  }
+
+  /**
+   * 隐藏所有的选中框transformer
+   * */
+  hideAllTransformer(layer) {
+    layer = layer || this.layer;
+    layer.children.forEach((item) => {
+      item.className === 'Transformer' && item.visible(false);
+    });
+  }
+
+  /**
+   * 创建图片
+   * @param {HTMLImageElement} image 图片对象
+   * @param {object} param 参数
+   * @returns {Promise<{image: Konva.Image, width: number, height: number}>
+   * */
+  async createImage(image, param = {}) {
+    param = Object.assign(
+      {
+        width: image.width,
+        height: image.height,
+        x: 0,
+        y: 0,
+        scaleX: 1,
+        scaleY: 1,
+        rotation: 0,
+      },
+      param,
+    );
+
+    const designImage = await getDesignImage(image, this.layer, this.hideAllTransformer, param);
+
+    // 设计图的事件
+    designImage.image.on('dragmove', (e) => {
+      this.updateTexture(3);
+    });
+    designImage.image.on('dragend', (e) => {
+      this.updateTexture(33);
+    });
+
+    // 锚点的事件
+    designImage.transformer.on('visibleChange', (event) => {
+      this.updateTexture(11, 50);
+    });
+    designImage.transformer.on('transform', (e) => {
+      this.updateTexture(4);
+    });
+    designImage.transformer.on('transformend', () => {
+      this.updateTexture(9, 50);
+    });
+
+    designImage.image.setAttrs({
+      x: -this.clip.attrs.x + param.x,
+      y: -this.clip.attrs.y + param.y,
+      scaleX: param.scaleX,
+      scaleY: param.scaleY,
+      rotation: param.rotation,
+      type: 'image',
+      name: 'image',
+      konvaCanvas: this,
+      remove: () => {
+        this.clip.children = this.clip.children.filter((item) => item !== designImage.image);
+        this.layer.children = this.layer.children.filter((item) => item !== designImage.transformer);
+        this.updateTexture();
+        this.layer.draw();
+      },
+    });
+
+    return designImage;
+  }
+
+  /**
+   * 添加设计图
+   * @param {{image: Konva.Rect, transformer:Transformer}} design 设计图
+   * @description 查找哪里使用了这个方法, 全局搜索: canvas.add
+   * */
+  add(design) {
+    this.clip.add(design.image); //添加设计图
+    this.updateTexture(44, 50);
+  }
+
+  /**
+   * 获取当前设计图列表
+   * */
+  getImageList() {
+    return this.clip.children;
+  }
+
+  /**
+   * 添加文字
+   * @param {string} text 文字
+   * @param {Object} param 参数
+   * */
+  addText(text, param = {}) {
+    const t = new Konva.Text({
+      x: 0,
+      y: 0,
+      text: text,
+      fontSize: 20,
+      fontFamily: 'Calibri',
+      fill: '#555',
+      draggable: true,
+    });
+
+    const transformer = new Konva.Transformer({
+      node: t,
+      enabledAnchors: ['middle-left', 'middle-right'],
+    });
+
+    this.layer.add(transformer);
+    this.clip.add(t);
+  }
+
   _init() {}
 
   /**
@@ -177,128 +321,5 @@ export class KonvaCanvas {
         OperationUtil.doubleClickCanvas();
       }
     });
-  }
-
-  /**
-   * 更新模型的材质
-   * @param {number|string} num console.log用的
-   * @param {number|null} timeout 是否使用延时器
-   * @param isUpdate
-   * */
-  updateTexture(num = '', timeout = null, isUpdate = false) {
-    if (this.param.view.texture && (store.state.designApplication.show3d || isUpdate)) {
-      // console.log('执行了更新模型');
-      if (timeout !== null) {
-        this.param.view.updateTexture(num);
-      } else {
-        setTimeout(() => this.param.view.updateTexture(num), timeout);
-      }
-    }
-  }
-
-  /**
-   * 是否有选中的元素
-   * @returns {boolean} 是否有选中的元素 true-有 false-没有
-   * */
-  hasSelected() {
-    let flag = false;
-    this.layer.children.forEach((item) => {
-      if (item.className === 'Transformer' && item.visible()) {
-        flag = true;
-      }
-    });
-    return flag;
-  }
-
-  /**
-   * 隐藏所有的选中框transformer
-   * */
-  hideAllTransformer(layer) {
-    layer = layer || this.layer;
-    layer.children.forEach((item) => {
-      item.className === 'Transformer' && item.visible(false);
-    });
-  }
-
-  /**
-   * 创建图片
-   * @param {HTMLImageElement} image 图片对象
-   * @param {object} param 参数
-   * @returns {Promise<{image: Konva.Image, width: number, height: number}>
-   * */
-  async createImage(image, param = {}) {
-    param = Object.assign(
-      {
-        width: image.width,
-        height: image.height,
-        x: 0,
-        y: 0,
-        scaleX: 1,
-        scaleY: 1,
-        rotation: 0,
-      },
-      param,
-    );
-
-    const designImage = await getDesignImage(image, this.layer, this.hideAllTransformer, param);
-
-    // 设计图的事件
-    designImage.image.on('dragmove', (e) => {
-      this.updateTexture(3);
-    });
-    designImage.image.on('dragend', (e) => {
-      this.updateTexture(33);
-    });
-
-    // 锚点的事件
-    designImage.transformer.on('visibleChange', (event) => {
-      this.updateTexture(11, 50);
-    });
-    designImage.transformer.on('transform', (e) => {
-      this.updateTexture(4);
-    });
-    designImage.transformer.on('transformend', () => {
-      this.updateTexture(9, 50);
-    });
-
-    designImage.transformer.setAttrs({
-      // x: param.x,
-      // y: param.y,
-      // rotation: param.rotation,
-    });
-
-    designImage.image.setAttrs({
-      x: -this.clip.attrs.x + param.x,
-      y: -this.clip.attrs.y + param.y,
-      scaleX: param.scaleX,
-      scaleY: param.scaleY,
-      rotation: param.rotation,
-      type: 'image',
-      name: 'image',
-      konvaCanvas: this,
-      remove: () => {
-        this.clip.children = this.clip.children.filter((item) => item !== designImage.image);
-        this.layer.children = this.layer.children.filter((item) => item !== designImage.transformer);
-        this.updateTexture();
-        this.layer.draw();
-      },
-    });
-    return designImage;
-  }
-
-  /**
-   * 添加设计图
-   * @param {{image: Konva.Rect, transformer:Transformer}} design 设计图
-   * */
-  add(design) {
-    this.clip.add(design.image); //添加设计图
-    this.updateTexture(44, 50);
-  }
-
-  /**
-   * 获取当前设计图列表
-   * */
-  getImageList() {
-    return this.clip.children;
   }
 }

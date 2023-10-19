@@ -3,7 +3,7 @@
     <prodTabs v-show="active === leftTabsList[0].value" />
     <imageTabs v-show="active === leftTabsList[1].value" />
     <backgroundTabs v-show="active === leftTabsList[2].value" />
-    <div v-show="active === leftTabsList[3].value">text</div>
+    <textTabs v-show="active === leftTabsList[3].value" />
   </div>
 </template>
 
@@ -11,12 +11,14 @@
 import prodTabs from '@/designApplication/components/layout/leftTabs/prodTabs';
 import imageTabs from '@/designApplication/components/layout/leftTabs/imageTabs';
 import backgroundTabs from '@/designApplication/components/layout/leftTabs/backgroundTabs';
+import textTabs from '@/designApplication/components/layout/leftTabs/textTabs';
 import { leftTabsList } from '@/designApplication/core/utils/defineData';
 export default {
   components: {
     prodTabs,
     imageTabs,
     backgroundTabs,
+    textTabs,
   },
   props: {
     active: { type: String, default: '' },

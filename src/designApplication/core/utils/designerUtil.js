@@ -15,6 +15,15 @@ export class DesignerUtil {
   static prodType = ProdType;
 
   /**
+   * 获取view
+   * @param {String|null} viewId 视图id
+   * @param {ProdItem|null} prodItem 产品
+   * */
+  static getView(viewId = null, prodItem = null) {
+    return store.state.designApplication.prodStore.getView(viewId, prodItem);
+  }
+
+  /**
    * 获取canvas配置
    * @returns {Config} 配置
    * */

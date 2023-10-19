@@ -331,6 +331,9 @@ export default {
   mutations: {
     ...mutationsProd,
   },
+  /**
+   * actions => 工具(designerUtil) && 操作(actions | operationUtil)
+   * */
   actions: {
     ...actionsProd,
     /**
