@@ -9,11 +9,13 @@ export class config3dUtil {
    * @param {Config3d} config3d 3d配置
    * @returns {boolean} 是否能加载3d true-能加载 false-不能加载
    * */
-  static isLoad3d(config3d) {
+  static isLoad3d(config3d = {}) {
     let flag = true;
 
+    if (!config3d) flag = false;
+
     // 视图配置已不存在
-    if (!config3d.viewList || config3d.viewList.length === 0) {
+    if (config3d.viewList && config3d.viewList.length === 0) {
       console.error('加载3d失败；视图配置已不存在', config3d);
       flag = false;
     }
@@ -22,10 +24,10 @@ export class config3dUtil {
     if (!config3d) flag = false;
 
     // 未上传3d
-    if (config3d.hasUpload3d === 0) flag = false;
+    if (config3d?.hasUpload3d === 0) flag = false;
 
     // 未开启3d
-    if (config3d.openflag3d === 1) flag = false;
+    if (config3d?.openflag3d === 1) flag = false;
 
     return flag;
   }

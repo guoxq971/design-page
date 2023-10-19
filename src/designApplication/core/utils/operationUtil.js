@@ -29,6 +29,7 @@ export class OperationUtil {
 
             if (view.canvas && !isGlass) {
               view.canvas.changeBgc(color3dItem.colorCode);
+              view.canvas.updateTexture('', 50, true);
             }
           }
           break;

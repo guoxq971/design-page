@@ -10,7 +10,6 @@ export const konvaRectConfig = (param) => {
 
   const width = image.width;
   const height = image.height;
-  console.log('image', [image]);
 
   return {
     width: width, // 宽度

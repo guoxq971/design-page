@@ -93,10 +93,18 @@ function getViewByMaterialName(materialName, prodItem) {
  * */
 function loadCanvasTexture(meshPlusList) {
   const config = DesignerUtil.getConfig();
-
+  if (!config) {
+    console.error('加载 canvas 到对应的 mesh 上 失败，config 为空');
+    return;
+  }
   meshPlusList.forEach((item) => {
     const { mesh, view } = item;
     const color3dItem = config.get3dColorItemByMaterialName(mesh.name);
+
+    if (!color3dItem) {
+      console.error('加载 canvas 到对应的 mesh 上 失败，color3dItem 为空');
+      return;
+    }
 
     // 如果是玻璃材质，不需要处理
     if (DesignerUtil.hasGlass(color3dItem.colorCode)) return;
@@ -106,7 +114,11 @@ function loadCanvasTexture(meshPlusList) {
       return;
     }
 
-    const canvas = view.canvas.stage.content.querySelectorAll('canvas');
+    const canvas = view.canvas?.stage.content.querySelectorAll('canvas');
+    if (!canvas) {
+      console.error('加载 canvas 到对应的 mesh 上 失败，canvas 为空');
+      return;
+    }
     const targetCanvas = canvas[0];
 
     item.canvas = targetCanvas;

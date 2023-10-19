@@ -19,6 +19,7 @@ export class KonvaCanvas {
   stage; // 舞台
   layer; // 图层
   clip; // 裁剪区域
+  v; // 车线
   konvaPath; // 裁剪区域
 
   constructor(_param = '') {
@@ -99,7 +100,7 @@ export class KonvaCanvas {
     const v = staticView.v;
     if (!v) return;
 
-    const path = new Konva.Path({
+    this.v = new Konva.Path({
       x: x,
       y: y,
       data: v,
@@ -113,7 +114,10 @@ export class KonvaCanvas {
       visible: canvasConfig.isV,
     });
 
-    this.layer.add(path);
+    this.layer.add(this.v);
+
+    // 置底
+    this.v.moveToBottom();
   }
 
   /**
@@ -176,10 +180,20 @@ export class KonvaCanvas {
   }
 
   /**
-   * 更新模型的残值
+   * 更新模型的材质
+   * @param {number|string} num console.log用的
+   * @param {number|null} timeout 是否使用延时器
+   * @param isUpdate
    * */
-  updateTexture(num) {
-    if (this.param.view.texture) this.param.view.updateTexture(num);
+  updateTexture(num = '', timeout = null, isUpdate = false) {
+    if (this.param.view.texture && (store.state.designApplication.show3d || isUpdate)) {
+      // console.log('执行了更新模型');
+      if (timeout !== null) {
+        this.param.view.updateTexture(num);
+      } else {
+        setTimeout(() => this.param.view.updateTexture(num), timeout);
+      }
+    }
   }
 
   /**
@@ -238,13 +252,13 @@ export class KonvaCanvas {
 
     // 锚点的事件
     designImage.transformer.on('visibleChange', (event) => {
-      setTimeout(() => this.updateTexture(9), 50);
+      this.updateTexture(11, 50);
     });
     designImage.transformer.on('transform', (e) => {
       this.updateTexture(4);
     });
     designImage.transformer.on('transformend', () => {
-      setTimeout(() => this.updateTexture(5), 50);
+      this.updateTexture(9, 50);
     });
 
     designImage.transformer.setAttrs({
@@ -260,6 +274,7 @@ export class KonvaCanvas {
       scaleY: param.scaleY,
       rotation: param.rotation,
       type: 'image',
+      name: 'image',
       konvaCanvas: this,
       remove: () => {
         this.clip.children = this.clip.children.filter((item) => item !== designImage.image);
@@ -268,7 +283,6 @@ export class KonvaCanvas {
         this.layer.draw();
       },
     });
-    console.log('designImage.image', designImage.image);
     return designImage;
   }
 
@@ -278,7 +292,7 @@ export class KonvaCanvas {
    * */
   add(design) {
     this.clip.add(design.image); //添加设计图
-    setTimeout(() => this.updateTexture(), 50);
+    this.updateTexture(44, 50);
   }
 
   /**

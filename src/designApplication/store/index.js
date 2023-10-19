@@ -137,6 +137,9 @@ const actionsProd = {
    * @returns {ProdItem} 当前激活的产品
    * */
   async setProd({ state, commit, dispatch, getters }, detail) {
+    if (state.loading_prod) {
+      Message.warning('模板加载中，请稍后');
+    }
     try {
       state.loading_prod = true;
 
@@ -187,12 +190,15 @@ const actionsProd = {
    * 切换模板类型
    * @param {*} vuex context
    * @param {object} param 参数
-   * @param {ProdItem} param.prodItem 产品
+   * @param {ProdItem} param.prodItem 产品(当前产品)
    * @param {ProdType} param.type 模板类型(要切换的类型)
    * @param {number} param.sizeId 尺码id
    * @param {number} param.colorId 颜色id
    * */
   async changeProd({ state, commit, dispatch, getters }, param) {
+    if (state.loading_prod) {
+      Message.warning('模板加载中，请稍后');
+    }
     const type = param.type;
 
     // 当前产品

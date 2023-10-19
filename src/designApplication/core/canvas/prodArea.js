@@ -89,6 +89,17 @@ function createClip(x, y, konvaPath) {
           break;
       }
     },
+    clipFunc2: () =>
+      function (ctx, group) {
+        switch (isClip) {
+          case true:
+            clipFunc(ctx, konvaPath);
+            break;
+          case false:
+            ctx.rect(0, 0, canvasSize.width, canvasSize.height);
+            break;
+        }
+      },
   });
 }
 

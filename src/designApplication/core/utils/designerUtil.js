@@ -2,6 +2,7 @@ import { ProdType } from '@/designApplication/interface/prodItem';
 import store from '@/store';
 import { disposeThree } from '@/designApplication/core/utils/clearThree';
 import { Config } from '@/designApplication/core/config';
+import { config3dUtil } from '@/designApplication/interface/Config3d/config3dOfCommonResponse';
 
 /**
  * 设计器工具类
@@ -10,6 +11,7 @@ import { Config } from '@/designApplication/core/config';
  * @method getProdItem 获取产品
  * */
 export class DesignerUtil {
+  static config3dUtil = config3dUtil;
   static prodType = ProdType;
 
   /**
@@ -73,6 +75,11 @@ export class DesignerUtil {
     );
 
     prodItem = prodItem || this.getActiveProd();
+
+    if (!prodItem) {
+      console.error('获取产品配置 prodItem is null');
+      return;
+    }
 
     // colorId 获取对应颜色的id
     const colorId = param.colorId;
