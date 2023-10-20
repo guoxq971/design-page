@@ -1,39 +1,145 @@
 <template>
-  <div>
-    <el-card header="控制面板">
-      <el-switch v-model="config.canvas.isShowProductImage" active-text="是否展示产品图片" inactive-text="否" :active-value="true" :inactive-value="false" />
-      <br />
-      <el-switch @change="onChangeByClip" v-model="config.canvas.isClip" active-text="是否隐藏超出裁剪区域部分" inactive-text="否" :active-value="true" :inactive-value="false" />
-      <br />
-      <el-switch @change="onChangeByV" v-model="config.canvas.isV" active-text="是否展示车线" inactive-text="否" :active-value="true" :inactive-value="false" />
-      <br />
-      <el-switch @change="onChangeBy3d" v-model="show3d" active-text="展示3d" inactive-text="展示2d" :active-value="true" :inactive-value="false" :disabled="show3dDisabled" />
-    </el-card>
+  <el-card>
+    <el-collapse>
+      <!--控制面板-->
+      <el-collapse-item title="控制面板">
+        <div slot="title" style="display: flex; gap: 5px">
+          <iconpark-icon name="setting" size="20" />
+          <div>控制面板</div>
+        </div>
 
-    <el-card v-if="activeProd" :header="'当前模板 - ' + activeProd.detail.templateNo">
-      <div>可选模板:</div>
-      <div v-for="prod in prodStore.list" style="margin-top: 4px" :class="{ active: isActive(prod) }">
-        <el-button size="mini" @click="onSwitchProd(prod)">选择</el-button>
-        <span style="margin-left: 4px">{{ DesignerUtil.getProdTypeName(prod.type) }}</span>
-        <span v-if="prod.size">- {{ prod.size }}</span>
-        <el-tag style="margin-left: 4px" v-if="DesignerUtil.config3dUtil.isLoad3d(prod?.config3d)">3d</el-tag>
+        <el-form label-width="100px">
+          <el-form-item label="产品图片: ">
+            <el-switch v-model="config.canvas.isShowProductImage" active-text="是" inactive-text="否" :active-value="true" :inactive-value="false" />
+          </el-form-item>
+          <el-form-item label="裁剪超出: ">
+            <el-switch @change="onChangeByClip" v-model="config.canvas.isClip" active-text="是" inactive-text="否" :active-value="true" :inactive-value="false" />
+          </el-form-item>
+          <el-form-item label="车线: ">
+            <el-switch @change="onChangeByV" v-model="config.canvas.isV" active-text="是否展示车线" inactive-text="否" :active-value="true" :inactive-value="false" />
+          </el-form-item>
+          <el-form-item label="展示: ">
+            <el-switch @change="onChangeBy3d" v-model="show3d" active-text="3d" inactive-text="2d" :active-value="true" :inactive-value="false" :disabled="show3dDisabled" />
+          </el-form-item>
+        </el-form>
+      </el-collapse-item>
+
+      <!--当前模板-->
+      <el-collapse-item v-if="activeProd" title="模板">
+        <div slot="title" style="display: flex; gap: 5px">
+          <iconpark-icon name="theme" size="20" />
+          <div>模板 - {{ activeProd.detail.templateNo }}</div>
+        </div>
+
+        <div v-for="prod in prodStore.list" style="margin-top: 4px" :class="{ active: isActive(prod) }">
+          <el-button :disabled="isActive(prod)" :type="isActive(prod) ? 'primary' : ''" size="mini" @click="onSwitchProd(prod)" style="margin-left: 10px">选择</el-button>
+          <el-tag style="margin-left: 4px" :type="DesignerUtil.prodType.isCommon(prod.type) ? 'success' : ''">{{ DesignerUtil.getProdTypeName(prod.type) }}</el-tag>
+          <span v-if="prod.size">- {{ prod.size }}</span>
+          <el-tag style="margin-left: 4px" v-if="DesignerUtil.config3dUtil.isLoad3d(prod?.config3d)">3d</el-tag>
+        </div>
+      </el-collapse-item>
+
+      <!--设计图列表-->
+      <el-collapse-item class="custom-wrap" title="设计图列表">
+        <div slot="title" style="display: flex; gap: 5px">
+          <iconpark-icon name="pic" size="20" />
+          <div>设计图列表 ({{ imageTotal }})</div>
+        </div>
+
+        <el-collapse v-if="activeProd">
+          <el-collapse-item v-for="view in activeProd.viewList" :title="view.name" :name="view.id">
+            <!--标题-->
+            <div slot="title" style="display: flex; align-items: center">
+              <box-adaptive style="width: 50px; height: 50px">
+                <img :src="showImg('prod', view)" alt="" style="position: absolute; width: 100%; height: 100%" />
+                <img :src="showImg('bg', view)" alt="" style="position: absolute; width: 100%; height: 100%" />
+              </box-adaptive>
+              <span>{{ view.name }} ({{ imageList(view).length }})</span>
+            </div>
+
+            <!--设计图列表-->
+            <div class="layer-group">
+              <div v-for="image in imageList(view)" class="layer-item" :class="{ 'active-layer': image.attrs.transformer.attrs.visible }">
+                <!--背景色-->
+                <div v-if="image.attrs.name === 'bgc'" class="img-wrap" @click="onSelected(image, image.attrs.name, view)">
+                  <div class="img" :style="{ backgroundColor: image.attrs.fill }"></div>
+                  <div class="img-name">{{ image.attrs.fill }}</div>
+                </div>
+
+                <!--文字-->
+                <div v-else-if="image.attrs.name === 'text'" class="img-wrap" @click="onSelected(image, image.attrs.name, view)">
+                  <!--<el-input :value="image.attrs.text" @input="(val) => onInput(image, view, val)" />-->
+                  <div class="text">文</div>
+                  <div class="img-name">{{ image.attrs.text }}</div>
+                </div>
+
+                <!--设计图-->
+                <div v-else-if="image.attrs.name === 'image'" class="img-wrap" @click="onSelected(image, image.attrs.name, view)">
+                  <el-image :src="image.attrs.fillPatternImage.src" class="img" />
+                  <div class="img-name">{{ image.attrs.detail.name }}</div>
+                </div>
+
+                <div class="btn-layer">
+                  <!--图层上移动-->
+                  <template v-if="!['bgc'].includes(image.attrs.name)">
+                    <div class="btn" @click="onLayer(image, image.attrs.name, 'up')">
+                      <div class="el-icon-top"></div>
+                    </div>
+
+                    <div class="btn" @click="onLayer(image, image.attrs.name, 'down')">
+                      <div class="el-icon-bottom"></div>
+                    </div>
+                  </template>
+
+                  <!--图层-显示隐藏-->
+                  <div class="btn" @click="onVisible(image, image.attrs.name)">
+                    <iconpark-icon :name="image.attrs.visible ? 'preview-open' : 'preview-close'" size="20" />
+                  </div>
+
+                  <!--删除-->
+                  <div class="btn" @click="onRemove(image, image.attrs.name)">
+                    <div class="el-icon-delete"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </el-collapse-item>
+        </el-collapse>
+      </el-collapse-item>
+    </el-collapse>
+
+    <el-card style="margin-top: 10px" header="当前选中的设计">
+      <div slot="header">
+        <span>当前选中的设计</span>
+        <span v-if="activeDesign">({{ DesignerUtil.DesignType.getLabel(activeDesign.attrs.name) }})</span>
+      </div>
+
+      <div v-if="activeDesign">
+        <div class="layer-item" style="padding: 0">
+          <!--图层上移动-->
+          <template v-if="!['bgc'].includes(activeDesign.attrs.name)">
+            <div class="btn" @click="onLayer(activeDesign, activeDesign.attrs.name, 'up')">
+              <div class="el-icon-top"></div>
+            </div>
+
+            <div class="btn" @click="onLayer(activeDesign, activeDesign.attrs.name, 'down')">
+              <div class="el-icon-bottom"></div>
+            </div>
+          </template>
+
+          <!--显示隐藏-->
+          <div class="btn" @click="onVisible(activeDesign, activeDesign.attrs.name)">
+            <iconpark-icon :name="activeDesign.attrs.visible ? 'preview-open' : 'preview-close'" size="20" />
+          </div>
+
+          <!--删除-->
+          <div class="btn" @click="onRemove(activeDesign, activeDesign.attrs.name)">
+            <div class="el-icon-delete"></div>
+          </div>
+        </div>
       </div>
     </el-card>
-
-    <el-card header="设计图列表">
-      <el-collapse v-if="activeProd">
-        <el-collapse-item v-for="view in activeProd.viewList" :title="view.name" :name="view.id">
-          <template slot="title">{{ view.name }}</template>
-          <div v-for="image in imageList(view)">
-            <div v-if="image.attrs.name === 'bgc'" @click="onRemove2(image)">
-              {{ image.attrs.fill }}
-            </div>
-            <el-image v-else-if="image.attrs.name === 'image'" @click="onRemove(image)" style="width: 50px; height: 50px" :src="image.attrs.fillPatternImage.src" />
-          </div>
-        </el-collapse-item>
-      </el-collapse>
-    </el-card>
-  </div>
+  </el-card>
 </template>
 
 <script>
@@ -61,20 +167,64 @@ export default {
     }),
     ...mapGetters({
       activeProd: 'designApplication/activeProd',
+      activeProdStatic: 'designApplication/activeProdStatic',
     }),
-    // 设计图列表
+    /**
+     * 展示产品图
+     * */
+    showImg() {
+      return (type, view) => {
+        const staticView = this.activeProdStatic.viewList.find((e) => e.id === view.id);
+
+        if (type === 'prod') {
+          return staticView.showImage.image;
+        }
+        if (type === 'bg') {
+          return staticView.showImage.texture;
+        }
+      };
+    },
+    /**
+     * 设计图列表
+     * */
     imageList() {
       return (view) => {
         return view.canvas?.getImageList() || [];
       };
     },
-    // 当前激活的模板
+    /**
+     * 总设计图数量
+     * */
+    imageTotal() {
+      return this.activeProd.viewList.reduce((total, view) => {
+        return total + this.imageList(view).length;
+      }, 0);
+    },
+    /**
+     * 当前激活的模板
+     * */
     isActive() {
       return (prod) => prod === this?.activeProd;
     },
     // show3d 是否禁用
     show3dDisabled() {
       return !DesignerUtil.config3dUtil.isLoad3d(this.activeProd?.config3d);
+    },
+    /**
+     * 当前选中的设计
+     * */
+    activeDesign() {
+      let result = null;
+      this.activeProd.viewList.find((view) => {
+        let r = view.canvas.getsSelected();
+        if (r) {
+          console.log('r', r);
+          result = r._nodes[0];
+        }
+        return r;
+      });
+      console.log(result);
+      return result;
     },
   },
   watch: {
@@ -86,6 +236,13 @@ export default {
     },
   },
   methods: {
+    /**
+     * 文字
+     * */
+    onInput(text, view, val) {
+      console.log('view', view);
+      text.attrs.draw(val);
+    },
     /**
      * 切换模板
      * */
@@ -128,14 +285,46 @@ export default {
     /**
      * 删除图片
      * */
-    onRemove(image) {
-      image.attrs.remove();
+    onRemove(image, type) {
+      if (['image', 'text'].includes(type)) {
+        image.attrs.remove();
+      }
+
+      if (['bgc'].includes(type)) {
+        DesignerUtil.removeBgc();
+      }
     },
     /**
-     * 删除背景色
+     * 显示隐藏
      * */
-    onRemove2(image) {
-      DesignerUtil.removeBgc();
+    onVisible(image, type) {
+      if (['image', 'text'].includes(type)) {
+        image.attrs.visibleFn();
+      }
+
+      if (['bgc'].includes(type)) {
+        DesignerUtil.visibleBgc();
+      }
+    },
+    /**
+     * 图层上移下移
+     * */
+    onLayer(image, imageType, type) {
+      if (['image', 'text'].includes(imageType)) {
+        image.attrs.layerMoveFn(type);
+      }
+    },
+    /**
+     * 选中图层
+     * */
+    onSelected(image, type, view) {
+      if (['image', 'text'].includes(type)) {
+        image.attrs.selectedFn();
+      }
+
+      if (['bgc'].includes(type)) {
+        image.attrs.selectedFn();
+      }
     },
   },
   mounted() {},
@@ -144,6 +333,101 @@ export default {
 
 <style scoped lang="less">
 .active {
-  color: red;
+  color: red !important;
+}
+.custom-wrap {
+  /deep/ .el-collapse-item__wrap {
+    border-bottom: none !important;
+  }
+}
+
+.layer-group {
+  display: flex;
+  flex-direction: column-reverse;
+
+  .active-layer {
+    border: 2px solid #0099ff !important;
+  }
+}
+// 设计图item
+.layer-item {
+  margin-bottom: 5px;
+  border: 2px solid #eee;
+  border-radius: 5px;
+  padding: 8px;
+  display: flex;
+  gap: 5px;
+
+  .img-wrap {
+    display: inline-flex;
+    flex: 1;
+    max-width: 50%;
+  }
+
+  .text {
+    width: 32px;
+    height: 32px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.12),
+      0 0 6px rgba(0, 0, 0, 0.04);
+  }
+
+  .img {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.12),
+      0 0 6px rgba(0, 0, 0, 0.04);
+
+    .image {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  .img-name {
+    flex: 1;
+    padding: 0 5px;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    word-wrap: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.12),
+      0 0 6px rgba(0, 0, 0, 0.04);
+  }
+
+  // 操作区域
+  .btn-layer {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1px;
+  }
+  .btn {
+    transition: all 0.3s;
+    width: 32px;
+    height: 32px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font-size: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+
+    &:hover {
+      border: 1px solid #4087ff;
+    }
+  }
 }
 </style>

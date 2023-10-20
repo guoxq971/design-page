@@ -1,13 +1,14 @@
 // import Konva from 'konva';
 import { Konva } from '@/designApplication/core/canvas/konva';
 import { drawAreaDash, initProdArea } from './prodArea';
-import { getDesignImage } from './designImage';
+import { getDesignImage, getText } from './designImage';
 import store from '@/store';
 import { KonvaCanvasParam } from '@/designApplication/interface/konvaCanvasParam';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import { config3dUtil } from '@/designApplication/interface/Config3d/config3dOfCommonResponse';
 import { OperationUtil } from '@/designApplication/core/utils/operationUtil';
 import { loadImage } from '@/designApplication/core/utils/loadImage';
+import { initTransformer } from '@/designApplication/core/canvas/selectBorder';
 
 /**
  * 创建 konva canvas
@@ -41,42 +42,11 @@ export class KonvaCanvas {
     this._initV(); // 初始化车线
     this._init();
   }
-
   /**
-   * 添加背景色
-   * */
-  setBgc(color) {
-    let rect = this.clip.children.find((e) => e.name() === 'bgc');
-    if (!rect) {
-      rect = new Konva.Rect({
-        x: 0,
-        y: 0,
-        width: this.stage.width(),
-        height: this.stage.height(),
-        fill: color,
-        draggable: false,
-        name: 'bgc',
-      });
-      rect.setAttrs({
-        remove: () => {
-          this.clip.children = this.clip.children.filter((item) => item !== rect);
-          this.updateTexture();
-          this.layer.draw();
-        },
-      });
-      this.clip.add(rect);
-    } else {
-      rect.setAttrs('fill', color);
-    }
-
-    this.updateTexture();
-  }
-
-  /**
-   * 改变背景色
+   * 改变底色
    * @param {any} color 颜色
    * */
-  changeBgc(color = -1) {
+  setCanvasFill(color = -1) {
     if (color === -1) return;
     this.konvaPath.setAttr('fill', color);
     this.updateTexture();
@@ -87,15 +57,16 @@ export class KonvaCanvas {
    * 更新模型的材质
    * @param {number|string} num console.log用的
    * @param {number|null} timeout 是否使用延时器
-   * @param isUpdate
+   * @param {boolean} isUpdate 是否强制更新
    * */
   updateTexture(num = '', timeout = null, isUpdate = false) {
     if (this.param.view.texture && (store.state.designApplication.show3d || isUpdate)) {
-      // console.log('执行了更新模型');
       if (timeout !== null) {
-        this.param.view.updateTexture(num);
-      } else {
+        console.log('更新材质-1-timeout', num);
         setTimeout(() => this.param.view.updateTexture(num), timeout);
+      } else {
+        console.log('更新材质-2', num);
+        this.param.view.updateTexture(num);
       }
     }
   }
@@ -115,6 +86,20 @@ export class KonvaCanvas {
   }
 
   /**
+   * 获取选中的元素
+   * @returns {boolean} 是否有选中的元素 true-有 false-没有
+   * */
+  getsSelected() {
+    let result = null;
+    this.layer.children.forEach((item) => {
+      if (item.className === 'Transformer' && item.visible()) {
+        result = item;
+      }
+    });
+    return result;
+  }
+
+  /**
    * 隐藏所有的选中框transformer
    * */
   hideAllTransformer(layer) {
@@ -125,16 +110,24 @@ export class KonvaCanvas {
   }
 
   /**
-   * 创建图片
-   * @param {HTMLImageElement} image 图片对象
-   * @param {object} param 参数
-   * @returns {Promise<{image: Konva.Image, width: number, height: number}>
+   * 获取当前设计图列表
    * */
-  async createImage(image, param = {}) {
+  getImageList() {
+    return this.clip.children;
+  }
+
+  /**
+   * 添加设计图
+   * @param {HTMLImageElement} imageDOM 图片对象
+   * @param {object} param 参数
+   * @param {Object} detail 设计图详情
+   * @description 查找哪里使用了这个方法, 全局搜索: canvas.add
+   * */
+  async addImage(imageDOM, param = {}, detail) {
     param = Object.assign(
       {
-        width: image.width,
-        height: image.height,
+        width: imageDOM.width,
+        height: imageDOM.height,
         x: 0,
         y: 0,
         scaleX: 1,
@@ -144,7 +137,7 @@ export class KonvaCanvas {
       param,
     );
 
-    const designImage = await getDesignImage(image, this.layer, this.hideAllTransformer, param);
+    const designImage = await getDesignImage(imageDOM, this.layer, this.hideAllTransformer, param);
 
     // 设计图的事件
     designImage.image.on('dragmove', (e) => {
@@ -152,6 +145,9 @@ export class KonvaCanvas {
     });
     designImage.image.on('dragend', (e) => {
       this.updateTexture(33);
+    });
+    designImage.image.on('mousedown', (e) => {
+      DesignerUtil.hideAllTransformer();
     });
 
     // 锚点的事件
@@ -173,58 +169,150 @@ export class KonvaCanvas {
       rotation: param.rotation,
       type: 'image',
       name: 'image',
+      detail: detail,
       konvaCanvas: this,
+      transformer: designImage.transformer,
       remove: () => {
-        this.clip.children = this.clip.children.filter((item) => item !== designImage.image);
-        this.layer.children = this.layer.children.filter((item) => item !== designImage.transformer);
-        this.updateTexture();
-        this.layer.draw();
+        remove(this, designImage.image, designImage.transformer);
+      },
+      visibleFn: () => {
+        visibleImage(this, designImage.image, designImage.transformer);
+      },
+      layerMoveFn: (type) => {
+        layerMove(designImage.image, type);
+      },
+      selectedFn: () => {
+        DesignerUtil.hideAllTransformer();
+        // this.hideAllTransformer();
+        designImage.image.attrs.transformer.visible(true);
       },
     });
 
-    return designImage;
-  }
-
-  /**
-   * 添加设计图
-   * @param {{image: Konva.Rect, transformer:Transformer}} design 设计图
-   * @description 查找哪里使用了这个方法, 全局搜索: canvas.add
-   * */
-  add(design) {
-    this.clip.add(design.image); //添加设计图
+    this.clip.add(designImage.image); //添加设计图
     this.updateTexture(44, 50);
   }
 
   /**
-   * 获取当前设计图列表
+   * 添加背景色
    * */
-  getImageList() {
-    return this.clip.children;
+  addBgc(color) {
+    let rect = this.clip.children.find((e) => e.name() === 'bgc');
+    if (!rect) {
+      // 选中框
+      const transformer = initTransformer();
+      transformer.setAttrs({
+        draggable: false,
+        borderStrokeWidth: 0,
+        enabledAnchors: [],
+        anchorSize: 0,
+        dragDistance: 100000,
+      });
+      transformer.visible(false);
+
+      rect = new Konva.Rect({
+        x: 0,
+        y: 0,
+        width: this.stage.width(),
+        height: this.stage.height(),
+        fill: color,
+        draggable: false,
+        name: 'bgc',
+        dragDistance: 100000,
+      });
+
+      rect.on('mousedown', (e) => {
+        DesignerUtil.hideAllTransformer();
+      });
+
+      transformer.nodes([rect]);
+      this.layer.add(transformer);
+
+      rect.setAttrs({
+        visible: true,
+        transformer,
+        visibleFn: () => {
+          visibleImage(this, rect);
+        },
+        remove: () => {
+          this.clip.children = this.clip.children.filter((item) => item !== rect);
+          this.updateTexture();
+          this.layer.draw();
+        },
+        selectedFn: () => {
+          DesignerUtil.hideAllTransformer();
+          // this.hideAllTransformer();
+          rect.attrs.transformer.visible(true);
+        },
+      });
+      this.clip.add(rect);
+      rect.moveToBottom();
+    } else {
+      rect.setAttrs('fill', color);
+    }
+
+    this.updateTexture();
   }
 
   /**
    * 添加文字
-   * @param {string} text 文字
    * @param {Object} param 参数
    * */
-  addText(text, param = {}) {
-    const t = new Konva.Text({
-      x: 0,
-      y: 0,
-      text: text,
-      fontSize: 20,
-      fontFamily: 'Calibri',
-      fill: '#555',
-      draggable: true,
+  async addText(param = {}) {
+    // 设置默认值
+    const result = await getText(param.text, this.layer, this.hideAllTransformer);
+
+    result.text.on('mousedown', (e) => {
+      DesignerUtil.hideAllTransformer();
     });
 
-    const transformer = new Konva.Transformer({
-      node: t,
-      enabledAnchors: ['middle-left', 'middle-right'],
+    // 设置文字属性
+    setTextAttrs(result.text, param);
+
+    // 文字的事件
+    result.text.setAttrs({
+      visible: true,
+      transformer: result.transformer,
+      visibleFn: () => {
+        visibleImage(this, result.text, result.transformer);
+      },
+      remove: () => {
+        remove(this, result.text, result.transformer);
+      },
+      draw: (param2) => {
+        setTextAttrs(result.text, param2);
+        this.layer.draw();
+      },
+      layerMoveFn: (type) => {
+        layerMove(result.text, type);
+      },
+      selectedFn: () => {
+        DesignerUtil.hideAllTransformer();
+        // this.hideAllTransformer();
+        result.text.attrs.transformer.visible(true);
+      },
     });
 
-    this.layer.add(transformer);
-    this.clip.add(t);
+    // 设置居中
+    // 画布的参数配置
+    const canvasSize = DesignerUtil.getVuexConfig().canvasSize;
+    const canvasWidth = canvasSize.width;
+    const canvasHeight = canvasSize.height;
+    const canvasRatio = canvasSize.ratio;
+
+    // 文字的参数
+    const width = result.text.textHeight;
+    const height = result.text.textWidth;
+
+    // 文字在画布展示的位置
+    const x = canvasWidth / 2 / canvasRatio - width / 2;
+    const y = canvasHeight / 2 / canvasRatio - height / 2;
+
+    result.text.setAttrs({
+      x: -this.clip.attrs.x + x,
+      y: -this.clip.attrs.y + y,
+    });
+
+    this.clip.add(result.text);
   }
 
   _init() {}
@@ -322,4 +410,79 @@ export class KonvaCanvas {
       }
     });
   }
+}
+
+/**
+ * 图层移动
+ * */
+function layerMove(image, type) {
+  //上移
+  if (type === 'up') {
+    image.moveUp();
+  }
+  //下移
+  else if (type === 'down') {
+    image.moveDown();
+  }
+  //置顶
+  else if (type === 'top') {
+    image.moveToTop();
+  }
+  //置底
+  else if (type === 'bottom') {
+    image.moveToBottom();
+  }
+
+  if (['down', 'bottom'].includes(type)) {
+    // 背景色置底
+    DesignerUtil.moveBottomBgc();
+  }
+}
+
+/**
+ * 显示隐藏设计图
+ * @param that this
+ * @param {Object} image 节点
+ * @param {Object} transformer 选中框
+ * */
+function visibleImage(that, image, transformer = null) {
+  const visible = !image.attrs.visible;
+  image.visible(visible);
+  if (transformer && visible === false) {
+    transformer.visible(visible);
+  }
+  that.layer.draw();
+}
+
+/**
+ * 移除设计图
+ * @param that this
+ * @param {Object} image 节点
+ * @param transformer 选中框
+ * */
+function remove(that, image, transformer) {
+  that.clip.children = that.clip.children.filter((item) => item !== image);
+  that.layer.children = that.layer.children.filter((item) => item !== transformer);
+  that.updateTexture();
+  that.layer.draw();
+}
+
+/**
+ * 设置文字属性
+ * @param {Konva.Text} text 文字
+ * @param {Object} param 参数
+ * */
+function setTextAttrs(text, param) {
+  text.setAttrs({
+    text: param.text,
+    fill: param.fontColor || '#000',
+    fontSize: param.fontSize || 20,
+    fontFamily: param.fontFamily || 'Calibri',
+    fontStyle: param.fontStyle || 'normal', // 斜体
+    fontWeight: param.fontWeight || 'normal', // 加粗
+    textDecoration: param.textDecoration || 'none', // 下划线
+    textAnchor: param.textAlign || 'left', // 文字对齐方式
+    letterSpacing: param.letterSpacing || 0, // 字间距
+    lineHeight: param.lineHeight || 1, // 行间距
+  });
 }

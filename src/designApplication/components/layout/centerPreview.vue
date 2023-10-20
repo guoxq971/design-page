@@ -5,8 +5,6 @@
       <box-adaptive class="box-wrap" :class="{ active: item.id === activeViewId }" @click.native="onPreview(item)">
         <img :src="item.showImage.image" alt="" class="full" style="position: absolute" />
         <img :src="item.showImage.texture" alt="" class="full" style="position: absolute" />
-        <!--<img :src="item.prod" alt="" class="full" style="position: absolute" />-->
-        <!--<img :src="item.bg" alt="" class="full" style="position: absolute" />-->
       </box-adaptive>
     </el-tooltip>
   </div>

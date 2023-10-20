@@ -28,7 +28,7 @@ export class OperationUtil {
             const isGlass = DesignerUtil.hasGlass(color3dItem?.colorCode);
 
             if (view.canvas && !isGlass) {
-              view.canvas.changeBgc(color3dItem.colorCode);
+              view.canvas.setCanvasFill(color3dItem.colorCode);
               view.canvas.updateTexture('', 50, true);
             }
           }
@@ -39,7 +39,7 @@ export class OperationUtil {
           for (let view of prodItem.viewList) {
             const color = null;
             if (view.canvas) {
-              view.canvas.changeBgc(color);
+              view.canvas.setCanvasFill(color);
             }
           }
           break;

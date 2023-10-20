@@ -2,7 +2,7 @@
  * 加载图片
  * @param src
  * @param param
- * @returns {Promise<Image>}
+ * @returns {Promise<HTMLImageElement>}
  * */
 export function loadImage(src, param = {}) {
   param = Object.assign({}, param);

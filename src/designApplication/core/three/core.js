@@ -2,7 +2,6 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { Raycaster } from './raycaster.js';
 import store from '@/store';
-import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import { OperationUtil } from '@/designApplication/core/utils/operationUtil';
 
 export class Core {

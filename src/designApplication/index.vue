@@ -44,7 +44,7 @@ export default {
   .design-right {
     flex: 1;
     min-width: 380px;
-    border: 1px solid darkolivegreen;
+    //border: 1px solid #eee;
   }
 }
 </style>

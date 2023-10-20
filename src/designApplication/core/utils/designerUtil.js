@@ -4,6 +4,25 @@ import { disposeThree } from '@/designApplication/core/utils/clearThree';
 import { Config } from '@/designApplication/core/config';
 import { config3dUtil } from '@/designApplication/interface/Config3d/config3dOfCommonResponse';
 
+export class DesignType {
+  static bgc = 'bgc';
+  static text = 'text';
+  static image = 'image';
+
+  static getLabel(type) {
+    switch (type) {
+      case this.bgc:
+        return '背景色';
+      case this.text:
+        return '文字';
+      case this.image:
+        return '图片';
+      default:
+        return '';
+    }
+  }
+}
+
 /**
  * 设计器工具类
  * @class DesignerUtil
@@ -13,6 +32,17 @@ import { config3dUtil } from '@/designApplication/interface/Config3d/config3dOfC
 export class DesignerUtil {
   static config3dUtil = config3dUtil;
   static prodType = ProdType;
+  static DesignType = DesignType;
+
+  /**
+   * 隐藏所有的选中框
+   * */
+  static hideAllTransformer(prodItem = null) {
+    prodItem = prodItem || this.getActiveProd();
+    for (let view of prodItem.viewList) {
+      view.canvas.hideAllTransformer();
+    }
+  }
 
   /**
    * 获取view
@@ -32,19 +62,19 @@ export class DesignerUtil {
   }
 
   /**
-   * 设置背景色
+   * 背景色 - 设置
    * */
   static setBgc(color, prodItem = null) {
     prodItem = prodItem || this.getActiveProd();
     for (let view of prodItem.viewList) {
       if (view.canvas) {
-        view.canvas.setBgc(color);
+        view.canvas.addBgc(color);
       }
     }
   }
 
   /**
-   * 移除背景色
+   * 背景色 - 移除
    * */
   static removeBgc(prodItem = null) {
     prodItem = prodItem || this.getActiveProd();
@@ -53,6 +83,38 @@ export class DesignerUtil {
         view.canvas.getImageList().forEach((e) => {
           if (e.attrs.name === 'bgc') {
             e.attrs.remove();
+          }
+        });
+      }
+    }
+  }
+
+  /**
+   * 背景色 - 置底
+   * */
+  static moveBottomBgc(prodItem = null) {
+    prodItem = prodItem || this.getActiveProd();
+    for (let view of prodItem.viewList) {
+      if (view.canvas) {
+        view.canvas.getImageList().forEach((e) => {
+          if (e.attrs.name === 'bgc') {
+            e.moveToBottom();
+          }
+        });
+      }
+    }
+  }
+
+  /**
+   * 背景色 - 显示隐藏
+   * */
+  static visibleBgc(prodItem = null) {
+    prodItem = prodItem || this.getActiveProd();
+    for (let view of prodItem.viewList) {
+      if (view.canvas) {
+        view.canvas.getImageList().forEach((e) => {
+          if (e.attrs.name === 'bgc') {
+            e.attrs.visibleFn();
           }
         });
       }

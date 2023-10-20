@@ -93,4 +93,12 @@ export class ProdItem {
 export class ProdType {
   static common = 1;
   static refine = 2;
+
+  static isCommon(type) {
+    return type === ProdType.common;
+  }
+
+  static isRefine(type) {
+    return type === ProdType.refine;
+  }
 }

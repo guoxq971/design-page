@@ -3,6 +3,8 @@ module.exports = defineConfig({
   transpileDependencies: true,
   // 控制台输出具体代码位置
   configureWebpack: {
-    devtool: 'source-map',
+    // 选项：
+    // devtool: 'source-map',
+    devtool: 'cheap-module-source-map',
   },
 });

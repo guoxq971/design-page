@@ -25,8 +25,8 @@ export function initTransformer(layer) {
   // const transformer = new Konva.Transformer(konvaTransformerConfig());
   const transformer = new CustomTransformer(konvaTransformerConfig());
 
-  transformer.on('transform', (transform) => {});
-  transformer.on('transformstart', (transform) => {});
+  // transformer.on('transform', (transform) => {});
+  // transformer.on('transformstart', (transform) => {});
   transformer.on('transformend', (transform) => {
     text.text('');
   });

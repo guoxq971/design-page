@@ -344,9 +344,9 @@ export default {
     async setImage({ state, commit, dispatch, getters }, detail) {
       const viewId = store.state.designApplication.activeViewId;
       const view = state.prodStore.get()?.viewList.find((e) => e.id === viewId);
-      const staticView = state.prodStore.getStatic().viewList.find((e) => e.id === viewId);
+      const staticView = state.prodStore.getStatic()?.viewList.find((e) => e.id === viewId);
 
-      if (!view) {
+      if (!view || !staticView) {
         Message.warning('设计图需要加载到的view获取失败!');
         return;
       }
@@ -386,7 +386,7 @@ export default {
         y,
       };
 
-      view.canvas.createImage(imageDOM, param).then((design) => view.canvas.add(design));
+      await view.canvas.addImage(imageDOM, param, detail);
     },
   },
 };
