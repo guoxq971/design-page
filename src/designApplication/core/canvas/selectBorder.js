@@ -3,6 +3,7 @@ import { Konva } from '@/designApplication/core/canvas/konva';
 import { konvaTransformerConfig } from './konvaConfig';
 
 class CustomTransformer extends Konva.Transformer {
+  customName = 'CustomTransformer';
   constructor(config) {
     super(config);
   }

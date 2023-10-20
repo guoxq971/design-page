@@ -38,10 +38,11 @@ export class KonvaCanvas {
 
     this._initStage(); // 初始化舞台
     this._initDashArea(); // 初始化虚线边框
-    this._initClip(); // 初始化裁剪区域
     this._initV(); // 初始化车线
+    this._initClip(); // 初始化裁剪区域
     this._init();
   }
+
   /**
    * 改变底色
    * @param {any} color 颜色
@@ -101,11 +102,15 @@ export class KonvaCanvas {
 
   /**
    * 隐藏所有的选中框transformer
+   * @param {Object} layer 图层
+   * @param {Object} ignore 忽略的类型
    * */
-  hideAllTransformer(layer) {
+  hideAllTransformer(layer, ignore) {
     layer = layer || this.layer;
     layer.children.forEach((item) => {
-      item.className === 'Transformer' && item.visible(false);
+      if (item.className === 'Transformer' && (item !== ignore || item.attrs.transformer !== ignore)) {
+        item.visible(false);
+      }
     });
   }
 
@@ -147,7 +152,7 @@ export class KonvaCanvas {
       this.updateTexture(33);
     });
     designImage.image.on('mousedown', (e) => {
-      DesignerUtil.hideAllTransformer();
+      DesignerUtil.hideAllTransformer(null, designImage.image);
     });
 
     // 锚点的事件
@@ -183,7 +188,6 @@ export class KonvaCanvas {
       },
       selectedFn: () => {
         DesignerUtil.hideAllTransformer();
-        // this.hideAllTransformer();
         designImage.image.attrs.transformer.visible(true);
       },
     });
@@ -197,10 +201,12 @@ export class KonvaCanvas {
    * */
   addBgc(color) {
     let rect = this.clip.children.find((e) => e.name() === 'bgc');
+
     if (!rect) {
       // 选中框
       const transformer = initTransformer();
       transformer.setAttrs({
+        name: 'bgc-transformer',
         draggable: false,
         borderStrokeWidth: 0,
         enabledAnchors: [],
@@ -210,8 +216,8 @@ export class KonvaCanvas {
       transformer.visible(false);
 
       rect = new Konva.Rect({
-        x: 0,
-        y: 0,
+        x: -this.clip.attrs.x,
+        y: -this.clip.attrs.y,
         width: this.stage.width(),
         height: this.stage.height(),
         fill: color,
@@ -221,7 +227,7 @@ export class KonvaCanvas {
       });
 
       rect.on('mousedown', (e) => {
-        DesignerUtil.hideAllTransformer();
+        DesignerUtil.hideAllTransformer(null, rect);
       });
 
       transformer.nodes([rect]);
@@ -240,14 +246,13 @@ export class KonvaCanvas {
         },
         selectedFn: () => {
           DesignerUtil.hideAllTransformer();
-          // this.hideAllTransformer();
           rect.attrs.transformer.visible(true);
         },
       });
       this.clip.add(rect);
       rect.moveToBottom();
     } else {
-      rect.setAttrs('fill', color);
+      rect.setAttr('fill', color);
     }
 
     this.updateTexture();
@@ -262,7 +267,7 @@ export class KonvaCanvas {
     const result = await getText(param.text, this.layer, this.hideAllTransformer);
 
     result.text.on('mousedown', (e) => {
-      DesignerUtil.hideAllTransformer();
+      DesignerUtil.hideAllTransformer(null, result.text);
     });
 
     // 设置文字属性
@@ -287,7 +292,6 @@ export class KonvaCanvas {
       },
       selectedFn: () => {
         DesignerUtil.hideAllTransformer();
-        // this.hideAllTransformer();
         result.text.attrs.transformer.visible(true);
       },
     });
@@ -396,10 +400,17 @@ export class KonvaCanvas {
 
     // 监听点击的位置是否有元素
     this.stage.on('mousedown', (e) => {
-      // 如果点击的是舞台或者path, 则隐藏所有的transformer
-      if (e.target === this.stage || e.target.attrs.type === 'path' || e.target.attrs.name === 'bgc') {
-        this.hideAllTransformer();
+      if (e.target.attrs.name === 'image') return;
+
+      if (e.target.attrs.name === 'back' && e.target.parent && e.target.parent.customName === 'CustomTransformer') {
+        if (e.target.parent._nodes && e.target.parent._nodes[0]?.attrs.name === 'bgc') {
+          //
+        } else {
+          return;
+        }
       }
+
+      this.hideAllTransformer();
     });
 
     // 监听双击事件

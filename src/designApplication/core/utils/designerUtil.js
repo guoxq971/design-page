@@ -36,11 +36,14 @@ export class DesignerUtil {
 
   /**
    * 隐藏所有的选中框
+   * @param {ProdItem|null} prodItem 产品
+   * @param {Object|null} ignore 忽略的类型
+   *
    * */
-  static hideAllTransformer(prodItem = null) {
+  static hideAllTransformer(prodItem = null, ignore = null) {
     prodItem = prodItem || this.getActiveProd();
     for (let view of prodItem.viewList) {
-      view.canvas.hideAllTransformer();
+      view.canvas.hideAllTransformer(null, ignore);
     }
   }
 

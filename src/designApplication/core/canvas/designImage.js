@@ -21,13 +21,13 @@ export async function getDesignImage(image, layer, hideAllTransformer) {
   layer.add(transformer);
 
   rect.on('click', function () {
-    hideAllTransformer(layer);
+    hideAllTransformer(layer, rect);
     transformer.visible(true);
   });
   // rect.on('mouseover', function () {});
   // rect.on('mouseout', function () {});
   rect.on('dragstart', function () {
-    hideAllTransformer(layer);
+    hideAllTransformer(layer, rect);
     transformer.visible(true);
   });
   // rect.on('dragmove', function () {});

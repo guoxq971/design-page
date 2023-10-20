@@ -108,13 +108,25 @@
       </el-collapse-item>
     </el-collapse>
 
-    <el-card style="margin-top: 10px" header="当前选中的设计">
+    <el-card style="margin-top: 10px" header="当前选中的设计" v-if="activeDesign">
       <div slot="header">
         <span>当前选中的设计</span>
         <span v-if="activeDesign">({{ DesignerUtil.DesignType.getLabel(activeDesign.attrs.name) }})</span>
       </div>
 
       <div v-if="activeDesign">
+        <!--设计信息-->
+        <div v-if="activeDesign.attrs.name === 'image'" class="img-wrap-2">
+          <div class="image-bd">
+            <el-image :src="activeDesign.attrs.fillPatternImage.src" class="image" />
+          </div>
+          <div class="img-name-2">{{ activeDesign.attrs.detail.name }}</div>
+        </div>
+        <div v-if="activeDesign.attrs.name === 'text'" class="text-wrap-2">
+          <el-input type="textarea" :rows="4" :value="activeDesign.attrs.text" @input="(val) => onInput(activeDesign, val)" />
+        </div>
+
+        <!--操作区域-->
         <div class="layer-item" style="padding: 0">
           <!--图层上移动-->
           <template v-if="!['bgc'].includes(activeDesign.attrs.name)">
@@ -196,7 +208,7 @@ export default {
      * 总设计图数量
      * */
     imageTotal() {
-      return this.activeProd.viewList.reduce((total, view) => {
+      return this.activeProd?.viewList.reduce((total, view) => {
         return total + this.imageList(view).length;
       }, 0);
     },
@@ -215,15 +227,13 @@ export default {
      * */
     activeDesign() {
       let result = null;
-      this.activeProd.viewList.find((view) => {
-        let r = view.canvas.getsSelected();
+      this.activeProd?.viewList.find((view) => {
+        let r = view.canvas?.getsSelected();
         if (r) {
-          console.log('r', r);
           result = r._nodes[0];
         }
         return r;
       });
-      console.log(result);
       return result;
     },
   },
@@ -239,9 +249,8 @@ export default {
     /**
      * 文字
      * */
-    onInput(text, view, val) {
-      console.log('view', view);
-      text.attrs.draw(val);
+    onInput(text, val) {
+      text.setAttr('text', val);
     },
     /**
      * 切换模板
@@ -428,6 +437,38 @@ export default {
     &:hover {
       border: 1px solid #4087ff;
     }
+  }
+}
+
+.text-wrap-2 {
+  margin-bottom: 7px;
+}
+
+.img-wrap-2 {
+  display: flex;
+  align-items: center;
+  margin-bottom: 7px;
+
+  .image-bd {
+    width: 90px;
+    height: 90px;
+    border-radius: 5px;
+    overflow: hidden;
+    .image {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .img-name-2 {
+    flex: 1;
+    padding: 0 5px;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    word-wrap: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 </style>
