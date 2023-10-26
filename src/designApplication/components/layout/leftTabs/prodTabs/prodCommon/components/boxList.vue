@@ -36,7 +36,7 @@ export default {
     getList: { type: Function, default: () => {} },
     /**
      * 产品列表
-     * @type {ParseProdItem[]}
+     * @see {import('@/design').ProdListDataItem[]}
      * */
     list: { type: Array, default: () => [] },
   },

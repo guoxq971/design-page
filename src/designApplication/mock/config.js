@@ -1,1 +1,1 @@
-export const TOKEN = 'LOGIN_REDIS_KEY_de5f04fe-df6c-4fba-b463-53291d7e6dcf_10_372083849764d3cd26f68b27fa438c1a';
+export const TOKEN = 'LOGIN_REDIS_KEY_de5f04fe-df6c-4fba-b463-53291d7e6dcf_10_8a844658bfecd3c242e34abf21bb54fd';

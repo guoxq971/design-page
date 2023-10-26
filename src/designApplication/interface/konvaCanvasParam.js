@@ -1,3 +1,5 @@
+import { ParseViewItem } from '@/designApplication/interface/parseViewItem';
+
 /**
  * konva canvas 参数
  * @class KonvaCanvasParam

@@ -15,7 +15,7 @@
               <div>②单尺码产品，无误差</div>
             </div>
           </div>
-          <el-dropdown-item @click.native="onClick(DesignerUtil.prodType.common)">通用设计</el-dropdown-item>
+          <el-dropdown-item @click.native="onClick(ProdType.common)">通用设计</el-dropdown-item>
         </el-tooltip>
         <el-tooltip placement="right">
           <div slot="content">
@@ -31,7 +31,7 @@
               </template>
             </div>
           </div>
-          <el-dropdown-item @click.native="onClick(DesignerUtil.prodType.refine)" :disabled="disabled">精细设计</el-dropdown-item>
+          <el-dropdown-item @click.native="onClick(ProdType.refine)" :disabled="disabled">精细设计</el-dropdown-item>
         </el-tooltip>
       </el-dropdown-menu>
     </el-dropdown>
@@ -46,6 +46,7 @@ export default {
   data() {
     return {
       DesignerUtil,
+      ProdType,
       // ModelEnum,
     };
   },

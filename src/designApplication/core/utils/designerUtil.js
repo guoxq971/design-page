@@ -26,13 +26,19 @@ export class DesignType {
 /**
  * 设计器工具类
  * @class DesignerUtil
- * @property {ProdType} prodType 产品类型
  * @method getProdItem 获取产品
  * */
 export class DesignerUtil {
   static config3dUtil = config3dUtil;
-  static prodType = ProdType;
   static DesignType = DesignType;
+
+  /**
+   * 获取当前激活产品的静态数据
+   * @returns {import('@/design').ActiveStaticProdData} 静态数据
+   */
+  static getActiveProdStatic() {
+    return store.getters['designApplication/activeProdStatic'];
+  }
 
   /**
    * 隐藏所有的选中框
@@ -224,10 +230,10 @@ export class DesignerUtil {
 
   /**
    * 获取当前激活的产品
-   * @returns {ProdItem} 当前激活的产品
+   * @returns {import('@/design').ProdListDataItem} 当前激活的产品
    * */
   static getActiveProd() {
-    return store.state.designApplication.prodStore.get();
+    return store.getters['designApplication/activeProd'];
   }
 }
 

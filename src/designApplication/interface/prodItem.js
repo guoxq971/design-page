@@ -10,8 +10,8 @@ import { MyThree } from '@/designApplication/core/three';
 export class ProdUtil {
   /**
    * 处理产品数据 (通用产品)
-   * @param {ParseProdItem} detail 产品数据
-   * @param {Config3d} config3d 3d配置
+   * @param {import('@/design').ProdListDataItem} detail 产品数据
+   * @param {import('@/design').ProdConfig3dResponseData} config3d 3d配置
    * @returns {ProdItem} 产品
    * */
   static disposeCommon(detail, config3d) {
@@ -31,8 +31,8 @@ export class ProdUtil {
 
   /**
    * 处理产品数据 (精细产品, 仅仅是初始化)
-   * @param {Prod3dConfigByRefineListItem} refineItemResponse 精细列表的接口返回值
-   * @param {ParseProdItem} detail 产品数据
+   * @param {import('@/design').ProdConfig3dResponseRefineData} refineItemResponse 精细列表的接口返回值
+   * @param {import('@/design').ProdListDataItem} detail 产品数据
    * @returns {ProdItem} 产品
    * */
   static disposeRefine(refineItemResponse, detail) {

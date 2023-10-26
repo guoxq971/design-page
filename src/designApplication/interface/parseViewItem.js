@@ -1,3 +1,4 @@
+import { KonvaCanvas } from '@/designApplication/core/canvas/konvaCanvas';
 /**
  * 解析后的视图项
  * @class ParseViewItem

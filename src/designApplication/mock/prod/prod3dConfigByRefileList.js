@@ -1,5 +1,10 @@
 import { TOKEN } from '@/designApplication/mock/config';
 
+/**
+ * 获取产品3d配置 - 精细
+ * @param templateNo
+ * @returns {Promise<import('@/design').ProdConfig3dResponseRefine>}
+ */
 export function fetchProd3dConfigByRefineList(templateNo) {
   return fetch('http://gateway.testcustomwe.com/base-web/cm/cmProductTemplate/getSizeListByTemplateNo/' + templateNo, {
     headers: {

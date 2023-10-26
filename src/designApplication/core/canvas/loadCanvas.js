@@ -1,13 +1,14 @@
-import { KonvaCanvas } from '@/designApplication/core/canvas/konvaCanvas';
 import store from '@/store';
 import { sleep } from '@/designApplication/core/utils/sleep';
+import { KonvaCanvas } from '@/designApplication/core/canvas_2/konvaCanvas';
+import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 
 /**
  * 加载canvas
  * */
 export async function loadCanvas() {
-  const activeProdStatic = store.getters['designApplication/activeProdStatic'];
-  const activeProd = store.getters['designApplication/activeProd'];
+  const activeProdStatic = DesignerUtil.getActiveProdStatic();
+  const activeProd = DesignerUtil.getActiveProd();
 
   if (activeProdStatic?.viewList.length && activeProd?.viewList.some((e) => !e.canvas)) {
     try {
@@ -30,7 +31,7 @@ function closeLoading() {
 
 /**
  * 初始化画布
- * @param {ActiveData} activeProdStatic 静态资源数据
+ * @param {import('@/design').ActiveStaticProdData} activeProdStatic 静态资源数据
  * */
 function initCanvas(activeProdStatic) {
   for (let staticView of activeProdStatic.viewList) {
@@ -39,12 +40,12 @@ function initCanvas(activeProdStatic) {
 }
 /**
  * 创建画布
- * @param {StaticViewItem} staticView 视图
+ * @param {import('@/design').StaticViewItem} staticView 视图
  * */
 function createCanvas(staticView) {
-  const activeProd = store.getters['designApplication/activeProd'];
+  const activeProd = DesignerUtil.getActiveProd();
   const config = store.state.designApplication.config;
-  const view = activeProd.viewList.find((e) => e.id === staticView.id);
+  const view = activeProd.viewList.find((e) => e.id == staticView.id);
 
   if (!view) return;
 

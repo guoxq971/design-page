@@ -12,8 +12,8 @@ import { fetchRefineProdConfig3dByTemplateNoWithSize } from '@/designApplication
 
 /**
  * 获取通用产品列表
- * @param {Object|null} params
- * @returns {Promise<GetListByCommonProd>} 通用产品列表
+ * @param {import('@/design').ProdListParams} params
+ * @returns {Promise<import('@/design').ProdListData>} 通用产品的数据
  * */
 export async function getCommonProdListApi(params = null) {
   const data = await parseCommonProd(params);
@@ -24,7 +24,7 @@ export async function getCommonProdListApi(params = null) {
 /**
  * 根据模板号获取3d配置（通用模板）
  * @param {string} templateNo 模板号
- * @returns {Promise<Config3d>} 3d配置
+ * @returns {Promise<import('@/design').ProdConfig3dResponseData>} 3d配置
  * */
 export async function getProd3dConfigByCommonApi(templateNo) {
   const res = await fetchProd3dConfigByCommon(templateNo); //通过接口获取数据
@@ -43,7 +43,7 @@ export async function getProd3dConfigByCommonApi(templateNo) {
 /**
  根据模板号获取3d配置（精细）
  @param {string} templateNo 模板号
- @returns {Promise<Prod3dConfigByRefineListItem[]>} 3d配置
+ @returns {Promise<import('@/design').ProdConfig3dResponseRefineData[]>} 3d配置
  * */
 export async function getProd3dConfigByRefineListApi(templateNo) {
   const res = await fetchProd3dConfigByRefineList(templateNo); //通过接口获取数据

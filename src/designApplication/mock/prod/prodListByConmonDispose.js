@@ -7,11 +7,12 @@ import { ParseColorItem } from '@/designApplication/interface/parseColorItem';
 import { ParseSizeItem } from '@/designApplication/interface/parseSizeItem';
 import { fetchProdListByCommon } from '@/designApplication/mock/prod/prodListByCommon2';
 import { GetListByCommonProd } from '@/designApplication/interface/getList';
+import { ParsePrintoutItem } from '@/designApplication/interface/parsePrintoutItem';
 
 /**
  * 解析通用产品的数据
- * @param {CommonProdParams|null} params 参数
- * @returns {Promise<GetListByCommonProd>} 通用产品的数据
+ * @param {import('@/design').ProdListParams} params
+ * @returns {Promise<import('@/design').ProdListData>} 通用产品的数据
  * */
 export async function parseCommonProd(params) {
   const result = new GetListByCommonProd();
@@ -34,8 +35,8 @@ export async function parseCommonProd(params) {
 
 /**
  * 解析
- * @param {ProdItemDetail} row 产品的接口数据
- * @returns {ParseProdItem} 产品的数据
+ * @param {import('@/design').ProdItemResponse} row 产品的接口数据
+ * @returns {import('@/design').ProdListDataItem} 产品的数据
  * */
 export function parseProdItemDetail(row) {
   // 原始数据
@@ -110,12 +111,12 @@ function parsePrintList(printAreas, views, detail) {
 function parsePrintoutList(pointoutPrintAreas) {
   const list = [];
   for (let row of pointoutPrintAreas) {
-    const parseSizeItem = new ParseSizeItem();
-    parseSizeItem.id = row.id;
-    parseSizeItem.size = row.size;
-    parseSizeItem.stitching = row.soft.v; //车线
-    parseSizeItem.v = row.soft.v; //车线
-    list.push(parseSizeItem);
+    const parsePrintoutItem = new ParsePrintoutItem();
+    parsePrintoutItem.id = row.id;
+    parsePrintoutItem.size = row.size;
+    parsePrintoutItem.stitching = row.soft.v; //车线
+    parsePrintoutItem.v = row.soft.v; //车线
+    list.push(parsePrintoutItem);
   }
   return list;
 }
@@ -143,8 +144,8 @@ function parseViewList(views) {
 
 /**
  * 解析颜色
- * @param {Array} appearances 颜色的数据
- * @returns {Array<ParseColorItem>} 颜色的数据
+ * @param {any[]} appearances 颜色的数据
+ * @returns {ParseColorItem[]} 颜色的数据
  * */
 function parseColorList(appearances) {
   const list = [];

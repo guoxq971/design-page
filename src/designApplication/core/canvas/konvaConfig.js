@@ -132,7 +132,7 @@ export const konvaTransformerConfig = (param = {}) => {
   if (node) _nodes = [node];
 
   return {
-    draggable: false, // 是否可拖拽
+    draggable: true, // 是否可拖拽
     nodes: _nodes, // 传入节点
     // shiftBehavior: 'resize', // 按住shift键时的行为 resize: 缩放 rotate: 旋转 [没测出什么效果]
     flipEnabled: true, // 允许翻转

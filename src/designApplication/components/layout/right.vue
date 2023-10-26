@@ -33,7 +33,7 @@
 
         <div v-for="prod in prodStore.list" style="margin-top: 4px" :class="{ active: isActive(prod) }">
           <el-button :disabled="isActive(prod)" :type="isActive(prod) ? 'primary' : ''" size="mini" @click="onSwitchProd(prod)" style="margin-left: 10px">选择</el-button>
-          <el-tag style="margin-left: 4px" :type="DesignerUtil.prodType.isCommon(prod.type) ? 'success' : ''">{{ DesignerUtil.getProdTypeName(prod.type) }}</el-tag>
+          <el-tag style="margin-left: 4px" :type="ProdType.isCommon(prod.type) ? 'success' : ''">{{ DesignerUtil.getProdTypeName(prod.type) }}</el-tag>
           <span v-if="prod.size">- {{ prod.size }}</span>
           <el-tag style="margin-left: 4px" v-if="DesignerUtil.config3dUtil.isLoad3d(prod?.config3d)">3d</el-tag>
         </div>
@@ -159,12 +159,14 @@ import { mapGetters, mapState } from 'vuex';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import { OperationUtil } from '@/designApplication/core/utils/operationUtil';
 import { Message } from 'element-ui';
+import { ProdType } from '@/designApplication/interface/prodItem';
 
 export default {
   data() {
     return {
       sizeId: '',
       DesignerUtil,
+      ProdType,
       show3d: false,
     };
   },
@@ -228,9 +230,9 @@ export default {
     activeDesign() {
       let result = null;
       this.activeProd?.viewList.find((view) => {
-        let r = view.canvas?.getsSelected();
+        const r = view.canvas?.getSelected();
         if (r) {
-          result = r._nodes[0];
+          result = r.design;
         }
         return r;
       });

@@ -8,7 +8,6 @@ import { UseProdDetail } from '@/designApplication/interface/commonProd';
  * @property {ParseColorItem[]} colorList 颜色列表
  * @property {ParseSizeItem[]} sizeList 尺码列表
  * @property {ParseSizeItem[]} printoutList 印刷指定区域列表
- * @property {boolean} isActive 是否选中
  * @property {ProdItemDetail} detail 通用产品的产品解析
  * @property {ShowImage} showImage 展示用的数据
  * */
@@ -20,7 +19,6 @@ export class ParseProdItem extends UseProdDetail {
   printoutList = []; // 指定印刷区域
 
   // 自定义字段 --start
-  isActive = false; // 是否选中
   detail; // new CommonProdItem()
   showImage; // 展示用的数据 Object
   // 自定义字段 --end

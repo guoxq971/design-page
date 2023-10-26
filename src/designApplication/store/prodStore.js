@@ -38,7 +38,7 @@ export class ProdStore {
    * 获取激活产品
    * @param {number|null} type 产品类型 1-通用产品 2-精细产品
    * @param {null|string} sizeId 尺码id
-   * @returns {ProdItem} 当前激活的产品
+   * @returns {import('@/design').ProdListDataItem} 当前激活的产品
    * */
   get(type = null, sizeId = null) {
     if (type === null) type = store.state.designApplication.activeType;
@@ -55,8 +55,8 @@ export class ProdStore {
   /**
    * 获取视图
    * @param {number|null} viewId 视图id
-   * @param {ProdItem|null} prod 产品
-   * @returns {ParseViewItem|null} 视图
+   * @param {import('@/design').ProdListDataItem|null} prod 产品
+   * @returns {import('@/design').ParseViewItem|null} 视图
    * */
   getView(viewId = null, prod = null) {
     if (!prod) prod = this.get();
@@ -68,7 +68,7 @@ export class ProdStore {
   /**
    * 获取激活产品的静态资源数据 (该数据不能用来修改)
    * @param {ProdItem|null} prod 产品
-   * @returns {ActiveData|null} 当前激活的产品的静态资源数据
+   * @returns {import('@/design').ActiveStaticProdData|null} 当前激活的产品的静态资源数据
    * */
   getStatic(prod = null) {
     const activeColorId = store.state.designApplication.activeColorId;

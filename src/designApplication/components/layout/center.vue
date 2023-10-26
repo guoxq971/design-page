@@ -39,7 +39,6 @@
         <div class="canvas-work-container" :style="{ width: config.canvasSize.width + 'px' }">
           <template v-for="view in activeProdStatic.viewList">
             <div
-              :key="'a' + view.id"
               class="canvas-wrap"
               :style="{
                 width: config.canvasSize.width + 'px',

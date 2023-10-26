@@ -34,8 +34,8 @@ export class config3dUtil {
 
   /**
    * 获取可使用精细产品的列表
-   * @param {Prod3dConfigByRefineListItem[]} refineList
-   * @returns {Prod3dConfigByRefineListItem[]} 可使用精细产品的列表
+   * @param {import('@/design').ProdConfig3dResponseRefineData[]} refineList
+   * @returns {import('@/design').ProdConfig3dResponseRefineData[]} 可使用精细产品的列表
    * */
   static getOpenRefineList(refineList) {
     return refineList.filter((e) => {

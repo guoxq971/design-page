@@ -25,6 +25,9 @@ export default {
       loading: false,
       total: 0,
       params: new CommonProdParams(),
+      /**
+       * @type {import('@/design').ParseProdItem[]}
+       */
       list: [],
     };
   },
@@ -36,8 +39,6 @@ export default {
         this.list = list;
         this.total = total;
         if (this.list.length === 0) return;
-
-        this.$set(this.list[0], 'isActive', true);
         await this.$store.dispatch('designApplication/setProd', this.list[0]);
       } finally {
         this.loading = false;

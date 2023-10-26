@@ -1,7 +1,11 @@
 import { TOKEN } from '@/designApplication/mock/config';
 
-// 获取通用产品列表
-export function fetchProdListByCommon(params = {}) {
+/**
+ * 获取通用产品列表
+ * @param {import('@/design').ProdListParams} params
+ * @returns {Promise<import('@/design').ProdListResponseData>}
+ */
+export function fetchProdListByCommon(params) {
   let str = '';
   // 对象转请求字符串
   for (let key in params) {

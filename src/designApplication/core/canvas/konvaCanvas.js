@@ -88,15 +88,18 @@ export class KonvaCanvas {
 
   /**
    * 获取选中的元素
-   * @returns {boolean} 是否有选中的元素 true-有 false-没有
+   * @returns {import('@/design').CustomCanvasDesign | null} 复合设计节点
    * */
-  getsSelected() {
+  getSelected() {
     let result = null;
     this.layer.children.forEach((item) => {
       if (item.className === 'Transformer' && item.visible()) {
-        result = item;
+        result = {};
+        result.transform = item;
+        result.design = item._nodes[0];
       }
     });
+
     return result;
   }
 
@@ -304,8 +307,8 @@ export class KonvaCanvas {
     const canvasRatio = canvasSize.ratio;
 
     // 文字的参数
-    const width = result.text.textHeight;
-    const height = result.text.textWidth;
+    const width = result.text.textWidth;
+    const height = result.text.textHeight;
 
     // 文字在画布展示的位置
     const x = canvasWidth / 2 / canvasRatio - width / 2;
@@ -390,10 +393,6 @@ export class KonvaCanvas {
       width: canvasSize.width,
       height: canvasSize.height,
     });
-
-    // 设置舞台的缩放
-    // this.stage.scaleX(3);
-    // this.stage.scaleY(3);
 
     this.layer = new Konva.Layer();
     this.stage.add(this.layer);

@@ -14,7 +14,6 @@ import { loadImage } from '@/designApplication/core/utils/loadImage';
  * designApplication store
  * @class State
  * @property {Config} config 配置
- * @property {boolean} konvaCustomMouse konva的自定鼠标事件进行中
  * @property {boolean} loading_prod 是否正在加载产品
  * @property {boolean} loading_2d 是否正在加载2d canvas
  * @property {boolean} loading_3d 是否正在加载3d three
@@ -26,7 +25,6 @@ import { loadImage } from '@/designApplication/core/utils/loadImage';
  * */
 class State {
   config = new Config();
-  konvaCustomMouse = false; //konva的自定鼠标事件进行中
   show3d = false;
   loading_prod = false;
   loading_2d = false;
@@ -42,7 +40,7 @@ class State {
 const gettersProd = {
   /**
    * 获取激活产品的静态资源数据 (改数据不能用来修改)
-   * @returns {ActiveData|null} 当前激活的产品的静态资源数据
+   * @returns {import('@/design').ActiveStaticProdData|null} 当前激活的产品的静态资源数据
    * */
   activeProdStatic(state) {
     return state.prodStore.getStatic();
@@ -81,9 +79,6 @@ const gettersProd = {
 const mutationsProd = {
   setShow3d(state, flag) {
     state.show3d = flag;
-  },
-  setKonvaCustomMouse(state, flag) {
-    state.konvaCustomMouse = flag;
   },
   setLoading2d(state, loading) {
     state.loading_2d = loading;
@@ -133,16 +128,19 @@ const actionsProd = {
   /**
    * 设置激活产品 (这个方法只会在切换模板号的时候调用)
    * @param {*} vuex context
-   * @param {ParseProdItem} detail 产品详情
+   * @param {import('@/design').ProdListDataItem} detail 产品详情
    * @returns {ProdItem} 当前激活的产品
    * */
   async setProd({ state, commit, dispatch, getters }, detail) {
     if (state.loading_prod) {
       Message.warning('模板加载中，请稍后');
+      return;
     }
+
     try {
       state.loading_prod = true;
 
+      // 隐藏3d
       commit('setShow3d', false);
 
       // 清空已有的canvas / three
@@ -343,7 +341,8 @@ export default {
      * */
     async setImage({ state, commit, dispatch, getters }, detail) {
       const viewId = store.state.designApplication.activeViewId;
-      const view = state.prodStore.get()?.viewList.find((e) => e.id === viewId);
+      const view = state.prodStore.getView(viewId);
+
       const staticView = state.prodStore.getStatic()?.viewList.find((e) => e.id === viewId);
 
       if (!view || !staticView) {
@@ -384,9 +383,11 @@ export default {
         scaleY,
         x,
         y,
+        imageDOM,
+        detail,
       };
 
-      await view.canvas.addImage(imageDOM, param, detail);
+      await view.canvas.addImage(param);
     },
   },
 };

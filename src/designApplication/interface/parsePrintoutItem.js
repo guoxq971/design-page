@@ -8,7 +8,7 @@
  * @param {string} v 车线
  *
  * */
-export class ParseSizeItem {
+export class ParsePrintoutItem {
   id;
   size;
   stitching;
