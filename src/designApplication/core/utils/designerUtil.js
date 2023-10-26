@@ -43,7 +43,7 @@ export class DesignerUtil {
   /**
    * 隐藏所有的选中框
    * @param {ProdItem|null} prodItem 产品
-   * @param {Object|null} ignore 忽略的类型
+   * @param {Konva.Transformer|Konva.Image|null} ignore 忽略的类型
    *
    * */
   static hideAllTransformer(prodItem = null, ignore = null) {
@@ -77,7 +77,7 @@ export class DesignerUtil {
     prodItem = prodItem || this.getActiveProd();
     for (let view of prodItem.viewList) {
       if (view.canvas) {
-        view.canvas.addBgc(color);
+        view.canvas.addBgc({ color });
       }
     }
   }

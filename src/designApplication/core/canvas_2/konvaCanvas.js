@@ -122,14 +122,32 @@ export class KonvaCanvas {
 
   /**
    * 隐藏所有的选中器
-   * @param {Konva.Layer} layer 图层
-   * @param {Konva.Transformer} ignore 忽略的选中器
+   * @param {Konva.Layer} [layer] 图层
+   * @param {Konva.Transformer|Konva.Image} [ignore] 忽略的选中器
    */
   hideAllTransformer(layer, ignore) {
     layer = layer || this.layer;
+    const isTransformer = (item) => {
+      return [canvasDefine.Transformer, canvasDefine.CustomTransformer].includes(item.className) || [canvasDefine.CustomTransformer].includes(item.customName);
+    };
+
+    const isIgnore = (item) => {
+      if (!ignore) return false;
+
+      const r1 = item === ignore;
+      const r2 = item.attrs.transformer === ignore;
+      const r3 = ignore.attrs.name === 'image' && item._id === ignore._id;
+
+      return r1 || r2 || r3;
+    };
+
     layer.children.forEach((item) => {
-      if (item.className === canvasDefine.Transformer && (item !== ignore || item.attrs.transformer !== ignore)) {
-        item.visible(false);
+      if (isTransformer(item)) {
+        if (isIgnore(item)) {
+          //
+        } else {
+          item.visible(false);
+        }
       }
     });
   }
@@ -180,10 +198,11 @@ export class KonvaCanvas {
     designImage.transformer.on('transformend', () => {
       this.updateTexture(9, 50);
     });
-
+    console.log('this.clip', this.clip);
+    // 设置属性
     designImage.image.setAttrs({
-      x: -this.clip.attrs.x + param.x,
-      y: -this.clip.attrs.y + param.y,
+      x: -this.clip.attrs.x / this.clip.attrs.scaleX + param.x,
+      y: -this.clip.attrs.y / this.clip.attrs.scaleY + param.y,
       scaleX: param.scaleX,
       scaleY: param.scaleY,
       rotation: param.rotation,
@@ -211,7 +230,7 @@ export class KonvaCanvas {
    * 添加背景色
    * @param {import ('@/design').AddParamOfBgc} param 参数
    */
-  addBgC(param) {
+  addBgc(param) {
     const color = param.color;
 
     /**

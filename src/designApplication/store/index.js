@@ -360,6 +360,7 @@ export default {
       const inch = inchToPx(detail.size, getters.activeProd.detail.dpi);
       // 设计图与产品dpi的换算
       const result = printAreaToImageRatio(inch, staticView.print);
+
       // 图片展示的宽高
       const width = result.size.width;
       const height = result.size.height;

@@ -62,7 +62,7 @@ export class KonvaCanvas {
   /**
    * 隐藏所有的选中器
    */
-  hideAllTransformer: () => void;
+  hideAllTransformer: (layer?: Konva.Layer, ignore?: Konva.Transformer) => void;
 
   /**
    * 更新模型对应部位的纹理

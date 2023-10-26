@@ -50,7 +50,7 @@
           <el-collapse-item v-for="view in activeProd.viewList" :title="view.name" :name="view.id">
             <!--标题-->
             <div slot="title" style="display: flex; align-items: center">
-              <box-adaptive style="width: 50px; height: 50px">
+              <box-adaptive style="width: 50px; height: 50px; padding: 10px">
                 <img :src="showImg('prod', view)" alt="" style="position: absolute; width: 100%; height: 100%" />
                 <img :src="showImg('bg', view)" alt="" style="position: absolute; width: 100%; height: 100%" />
               </box-adaptive>

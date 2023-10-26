@@ -7,17 +7,19 @@ import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
  * 获取设计图
  * @param {import('@/design').AddParamOfImage} param 参数
  * @param {Konva.Layer} layer 图层
- * @param {function} hideAllTransformer 隐藏所有选中框
+ * @param {import('@/design').KonvaCanvas.hideAllTransformer} hideAllTransformer 隐藏所有选中框
  * @returns {Promise<{image: Konva.Image, transformer: Konva.Transformer}>}
  * */
 export async function getDesignImage(param, layer, hideAllTransformer) {
   const image = param.imageDOM;
   // 选中框
-  const transformer = initTransformer();
+  let transformer;
+  transformer = initTransformer();
   transformer.visible(false);
 
   // 设计图
-  const rect = new Konva.Image(konvaRectConfig({ image: image }));
+  let rect;
+  rect = new Konva.Image(konvaRectConfig({ image: image }));
   transformer.nodes([rect]);
   layer.add(transformer);
 

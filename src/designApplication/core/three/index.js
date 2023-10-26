@@ -1,6 +1,6 @@
 import { Core } from './core.js';
 import store from '@/store';
-import { Konva } from '@/designApplication/core/canvas/konva';
+import { Konva, useKonvaCustomMouse } from '@/designApplication/core/canvas/konva';
 
 /**
  * 3d模型
@@ -52,14 +52,14 @@ export class MyThree extends Core {
    * 开启canvas的自定义鼠标事件
    * */
   openCustomMouse() {
-    Konva.konvaCustomMouse = true;
+    useKonvaCustomMouse().open();
   }
 
   /**
    * 关闭canvas的自定义鼠标事件
    * */
   closeCustomMouse() {
-    Konva.konvaCustomMouse = false;
+    useKonvaCustomMouse().close();
   }
 
   /**

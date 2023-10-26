@@ -5,8 +5,30 @@
  * @returns {boolean} 是否执行 true-执行自定义的鼠标事件 false-不执行自定义的鼠标事件
  * */
 export function isContinue(event) {
-  const cm = Konva.konvaCustomMouse;
+  const cm = useKonvaCustomMouse().getFlag();
   return cm && event.isTrusted;
+}
+
+// 单例模式的 konvaCustomMouse
+class KonvaCustomMouse {
+  flag = false;
+  open() {
+    this.flag = true;
+  }
+  close() {
+    this.flag = false;
+  }
+  getFlag() {
+    return this.flag;
+  }
+}
+
+let instance;
+export function useKonvaCustomMouse() {
+  if (!instance) {
+    instance = new KonvaCustomMouse();
+  }
+  return instance;
 }
 
 export var Konva;
@@ -18428,7 +18450,6 @@ export var Konva;
 
   // we need to import core of the Konva and then extend it with all additional objects
   const Konva = Konva$1.Util._assign(Konva$1, {
-    konvaCustomMouse: false,
     Arc,
     Arrow,
     Circle,
