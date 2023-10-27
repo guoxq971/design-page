@@ -1,4 +1,4 @@
-import { addEvent, initClip, initDashArea, initLayer, initStage, initV } from '@/designApplication/core/canvas_2/konvaCanvasInit';
+import { addEvent, initClip, initDashArea, initLayer, initRect, initStage, initV } from '@/designApplication/core/canvas_2/konvaCanvasInit';
 import { Konva } from '@/designApplication/core/canvas/konva';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 import store from '@/store';
@@ -48,6 +48,12 @@ export class KonvaCanvas {
   konvaPath;
 
   /**
+   * 产品边框
+   * @type {Konva.Path}
+   */
+  prodRect;
+
+  /**
    * @param {import ('@/design').InitParamOfKonvaCanvas} param 参数
    */
   constructor(param) {
@@ -56,6 +62,7 @@ export class KonvaCanvas {
 
   /**
    * 初始化
+   * @private
    * @param {import('@/design').InitParamOfKonvaCanvas} param 参数
    */
   _init(param) {
@@ -67,6 +74,7 @@ export class KonvaCanvas {
     const resultClip = initClip(param);
     this.clip = resultClip.clip;
     this.konvaPath = resultClip.konvaPath;
+    this.prodRect = initRect(param);
 
     this.stage.add(this.layer);
     this.layer.add(dashArea);
@@ -76,6 +84,8 @@ export class KonvaCanvas {
     }
     this.layer.add(this.konvaPath);
     this.layer.add(this.clip);
+    this.layer.add(this.prodRect);
+    this.prodRect.moveToBottom();
 
     // 监听事件
     addEvent(this.stage, this.layer, this.hideAllTransformer.bind(this));
@@ -198,7 +208,7 @@ export class KonvaCanvas {
     designImage.transformer.on('transformend', () => {
       this.updateTexture(9, 50);
     });
-    console.log('this.clip', this.clip);
+
     // 设置属性
     designImage.image.setAttrs({
       x: -this.clip.attrs.x / this.clip.attrs.scaleX + param.x,

@@ -52,6 +52,8 @@ export class Config {
  * @property {number[]} vDash 车线虚线
  *
  * @property {boolean} isShowProductImage 是否展示产品图片 true-产品图片 false-设计图
+ *
+ * @property {boolean} isShowProdRect 是否展示产品边框 true-展示 false-不展示
  * */
 class CanvasConfig {
   isClip = true;
@@ -60,9 +62,11 @@ class CanvasConfig {
   clipStoreFill = null; //'#fff'; //背景色
 
   isV = false;
-  vStoreWidth = 1.5;
+  vStoreWidth = 2;
   vStoreColor = 'red';
   vDash = [5, 5];
 
   isShowProductImage = true;
+
+  isShowProdRect = false;
 }

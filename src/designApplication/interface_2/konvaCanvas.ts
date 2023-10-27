@@ -37,7 +37,14 @@ export class KonvaCanvas {
   konvaPath: string;
 
   /**
+   * 产品边框
+   * @type {Konva.Path}
+   */
+  prodRect: string;
+
+  /**
    * 初始化
+   * @private
    */
   _init: (param: InitParamOfKonvaCanvas) => void;
 

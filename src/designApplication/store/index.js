@@ -343,6 +343,10 @@ export default {
       const viewId = store.state.designApplication.activeViewId;
       const view = state.prodStore.getView(viewId);
 
+      /**
+       * 静态数据
+       * @type {import('@/design').StaticViewItem}
+       */
       const staticView = state.prodStore.getStatic()?.viewList.find((e) => e.id === viewId);
 
       if (!view || !staticView) {
@@ -351,10 +355,8 @@ export default {
       }
 
       // 画布的参数配置
-      const canvasSize = DesignerUtil.getVuexConfig().canvasSize;
-      const canvasWidth = canvasSize.width;
-      const canvasHeight = canvasSize.height;
-      const canvasRatio = canvasSize.ratio;
+      const canvasWidth = staticView.print.width;
+      const canvasHeight = staticView.print.height;
 
       // 设计图单位转换(原图）
       const inch = inchToPx(detail.size, getters.activeProd.detail.dpi);
@@ -373,17 +375,20 @@ export default {
       const scaleY = height / imageDOM.height;
 
       // 图片在画布展示的位置
-      const x = canvasWidth / 2 / canvasRatio - width / 2;
-      const y = canvasHeight / 2 / canvasRatio - height / 2;
+      const x = canvasWidth / 2 - width / 2 + staticView.offset.x;
+      const y = canvasHeight / 2 - height / 2 + staticView.offset.y;
 
-      // 图片展示的参数
+      /**
+       * 图片展示的参数
+       *@type {import('@/design').AddParamOfImage}
+       */
       const param = {
+        x,
+        y,
         width,
         height,
         scaleX,
         scaleY,
-        x,
-        y,
         imageDOM,
         detail,
       };
@@ -395,6 +400,9 @@ export default {
 
 /**
  * px转换为mm
+ * @param {number} size 尺寸
+ * @param {number} dpi dpi
+ * @returns {width:number,height:number} 宽高
  * */
 function inchToPx(size, dpi) {
   // const dpi = getters.activeProd.detail.dpi; // 当前产品的dpi
@@ -411,6 +419,8 @@ function inchToPx(size, dpi) {
 
 /**
  * 获取图片在打印区域的比例
+ * @param {object} imageSize 图片的宽高
+ * @param {object} printAreaSize 打印区域的宽高
  * */
 function printAreaToImageRatio(imageSize, printAreaSize) {
   // 宽高的比例

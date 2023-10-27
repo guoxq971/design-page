@@ -121,6 +121,7 @@ export interface ParseViewItem {
 export interface ParsePrintItem {
   id: number;
   d: string;
+  viewId: string;
   width: number;
   height: number;
 }
@@ -349,8 +350,8 @@ export interface ProdConfig3dResponseRefine extends ResponseData<ProdConfig3dRes
  * @property {ShowImage} showImage 视图产品图
  * @property {object} offset 视图偏移量 {x, y}
  * @property {string|null|undefined} v 中间的车线(红色)
- * @property {object} print 视图打印区域
- * @property {object} printout 视图打印区域
+ * @property {ParsePrintItem} print 视图打印区域
+ * @property {ParsePrintoutItem} printout 视图打印区域
  */
 export interface StaticViewItem {
   id: string; // 视图id
@@ -361,8 +362,8 @@ export interface StaticViewItem {
   offset: { x: number; y: number }; // 视图偏移量 {x, y}
   v: string; //中间的车线(红色)
 
-  print: object; // 视图打印区域
-  printout: object; // 视图打印区域
+  print: ParsePrintItem; // 视图打印区域
+  printout: ParsePrintoutItem; // 视图打印区域
 }
 
 /**

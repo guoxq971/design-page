@@ -49,6 +49,43 @@ export function initDashArea(param) {
 }
 
 /**
+ * 产品的边框
+ * @param param
+ * @returns {Konva.Path}
+ */
+export function initRect(param) {
+  const staticView = param.staticView;
+  const canvasConfig = store.state.designApplication.config.canvas;
+  const canvasSize = store.state.designApplication.config.canvasSize;
+  const isShowProdRect = store.state.designApplication.config.canvas.isShowProdRect;
+  const offsetX = staticView.offset.x * (canvasSize.ratio - 1);
+  const offsetY = staticView.offset.y * (canvasSize.ratio - 1);
+  const x = staticView.offset.x + offsetX;
+  const y = staticView.offset.y + offsetY;
+
+  const width = staticView.print.width;
+  const height = staticView.print.height;
+  const d = `M0,0 L${width},0 L${width},${height} L0,${height} Z`;
+
+  // 裁剪区域（边框）
+  const path = new Konva.Path({
+    x: x,
+    y: y,
+    data: d,
+    fill: null,
+    stroke: 'red',
+    strokeWidth: 2,
+    dash: [5, 5],
+    type: 'path',
+    scaleX: canvasSize.ratio,
+    scaleY: canvasSize.ratio,
+    visible: isShowProdRect,
+  });
+
+  return path;
+}
+
+/**
  * 初始化 - 车线
  * @param {import('@/design').InitParamOfKonvaCanvas} param 参数
  * @returns {Konva.Path | null}

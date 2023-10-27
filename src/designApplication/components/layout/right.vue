@@ -18,6 +18,9 @@
           <el-form-item label="车线: ">
             <el-switch @change="onChangeByV" v-model="config.canvas.isV" active-text="是否展示车线" inactive-text="否" :active-value="true" :inactive-value="false" />
           </el-form-item>
+          <el-form-item label="产品边框: ">
+            <el-switch @change="onChangeByProdRect" v-model="config.canvas.isShowProdRect" active-text="是否展示产品边框" inactive-text="否" :active-value="true" :inactive-value="false" />
+          </el-form-item>
           <el-form-item label="展示: ">
             <el-switch @change="onChangeBy3d" v-model="show3d" active-text="3d" inactive-text="2d" :active-value="true" :inactive-value="false" :disabled="show3dDisabled" />
           </el-form-item>
@@ -272,6 +275,14 @@ export default {
      * */
     onChangeBy3d(e) {
       OperationUtil.doubleClickCanvas();
+    },
+    /**
+     * 3d / 2d 切换
+     * */
+    onChangeByProdRect(e) {
+      this.activeProd.viewList.forEach((view) => {
+        view.canvas.prodRect.visible(e);
+      });
     },
     /**
      * 是否展示车线
