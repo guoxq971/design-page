@@ -1,11 +1,31 @@
-import { ParseViewItem } from './prod';
+import { ParseViewItem, StaticViewItem } from './prod';
 import type Konva from 'konva';
+import { KonvaCanvas } from '../core/canvas_2/konvaCanvas.js';
 
 /**
  * @interface CanvasImage
  * @description 设计图的类型 - 图片
  */
-export interface CanvasImage extends Konva.Image {}
+export interface CanvasImage extends Konva.Image {
+  attrs: {
+    uuid: string;
+    x: number;
+    y: number;
+    scaleX: number;
+    scaleY: number;
+    rotation: number;
+    type: string;
+    name: string;
+    detail: object; //设计图的接口详情
+    view: ParseViewItem;
+    konvaCanvas: KonvaCanvas;
+    transformer: Konva.Transformer;
+    remove: () => void;
+    visibleFn: () => void;
+    layerMoveFn: () => void;
+    selectedFn: () => void;
+  };
+}
 
 /**
  * @interface CanvasText
@@ -59,6 +79,7 @@ export interface AddParamOfImage {
   rotation: number;
   imageDOM: HTMLImageElement;
   detail: object;
+  view: ParseViewItem;
 }
 
 /**
@@ -89,5 +110,5 @@ export interface AddParamOfText {
 export interface InitParamOfKonvaCanvas {
   id: string;
   view: ParseViewItem;
-  staticView: object;
+  staticView: StaticViewItem;
 }

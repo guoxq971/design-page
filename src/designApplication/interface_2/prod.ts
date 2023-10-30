@@ -1,7 +1,6 @@
 import { ListData, ResponseData, ResponseDataOld } from './global';
-import { KonvaCanvas } from './konvaCanvas';
+import { KonvaCanvas } from '../core/canvas_2/konvaCanvas.js';
 import type { Texture } from 'three';
-import { int } from 'three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements';
 
 /**
  * @interface ProdItemResponse
@@ -113,6 +112,7 @@ export interface ParseViewItem {
   texture: Texture;
   updateTexture: (num: number | string | null) => void;
   rect: { x: number; y: number; width: number; height: number };
+  activeImageUuid: string;
 }
 
 /**

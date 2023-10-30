@@ -5,10 +5,11 @@ import store from '@/store';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import { getDesignImage, getText, layerMove, remove, setTextAttrs, visibleImage } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
 import { initTransformer } from '@/designApplication/core/canvas/selectBorder';
+import { uuid } from '@/designApplication/core/utils/uuid';
+import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
 
 /**
  * KonvaCanvas
- * @class {import('@/design').KonvaCanvas} KonvaCanvas
  */
 export class KonvaCanvas {
   /**
@@ -28,6 +29,18 @@ export class KonvaCanvas {
    * @type {Konva.Layer}
    */
   layer;
+
+  /**
+   * 背景图层
+   * @type {Konva.Layer}
+   */
+  layerBg;
+
+  /**
+   * 裁剪区域
+   * @type {Konva.Group}
+   */
+  clipBg;
 
   /**
    * 裁剪区域
@@ -69,13 +82,17 @@ export class KonvaCanvas {
     this.param = param;
     this.stage = initStage(param);
     this.layer = initLayer(param);
+    this.layerBg = initLayer(param);
     const dashArea = initDashArea(param);
     this.v = initV(param);
     const resultClip = initClip(param);
     this.clip = resultClip.clip;
     this.konvaPath = resultClip.konvaPath;
     this.prodRect = initRect(param);
+    this.clipBg = resultClip.clip.clone();
 
+    this.layerBg.add(this.clipBg);
+    this.stage.add(this.layerBg);
     this.stage.add(this.layer);
     this.layer.add(dashArea);
     if (this.v) {
@@ -127,7 +144,7 @@ export class KonvaCanvas {
    * @returns {import ('@/design').CanvasDesign[]} 当前所有的设计图
    */
   getImageList() {
-    return this.clip.children;
+    return [...this.clip.children.toReversed(), ...this.clipBg.children];
   }
 
   /**
@@ -160,6 +177,11 @@ export class KonvaCanvas {
         }
       }
     });
+
+    if (this?.param?.view) {
+      // 设置当前视图的激活id为空
+      DesignImageUtil.setActiveImageNull(this.param.view);
+    }
   }
 
   /**
@@ -211,6 +233,7 @@ export class KonvaCanvas {
 
     // 设置属性
     designImage.image.setAttrs({
+      uuid: uuid(),
       x: -this.clip.attrs.x / this.clip.attrs.scaleX + param.x,
       y: -this.clip.attrs.y / this.clip.attrs.scaleY + param.y,
       scaleX: param.scaleX,
@@ -219,6 +242,7 @@ export class KonvaCanvas {
       type: canvasDefine.image,
       name: canvasDefine.image,
       detail: param.detail,
+      view: param.view,
       konvaCanvas: this,
       transformer: designImage.transformer,
       remove: () => remove(this, designImage.image, designImage.transformer),
@@ -227,6 +251,18 @@ export class KonvaCanvas {
       selectedFn: () => {
         DesignerUtil.hideAllTransformer();
         designImage.image.attrs.transformer.visible(true);
+      },
+    });
+
+    // 监听visible
+    designImage.transformer.attrs = new Proxy(designImage.transformer.attrs, {
+      set: (target, key, value) => {
+        if (key === 'visible' && value === true) {
+          // 当前视图激活的设计图
+          DesignImageUtil.setActiveImage(designImage.image);
+        }
+        target[key] = value;
+        return true;
       },
     });
 
@@ -246,7 +282,7 @@ export class KonvaCanvas {
     /**
      * @type {import('@/design').CanvasBgc | null}
      */
-    let rect = this.clip.children.find((e) => e.name() === canvasDefine.bgc);
+    let rect = this.clipBg.children.find((e) => e.name() === canvasDefine.bgc);
 
     // 背景色已存在
     if (rect) {
@@ -270,8 +306,9 @@ export class KonvaCanvas {
 
     // 背景色
     rect = new Konva.Rect({
-      x: -this.clip.attrs.x,
-      y: -this.clip.attrs.y,
+      uuid: uuid(),
+      x: 0,
+      y: 0,
       width: this.stage.width(),
       height: this.stage.height(),
       fill: color,
@@ -303,7 +340,7 @@ export class KonvaCanvas {
     // 添加
     transformer.nodes([rect]);
     this.layer.add(transformer);
-    this.clip.add(rect);
+    this.clipBg.add(rect);
     // 置底
     rect.moveToBottom();
     // 更新材质

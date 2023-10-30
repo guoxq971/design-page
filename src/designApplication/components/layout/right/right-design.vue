@@ -84,22 +84,34 @@
     <!--设计图列表-->
     <el-card class="one-handle" shadow="never" v-if="imageList.length">
       <div class="design-group">
-        <div class="design-wrap" v-for="(item, index) in imageList" :class="{ active: index === 0 }">
+        <div class="design-wrap" v-for="(item, index) in imageList" :class="{ active: item.attrs.uuid === activeView.activeImageUuid }">
           <div class="wrap">
-            <div class="design">
-              <el-image :src="item.attrs.fillPatternImage.src" style="width: 100%; height: 100%" />
-            </div>
-            <div class="title">{{ item.attrs.detail.name }}</div>
+            <!--设计图-->
+            <template v-if="item.attrs.name === 'image'">
+              <div class="design">
+                <el-image :src="item.attrs.fillPatternImage.src" style="width: 100%; height: 100%" />
+              </div>
+              <div class="title">{{ item.attrs.detail.name }}</div>
+            </template>
+
+            <!--背景色-->
+            <template v-if="item.attrs.name === 'bgc'">
+              <div class="design">
+                <div style="width: 100%; height: 100%" :style="{ backgroundColor: item.attrs.fill }" />
+              </div>
+            </template>
           </div>
           <div class="handle">
-            <!--图层-上移-->
-            <div class="layer-btn" v-title="'图层-上移'">
-              <img src="../img/图层上移.png" />
-            </div>
-            <!--图层-下移-->
-            <div class="layer-btn" v-title="'图层-下移'">
-              <img src="../img/图层下移.png" />
-            </div>
+            <template v-if="['image'].includes(item.attrs.name)">
+              <!--图层-上移-->
+              <div class="layer-btn" v-title="'图层-上移'" @click="onLayerUp(item)">
+                <img src="../img/图层上移.png" />
+              </div>
+              <!--图层-下移-->
+              <div class="layer-btn" v-title="'图层-下移'" @click="onLayerDown(item)">
+                <img src="../img/图层下移.png" />
+              </div>
+            </template>
             <!--图层-编辑-->
             <div class="layer-btn" v-title="'图层-编辑'">
               <iconpark-icon name="write" size="20" />
@@ -248,6 +260,24 @@ export default {
     },
   },
   methods: {
+    /**
+     * 设计图操作 - 上移动
+     * @param {import('@/design').CanvasDesign} image 设计图对象
+     */
+    onLayerUp(image) {
+      if (image.attrs.name === 'image') {
+        image.moveUp();
+      }
+    },
+    /**
+     * 设计图操作 - 下移动
+     * @param {import('@/design').CanvasDesign} image 设计图对象
+     */
+    onLayerDown(image) {
+      if (image.attrs.name === 'image') {
+        image.moveDown();
+      }
+    },
     /**
      * 设计说明 - 鼠标进入
      */
@@ -475,6 +505,7 @@ export default {
         //background-color: pink;
         display: flex;
         user-select: none;
+        justify-content: flex-end;
 
         .layer-btn {
           cursor: pointer;

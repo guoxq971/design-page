@@ -8,7 +8,7 @@ import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
  * @param {import('@/design').AddParamOfImage} param 参数
  * @param {Konva.Layer} layer 图层
  * @param {import('@/design').KonvaCanvas.hideAllTransformer} hideAllTransformer 隐藏所有选中框
- * @returns {Promise<{image: Konva.Image, transformer: Konva.Transformer}>}
+ * @returns {Promise<{image: import('@/design').CanvasImage, transformer: Konva.Transformer}>}
  * */
 export async function getDesignImage(param, layer, hideAllTransformer) {
   const image = param.imageDOM;

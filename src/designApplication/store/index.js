@@ -365,6 +365,17 @@ export default {
       });
     },
     /**
+     * 设置当前激活的设计图id
+     * @param {*} vuex context
+     * @param {string} uuid 设计图uuid
+     * @param {import('@/design').ParseViewItem} view 视图
+     */
+    setActiveImageUuid({ state, commit, dispatch, getters }, { uuid, view }) {
+      view = view || DesignerUtil.getView();
+      if (!view) return console.error('获取view失败');
+      view.activeImageUuid = uuid;
+    },
+    /**
      * 选中设计图
      * @param {*} vuex context
      * @param {ImageListByMyImage} detail 设计图详情
@@ -421,6 +432,7 @@ export default {
         scaleY,
         imageDOM,
         detail,
+        view,
       };
 
       await view.canvas.addImage(param);

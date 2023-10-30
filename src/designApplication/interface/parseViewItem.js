@@ -19,6 +19,7 @@ export class ParseViewItem {
   texture;
   updateTexture;
   rect;
+  activeImageUuid;
   imageList = [];
 }
 

@@ -57,6 +57,7 @@ export class DesignerUtil {
    * 获取view
    * @param {string|null} viewId 视图id
    * @param {import('@/design').ProdListDataItem | null} prodItem
+   * @returns {import('@/design').ParseViewItem} 视图
    * */
   static getView(viewId = null, prodItem = null) {
     return store.state.designApplication.prodStore.getView(viewId, prodItem);
@@ -145,7 +146,7 @@ export class DesignerUtil {
 
   /**
    * 获取产品配置
-   * @param {object} param 参数
+   * @param {colorId:string, viewId:string|number ,sizeId:string|number} param 参数
    * @param {import('@/design').ProdListDataItem | null} prodItem 产品
    * @returns {object} 配置
    * */
