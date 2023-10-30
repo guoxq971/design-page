@@ -42,9 +42,10 @@ export default {
     z-index: 2;
   }
   .design-right {
-    flex: 1;
-    min-width: 380px;
+    //flex: 1;
+    //min-width: 380px;
     //border: 1px solid #eee;
+    width: 372px;
   }
 }
 </style>

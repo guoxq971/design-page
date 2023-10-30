@@ -12,7 +12,7 @@ export class ProdUtil {
    * 处理产品数据 (通用产品)
    * @param {import('@/design').ProdListDataItem} detail 产品数据
    * @param {import('@/design').ProdConfig3dResponseData} config3d 3d配置
-   * @returns {ProdItem} 产品
+   * @returns {import('@/design').ProdListDataItem} 产品
    * */
   static disposeCommon(detail, config3d) {
     // 初始化产品, 并添加到仓库
@@ -70,6 +70,8 @@ export class ProdUtil {
  * @property {Array<any>} sizeList 尺码列表
  * @property {MyThree} three three对象
  * @property {Config3d|null} config3d 3d配置
+ * @property {Array<any>} priceList 价格列表
+ * @property {string} isSpecial 价格参数
  * */
 export class ProdItem {
   detail = new ParseProdItem();
@@ -82,6 +84,8 @@ export class ProdItem {
   sizeList;
   three;
   config3d;
+  priceList = [];
+  isSpecial = '';
 }
 
 /**

@@ -1,6 +1,7 @@
 import { ListData, ResponseData, ResponseDataOld } from './global';
 import { KonvaCanvas } from './konvaCanvas';
 import type { Texture } from 'three';
+import { int } from 'three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements';
 
 /**
  * @interface ProdItemResponse
@@ -148,6 +149,45 @@ interface ShowImage {
 }
 
 /**
+ * 价格列表的item
+ */
+export interface PriceListItem {
+  price: number;
+  num: number;
+}
+/**
+ * 接口返回值 - 产品价格 - data - resListItem[]
+ * @property templateProperty 是否是特殊价格 0-尺码 1-颜色 2-正常
+ */
+interface resListItem {
+  templateProperty: string;
+  priceList: PriceListItem[];
+}
+
+/**
+ * 接口返回值 - 产品价格 - data
+ */
+export interface ProdPriceResponseData {
+  resList: resListItem[];
+  templateType: string;
+}
+
+/**
+ * 产品价格接口 - 组装后的返回值
+ * @property {PriceListItem[]} list 价格列表
+ * @property {string} isSpecial 是否是特殊价格 ''-没有 0-尺码 1-颜色 2-正常
+ */
+export interface GetProdPriceApiType {
+  list: PriceListItem[];
+  isSpecial: string;
+}
+
+/**
+ * 接口返回值 - 产品价格
+ */
+export interface ProdPriceResponse extends ResponseData<ProdPriceResponseData> {}
+
+/**
  * @interface ProdListDataItem
  * @description: 产品列表项(解析后)
  */
@@ -158,6 +198,8 @@ export interface ProdListDataItem extends ProdItemResponse {
   sizeList: ParseSizeItem[]; // 尺码
   printoutList: ParsePrintoutItem[]; // 指定印刷区域
   detail: ProdItemResponse; // 接口返回值详情
+  priceList: PriceListItem[]; // 价格列表
+  isSpecial: string; // 是否是特殊价格 ‘’-没有 0-尺码 1-颜色 2-正常
   // 展示用的数据 Object
   showImage: ShowImage;
 }

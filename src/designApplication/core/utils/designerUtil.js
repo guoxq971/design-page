@@ -42,7 +42,7 @@ export class DesignerUtil {
 
   /**
    * 隐藏所有的选中框
-   * @param {ProdItem|null} prodItem 产品
+   * @param {import('@/design').ProdListDataItem | null} prodItem
    * @param {Konva.Transformer|Konva.Image|null} ignore 忽略的类型
    *
    * */
@@ -55,8 +55,8 @@ export class DesignerUtil {
 
   /**
    * 获取view
-   * @param {String|null} viewId 视图id
-   * @param {ProdItem|null} prodItem 产品
+   * @param {string|null} viewId 视图id
+   * @param {import('@/design').ProdListDataItem | null} prodItem
    * */
   static getView(viewId = null, prodItem = null) {
     return store.state.designApplication.prodStore.getView(viewId, prodItem);
@@ -72,6 +72,8 @@ export class DesignerUtil {
 
   /**
    * 背景色 - 设置
+   * @param {string} color 颜色
+   * @param {import('@/design').ProdListDataItem | null} prodItem
    * */
   static setBgc(color, prodItem = null) {
     prodItem = prodItem || this.getActiveProd();
@@ -84,6 +86,7 @@ export class DesignerUtil {
 
   /**
    * 背景色 - 移除
+   * @param {import('@/design').ProdListDataItem | null} prodItem
    * */
   static removeBgc(prodItem = null) {
     prodItem = prodItem || this.getActiveProd();
@@ -100,6 +103,7 @@ export class DesignerUtil {
 
   /**
    * 背景色 - 置底
+   * @param {import('@/design').ProdListDataItem | null} prodItem
    * */
   static moveBottomBgc(prodItem = null) {
     prodItem = prodItem || this.getActiveProd();
@@ -116,6 +120,7 @@ export class DesignerUtil {
 
   /**
    * 背景色 - 显示隐藏
+   * @param {import('@/design').ProdListDataItem | null} prodItem
    * */
   static visibleBgc(prodItem = null) {
     prodItem = prodItem || this.getActiveProd();
@@ -132,7 +137,7 @@ export class DesignerUtil {
 
   /**
    * 是否是玻璃材质
-   * @param {String} colorCode 颜色编码
+   * @param {string} colorCode 颜色编码
    * */
   static hasGlass(colorCode) {
     return colorCode === '';
@@ -140,9 +145,9 @@ export class DesignerUtil {
 
   /**
    * 获取产品配置
-   * @param {Object} param 参数
-   * @param {ProdItem|null} prodItem 产品
-   * @returns {Object} 配置
+   * @param {object} param 参数
+   * @param {import('@/design').ProdListDataItem | null} prodItem 产品
+   * @returns {object} 配置
    * */
   static getConfig(param = {}, prodItem = null) {
     param = Object.assign(
@@ -172,16 +177,16 @@ export class DesignerUtil {
 
     /**
      * 根据viewId获取颜色
-     * @param {String} viewId 视图id
-     * @returns {Object} 颜色
+     * @param {string} viewId 视图id
+     * @returns {object} 颜色
      * */
     function get3dColorItemByViewId(viewId) {
       return colorConfig3d.list.find((e) => e.viewId == viewId);
     }
     /**
      * 根据materialName获取颜色
-     * @param {String} materialName 材质名称
-     * @returns {Object} 颜色
+     * @param {string} materialName 材质名称
+     * @returns {object} 颜色
      * */
     function get3dColorItemByMaterialName(materialName) {
       return colorConfig3d.list.find((e) => e.materialName == materialName);
@@ -198,7 +203,7 @@ export class DesignerUtil {
 
   /**
    * 清除指定产品的canvas / three
-   * @param {ProdItem} prodItem 产品
+   * @param {import('@/design').ProdListDataItem} prodItem 产品
    * */
   static clearProd(prodItem) {
     // 清除three
@@ -239,7 +244,7 @@ export class DesignerUtil {
 
 /**
  * 清除three
- * @param {ProdItem} prodItem 产品
+ * @param {import('@/design').ProdListDataItem} prodItem 产品
  * */
 export function clearThree(prodItem) {
   if (prodItem.three) {
@@ -251,7 +256,7 @@ export function clearThree(prodItem) {
 
 /**
  * 清空canvas
- * @param {ParseViewItem} view 视图
+ * @param {import('@/design').ParseViewItem} view 视图
  * */
 export function clearCanvas(view) {
   view.canvas?.stage.destroy();

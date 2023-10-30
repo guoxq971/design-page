@@ -1,7 +1,7 @@
 <template>
   <div class="center-work-container" :id="config.workerContainerId" v-loading="loading_prod">
     <!--3d容器-->
-    <div class="three-container" :id="config.threeContainerId" :style="{ left: show3d ? '0' : '-10000px' }"></div>
+    <div v-loading="loading_3d" class="three-container" :id="config.threeContainerId" :style="{ left: show3d ? '0' : '-10000px' }"></div>
 
     <template v-if="activeProdStatic">
       <!--标题-->
@@ -12,12 +12,19 @@
       <div class="body-wrap layer-top">
         <!--价格-->
         <div class="price-wrap">
-          <div class="text" v-if="!loading_price">10</div>
+          <centerPriceIcon class="price-icon" />
+          <div class="text" v-if="!loading_price && !loading_prod">
+            {{ price }}
+          </div>
           <div class="text" v-else>
             <div class="el-icon-loading" style="font-size: 17px" />
           </div>
           <!--特殊颜色/尺码标识-->
-          <div class="warning">尺码/颜色不同价</div>
+          <div class="warning" v-if="!loading_price && [0, 1].includes(activeProd.isSpecial)">
+            <span v-if="['0', 0].includes(activeProd.isSpecial)">尺码</span>
+            <span v-if="['1', 1].includes(activeProd.isSpecial)">颜色</span>
+            <span>不同价</span>
+          </div>
         </div>
 
         <!--颜色-->
@@ -66,21 +73,21 @@
 </template>
 
 <script>
-import centerPreview from './centerPreview.vue';
-import centerProdInfo from './centerProdInfo.vue';
+import centerPreview from './center/centerPreview.vue';
+import centerProdInfo from './center/centerProdInfo.vue';
 import { mapGetters, mapState } from 'vuex';
-import centerSwitchProdType from './centerSwitchProdType.vue';
+import centerSwitchProdType from './center/centerSwitchProdType.vue';
+import centerPriceIcon from './center/centerPriceIcon.vue';
 
 export default {
   components: {
     centerPreview,
     centerProdInfo,
     centerSwitchProdType,
+    centerPriceIcon,
   },
   data() {
-    return {
-      loading_price: false,
-    };
+    return {};
   },
   computed: {
     ...mapGetters({
@@ -96,7 +103,35 @@ export default {
       activeSizeId: (state) => state.designApplication.activeSizeId,
       activeViewId: (state) => state.designApplication.activeViewId,
       loading_prod: (state) => state.designApplication.loading_prod,
+      loading_price: (state) => state.designApplication.loading_price,
+      loading_3d: (state) => state.designApplication.loading_3d,
     }),
+    // 产品价格
+    price() {
+      let price = '';
+      if (!this.loading_price && !this.loading_prod) {
+        /**
+         * @type {import('@/design').ProdListDataItem}
+         */
+        const prodItem = this.activeProd;
+
+        if (!prodItem) return '';
+        if (prodItem.isSpecial === '') {
+          price = '未获取到价格';
+        }
+
+        if (prodItem.priceList?.length) {
+          let prop;
+          if (prodItem.isSpecial == 1) {
+            prop = this.activeColorId;
+          } else if (prodItem.isSpecial == 0) {
+            prop = this.activeSizeId;
+          }
+          price = `￥${this.getTemplatePrice(prodItem.priceList, prop, prodItem.isSpecial)}`;
+        }
+      }
+      return price;
+    },
   },
   methods: {
     onShow3d() {
@@ -111,6 +146,34 @@ export default {
     onSize(item) {
       if (this.activeSizeId === item.id) return;
       this.$store.dispatch('designApplication/setActiveSizeId', item.id);
+    },
+    /**
+     * 获取模板价格根据类型
+     * @param {import('@/design').ProdListDataItem.priceList} list 模板价格列表
+     * @param {string} prop 类型 例如：尺码 | 颜色 会是激活的id
+     * @param {number} isSpecial 是否是特殊模板 2-正常 1-颜色 0-尺码
+     * @param {number} num 1：获取价格 2：获取数量
+     * @returns {string}
+     * */
+    getTemplatePrice(list, prop, isSpecial, num = 1) {
+      const appearances = this.activeProd.detail.appearances;
+      const sizes = this.activeProd.detail.sizes;
+
+      if (list.length === 0) return '';
+      if (list[0].prop === '') return list[0].list.find((e) => e.num === num)?.price;
+      // 颜色
+      if (isSpecial === 1) {
+        const result = appearances.find((e) => e.id == prop);
+        if (!result) return '';
+        return list.find((e) => e.prop === result.name)?.list.find((e) => e.num === num)?.price;
+      }
+      // 尺码
+      if (isSpecial === 0) {
+        const result = sizes.find((e) => e.id == prop);
+        if (!result) return '';
+        return list.find((e) => e.prop === result.name)?.list.find((e) => e.num === num)?.price;
+      }
+      return '';
     },
   },
   mounted() {},
@@ -161,6 +224,15 @@ export default {
   //价格
   .price-wrap {
     display: flex;
+    position: relative;
+    .price-icon {
+      position: absolute;
+      left: -23px;
+      color: #0099ff;
+      cursor: pointer;
+      font-size: 17px;
+    }
+
     .text {
       height: 22px;
       display: flex;

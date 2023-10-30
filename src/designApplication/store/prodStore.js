@@ -46,9 +46,9 @@ export class ProdStore {
 
     // console.log('get 获取激活产品', 'type', type, 'sizeId', sizeId);
     if (type === ProdType.common) {
-      return this.list.find((e) => e.type === type);
+      return this.list.find((e) => e.type == type);
     } else {
-      return this.list.find((e) => e.type === type && e.sizeId === sizeId);
+      return this.list.find((e) => e.type === type && e.sizeId == sizeId);
     }
   }
 

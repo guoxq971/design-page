@@ -1,4 +1,3 @@
-import { KonvaCanvas } from '@/designApplication/core/canvas/konvaCanvas';
 /**
  * 解析后的视图项
  * @class ParseViewItem
@@ -6,7 +5,7 @@ import { KonvaCanvas } from '@/designApplication/core/canvas/konvaCanvas';
  * @param {number} id 视图项id
  * @param {String} name 视图项名称
  * @param {x: number, y: number} offset 视图项偏移量
- * @param {KonvaCanvas} canvas 视图项画布
+ * @param {import('@/design').KonvaCanvas} canvas 视图项画布
  * @param {three.Texture} texture 视图项纹理
  * @param {Function} updateTexture 更新纹理
  * @param {ViewRect} rect 视图项的矩形区域

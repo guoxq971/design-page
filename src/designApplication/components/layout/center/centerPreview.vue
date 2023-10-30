@@ -12,7 +12,7 @@
 
 <script>
 import { mapState, mapGetters } from 'vuex';
-import boxContainer from '@/designApplication/components/boxContainer';
+import boxContainer from '@/designApplication/components/boxContainer.vue';
 
 export default {
   components: { boxContainer },

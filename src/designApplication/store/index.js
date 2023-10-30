@@ -9,12 +9,14 @@ import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import { Message } from 'element-ui';
 import store from '@/store';
 import { loadImage } from '@/designApplication/core/utils/loadImage';
+import { getProdPriceApi } from '@/designApplication/apis/prod';
 
 /**
  * designApplication store
  * @class State
  * @property {Config} config 配置
  * @property {boolean} loading_prod 是否正在加载产品
+ * @property {boolean} loading_price 是否正在加载价格
  * @property {boolean} loading_2d 是否正在加载2d canvas
  * @property {boolean} loading_3d 是否正在加载3d three
  * @property {number|null} activeColorId 选中的颜色
@@ -26,6 +28,7 @@ import { loadImage } from '@/designApplication/core/utils/loadImage';
 class State {
   config = new Config();
   show3d = false;
+  loading_price = false;
   loading_prod = false;
   loading_2d = false;
   loading_3d = false;
@@ -47,7 +50,7 @@ const gettersProd = {
   },
   /**
    * 获取激活产品
-   * @returns {ProdItem} 当前激活的产品
+   * @returns {import('@/design').ProdListDataItem} 当前激活的产品
    * */
   activeProd(state) {
     return state.prodStore.get();
@@ -77,6 +80,9 @@ const gettersProd = {
 
 // 产品相关的mutations
 const mutationsProd = {
+  setLoadingPrice(state, loading) {
+    state.loading_price = loading;
+  },
   setShow3d(state, flag) {
     state.show3d = flag;
   },
@@ -137,8 +143,11 @@ const actionsProd = {
       return;
     }
 
+    let prod;
+
     try {
       state.loading_prod = true;
+      console.time(`加载产品 - 通用${detail.templateNo}`);
 
       // 隐藏3d
       commit('setShow3d', false);
@@ -147,22 +156,10 @@ const actionsProd = {
       state.prodStore.clearAll();
       // await sleep(0);
 
-      // 获取价格列表
-
       // 获取3d配置 - 通用
       const config3d = await getProd3dConfigByCommonApi(detail.templateNo);
-
-      // 获取3d配置 - 精细
-      const refineList = await getProd3dConfigByRefineListApi(detail.templateNo);
-      const refineListFilter = config3dUtil.getOpenRefineList(refineList);
-      refineListFilter.forEach((refine) => {
-        const prodItem = ProdUtil.disposeRefine(refine, detail);
-        state.prodStore.add(prodItem);
-      });
-
-      // 初始化产品 - 通用
-      const prod = ProdUtil.disposeCommon(detail, config3d);
-      // 并添加到仓库
+      // 初始化产品 - 通用 (并添加到仓库)
+      prod = ProdUtil.disposeCommon(detail, config3d);
       state.prodStore.add(prod);
 
       // 切换的产品和当前产品不一致时，重置激活的颜色、尺码、视图
@@ -174,14 +171,31 @@ const actionsProd = {
       // 加载2d canvas
       await loadCanvas();
 
-      // 加载3d three
-      if (config3dUtil.isLoad3d(prod.config3d)) {
-        await loadThree({ prodItem: prod });
-      }
-
-      console.log('仓库列表', state.prodStore.list);
+      // console.log('仓库列表', state.prodStore.list);
     } finally {
       state.loading_prod = false;
+      console.timeEnd(`加载产品 - 通用${detail.templateNo}`);
+
+      if (prod) {
+        // 获取产品价格
+        dispatch('setPrice');
+
+        // 加载3d three
+        if (config3dUtil.isLoad3d(prod.config3d)) {
+          loadThree({ prodItem: prod, loading: true });
+        }
+        // 获取3d配置 - 精细
+        getProd3dConfigByRefineListApi(detail.templateNo).then((refineList) => {
+          // 获取3d配置 - 精细 (并添加到仓库)
+          const refineListFilter = config3dUtil.getOpenRefineList(refineList);
+          refineListFilter.forEach((refine) => {
+            const prodItem = ProdUtil.disposeRefine(refine, detail);
+            prodItem.isSpecial = prod.isSpecial;
+            prodItem.priceList = prod.priceList;
+            state.prodStore.add(prodItem);
+          });
+        });
+      }
     }
   },
   /**
@@ -334,6 +348,22 @@ export default {
    * */
   actions: {
     ...actionsProd,
+    /**
+     * 设置价格
+     * @param {*} vuex context
+     * @returns {Promise<void>}
+     */
+    async setPrice({ state, commit, dispatch, getters }) {
+      let prodItem = getters.activeProd;
+
+      // 获取价格列表
+      const priceResult = await getProdPriceApi(prodItem.detail.templateNo);
+
+      state.prodStore.list.forEach((prod) => {
+        prodItem.isSpecial = priceResult.isSpecial;
+        prodItem.priceList = priceResult.list;
+      });
+    },
     /**
      * 选中设计图
      * @param {*} vuex context

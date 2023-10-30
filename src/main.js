@@ -5,7 +5,7 @@ import store from './store';
 
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
-Vue.use(ElementUI, { size: 'small' });
+Vue.use(ElementUI, { size: 'mini' });
 
 // 自适应盒子
 import boxAdaptive from '@/designApplication/components/boxAdaptive.vue';
