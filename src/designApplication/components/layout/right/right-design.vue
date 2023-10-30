@@ -44,9 +44,9 @@
     <!--设计图操作-->
     <el-card class="one-handle handle2" shadow="never">
       <!--图层置顶-->
-      <img src="../img/图层置顶.png" class="right-design-img" v-title="'图层置顶'" />
+      <img src="../img/图层置顶.png" class="right-design-img" v-title="'图层置顶'" @click="onImageTop" />
       <!--图层置底-->
-      <img src="../img/图层置底.png" class="right-design-img" v-title="'图层置底'" />
+      <img src="../img/图层置底.png" class="right-design-img" v-title="'图层置底'" @click="onImageBottom" />
       <!--图层上移-->
       <img src="../img/图层上移.png" class="right-design-img" v-title="'图层上移'" />
       <!--图层下移-->
@@ -87,12 +87,12 @@
         <div class="design-wrap" v-for="(item, index) in imageList" :class="{ active: item.attrs.uuid === activeView.activeImageUuid }">
           <div class="wrap">
             <!--设计图-->
-            <template v-if="item.attrs.name === 'image'">
+            <div v-if="item.attrs.name === 'image'" class="design-bd" @click="onSetActiveImage(item)">
               <div class="design">
                 <el-image :src="item.attrs.fillPatternImage.src" style="width: 100%; height: 100%" />
               </div>
               <div class="title">{{ item.attrs.detail.name }}</div>
-            </template>
+            </div>
 
             <!--背景色-->
             <template v-if="item.attrs.name === 'bgc'">
@@ -121,11 +121,11 @@
               <iconpark-icon name="rss" size="20" />
             </div>
             <!--图层-删除-->
-            <div class="layer-btn" v-title="'图层-删除'">
+            <div class="layer-btn" v-title="'图层-删除'" @click="onLayerDel(item)">
               <img src="../img/删除图层.png" />
             </div>
             <!--图层-显示隐藏-->
-            <div class="layer-btn" v-title="'图层显示隐藏'">
+            <div class="layer-btn" v-title="'图层显示隐藏'" @click="onLayerVisible(item)">
               <template v-if="true">
                 <iconpark-icon name="preview-open" size="20" />
               </template>
@@ -176,6 +176,7 @@ import hoverSetting from './hover-setting.vue';
 import hoverClear from './hover-clear.vue';
 import hoverScale from './hover-scale.vue';
 import hoverTile from './hover-tile.vue';
+import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
 
 export default {
   name: 'right-design',
@@ -261,12 +262,39 @@ export default {
   },
   methods: {
     /**
+     * 设计图操作 - 置底
+     */
+    onImageBottom() {
+      if (!DesignImageUtil.hasActiveImage()) {
+        return this.$message.warning('请先选择设计图');
+      }
+      const image = DesignImageUtil.getImage();
+      DesignImageUtil.layerMoveBottom(image);
+    },
+    /**
+     * 设计图操作 - 置顶
+     */
+    onImageTop() {
+      if (!DesignImageUtil.hasActiveImage()) {
+        return this.$message.warning('请先选择设计图');
+      }
+      const image = DesignImageUtil.getImage();
+      DesignImageUtil.layerMoveTop(image);
+    },
+    /**
+     * 设置设计图 - 激活
+     * @param {import('@/design').CanvasDesign} image 设计图对象
+     */
+    onSetActiveImage(image) {
+      DesignImageUtil.setActiveImage(image);
+    },
+    /**
      * 设计图操作 - 上移动
      * @param {import('@/design').CanvasDesign} image 设计图对象
      */
     onLayerUp(image) {
       if (image.attrs.name === 'image') {
-        image.moveUp();
+        DesignImageUtil.layerMoveUp(image);
       }
     },
     /**
@@ -275,7 +303,25 @@ export default {
      */
     onLayerDown(image) {
       if (image.attrs.name === 'image') {
-        image.moveDown();
+        DesignImageUtil.layerMoveDown(image);
+      }
+    },
+    /**
+     * 设计图操作 - 移除
+     * @param {import('@/design').CanvasDesign} image 设计图对象
+     */
+    onLayerDel(image) {
+      if (image.attrs.name === 'image') {
+        DesignImageUtil.deleteImage(image);
+      }
+    },
+    /**
+     * 设计图操作 - 显示|隐藏
+     * @param {import('@/design').CanvasDesign} image 设计图对象
+     */
+    onLayerVisible(image) {
+      if (image.attrs.name === 'image') {
+        DesignImageUtil.setImageVisible(image);
       }
     },
     /**
@@ -476,6 +522,10 @@ export default {
       .wrap {
         display: flex;
         cursor: pointer;
+      }
+      .design-bd {
+        width: fit-content;
+        display: flex;
       }
       .design {
         width: @designWidth;

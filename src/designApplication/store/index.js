@@ -339,6 +339,9 @@ export default {
   getters: {
     // 产品相关的getters
     ...gettersProd,
+    activeView(state) {
+      return state.prodStore.getView(state.activeViewId);
+    },
   },
   mutations: {
     ...mutationsProd,

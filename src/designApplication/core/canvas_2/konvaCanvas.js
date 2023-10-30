@@ -245,8 +245,18 @@ export class KonvaCanvas {
       view: param.view,
       konvaCanvas: this,
       transformer: designImage.transformer,
-      remove: () => remove(this, designImage.image, designImage.transformer),
-      visibleFn: () => visibleImage(this, designImage.image, designImage.transformer),
+      remove: () => {
+        remove(this, designImage.image, designImage.transformer);
+        if (param.view.activeImageUuid === designImage.image.attrs.uuid) {
+          DesignImageUtil.setActiveImageNull(param.view);
+        }
+      },
+      visibleFn: () => {
+        visibleImage(this, designImage.image, designImage.transformer);
+        if (designImage.image.visible() === false && param.view.activeImageUuid === designImage.image.attrs.uuid) {
+          DesignImageUtil.setActiveImageNull(param.view);
+        }
+      },
       layerMoveFn: (type) => layerMove(designImage.image, type),
       selectedFn: () => {
         DesignerUtil.hideAllTransformer();
@@ -257,9 +267,9 @@ export class KonvaCanvas {
     // 监听visible
     designImage.transformer.attrs = new Proxy(designImage.transformer.attrs, {
       set: (target, key, value) => {
-        if (key === 'visible' && value === true) {
+        if (key === 'visible' && value === true && designImage.transformer.visible() === false) {
           // 当前视图激活的设计图
-          DesignImageUtil.setActiveImage(designImage.image);
+          store.dispatch('designApplication/setActiveImageUuid', { uuid: designImage.image.attrs.uuid });
         }
         target[key] = value;
         return true;

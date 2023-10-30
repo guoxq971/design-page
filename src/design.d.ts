@@ -22,4 +22,14 @@ export {
 } from './designApplication/interface_2/prod';
 export { ListData, ResponseDataOld, ResponseData } from './designApplication/interface_2/global';
 export { KonvaCanvas } from './designApplication/core/canvas_2/konvaCanvas.js';
-export { InitParamOfKonvaCanvas, AddParamOfImage, AddParamOfBgc, AddParamOfText, CanvasImage, CanvasDesign, CanvasText, CustomCanvasDesign } from './designApplication/interface_2/konvaCanvasParam';
+export {
+  InitParamOfKonvaCanvas,
+  AddParamOfImage,
+  AddParamOfBgc,
+  AddParamOfText,
+  CanvasImage,
+  CanvasDesign,
+  CanvasBgc,
+  CanvasText,
+  CustomCanvasDesign,
+} from './designApplication/interface_2/konvaCanvasParam';

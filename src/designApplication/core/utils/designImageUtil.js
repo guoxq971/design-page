@@ -6,8 +6,26 @@ import store from '@/store';
 export class DesignImageUtil {
   /**
    * 获取设计图相关参数
+   * @param {string|null} uuid
+   * @param {import('@/design').ParseViewItem} view
    */
-  static getImage() {}
+  static getImage(uuid = null, view = null) {
+    view = view || store.getters['designApplication/activeView'];
+    if (!view) return null;
+    if (uuid === null) uuid = view.activeImageUuid;
+    return view.canvas.getImageList().find((e) => e.attrs.uuid === uuid);
+  }
+
+  /**
+   * 当前是否有激活的设计图
+   * @param {import('@/design').ParseViewItem} view
+   * @returns {boolean} 是否有激活的设计图 true-有 false-无
+   */
+  static hasActiveImage(view = null) {
+    view = view || store.getters['designApplication/activeView'];
+    if (!view) return false;
+    return !!view?.activeImageUuid;
+  }
 
   /**
    * 设置当前激活的设计图
@@ -16,6 +34,8 @@ export class DesignImageUtil {
    */
   static setActiveImage(image, view = null) {
     store.dispatch('designApplication/setActiveImageUuid', { uuid: image.attrs.uuid });
+    image.attrs.konvaCanvas.hideAllTransformer();
+    image.attrs.transformer.visible(true);
   }
 
   /**
@@ -24,6 +44,22 @@ export class DesignImageUtil {
    */
   static setActiveImageNull(view = null) {
     store.dispatch('designApplication/setActiveImageUuid', { uuid: '', view });
+  }
+
+  /**
+   * 移除当前设计图
+   * @param {import('@/design').CanvasImage} image
+   */
+  static deleteImage(image) {
+    image.attrs.remove();
+  }
+
+  /**
+   * 设计图 - 显示|隐藏
+   * @param {import('@/design').CanvasImage} image
+   */
+  static setImageVisible(image) {
+    image.attrs.visibleFn();
   }
 
   /**
@@ -37,13 +73,16 @@ export class DesignImageUtil {
    * 图层移动 - 下移
    */
   static layerMoveDown(image) {
-    image.moveUp();
+    image.moveDown();
   }
 
   /**
    * 图层移动 - 置顶
+   * @param {import('@/design').CanvasImage} image
    */
-  static layerMoveTop() {}
+  static layerMoveTop(image) {
+    image.moveToTop();
+  }
 
   /**
    * 图层移动 - 置底
