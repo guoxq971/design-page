@@ -48,25 +48,25 @@
       <!--图层置底-->
       <img src="../img/图层置底.png" class="right-design-img" v-title="'图层置底'" @click="onImageBottom" />
       <!--图层上移-->
-      <img src="../img/图层上移.png" class="right-design-img" v-title="'图层上移'" />
+      <img src="../img/图层上移.png" class="right-design-img" v-title="'图层上移'" @click="onImageUp" />
       <!--图层下移-->
-      <img src="../img/图层下移.png" class="right-design-img" v-title="'图层下移'" />
+      <img src="../img/图层下移.png" class="right-design-img" v-title="'图层下移'" @click="onImageDown" />
       <!--复制图层-->
-      <img src="../img/复制图层.png" class="right-design-img" v-title="'复制图层'" />
+      <img src="../img/复制图层.png" class="right-design-img" v-title="'复制图层'" @click="onImageCopy" />
       <!--删除图层-->
-      <img src="../img/删除图层.png" class="right-design-img" v-title="'删除图层'" />
+      <img src="../img/删除图层.png" class="right-design-img" v-title="'删除图层'" @click="onImageDelete" />
       <!--水平居中-->
-      <img src="../img/水平居中.png" class="right-design-img" v-title="'水平居中'" />
+      <img src="../img/水平居中.png" class="right-design-img" v-title="'水平居中'" @click="onImagePositionHorizontal" />
       <!--垂直居中-->
-      <img src="../img/垂直居中.png" class="right-design-img" v-title="'垂直居中'" />
+      <img src="../img/垂直居中.png" class="right-design-img" v-title="'垂直居中'" @click="onImagePositionVertical" />
       <!--水平翻转-->
       <img src="../img/水平翻转.png" class="right-design-img" v-title="'水平翻转'" />
       <!--垂直翻转-->
       <img src="../img/垂直翻转.png" class="right-design-img" v-title="'垂直翻转'" />
       <!--放大-->
-      <img src="../img/放大.png" class="right-design-img" v-title="'放大'" />
+      <img src="../img/放大.png" class="right-design-img" v-title="'放大'" @click="onImageScaleUp" />
       <!--缩小-->
-      <img src="../img/缩小.png" class="right-design-img" v-title="'缩小'" />
+      <img src="../img/缩小.png" class="right-design-img" v-title="'缩小'" @click="onImageScaleDown" />
       <!--左旋45-->
       <img src="../img/左旋45°.png" class="right-design-img" v-title="'左旋45'" />
       <!--右旋45-->
@@ -126,7 +126,7 @@
             </div>
             <!--图层-显示隐藏-->
             <div class="layer-btn" v-title="'图层显示隐藏'" @click="onLayerVisible(item)">
-              <template v-if="true">
+              <template v-if="item.attrs.visible">
                 <iconpark-icon name="preview-open" size="20" />
               </template>
               <template v-else>
@@ -177,6 +177,8 @@ import hoverClear from './hover-clear.vue';
 import hoverScale from './hover-scale.vue';
 import hoverTile from './hover-tile.vue';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
+import { uuid } from '@/designApplication/core/utils/uuid';
+import { setProxyTransformer } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
 
 export default {
   name: 'right-design',
@@ -262,23 +264,105 @@ export default {
   },
   methods: {
     /**
-     * 设计图操作 - 置底
+     * 判断是否有激活的设计图
+     * @returns {Promise<never>|Promise<Awaited<CanvasImage|CanvasText|CanvasBgc>>}
      */
-    onImageBottom() {
+    hasActiveImage() {
       if (!DesignImageUtil.hasActiveImage()) {
-        return this.$message.warning('请先选择设计图');
+        this.$message.warning('请先选择设计图');
+        return Promise.reject({ msg: '请先选择设计图' });
       }
       const image = DesignImageUtil.getImage();
+      return Promise.resolve(image);
+    },
+    /**
+     * 设计图操作 - 复制
+     */
+    async onImageCopy() {
+      const image = await this.hasActiveImage();
+      if (image.attrs.type === 'image') {
+        const konvaCanvas = image.attrs.konvaCanvas;
+        const copyImage = image.clone();
+        const copyTransformer = image.attrs.transformer.clone();
+
+        // 选中框
+        copyTransformer.setAttr('visible', false);
+        setProxyTransformer(copyTransformer, copyImage);
+        copyTransformer.nodes([copyImage]);
+
+        // 设计图
+        copyImage.setAttrs({
+          uuid: uuid(),
+          x: image.attrs.x + 10,
+          y: image.attrs.y + 10,
+          transformer: copyTransformer,
+        });
+
+        konvaCanvas.clip.add(copyImage);
+        konvaCanvas.layer.add(copyTransformer);
+      }
+    },
+    /**
+     * 设计图操作 - 放大
+     */
+    async onImageScaleUp() {
+      const image = await this.hasActiveImage();
+      DesignImageUtil.scaleUp(image);
+    },
+    /**
+     * 设计图操作 - 缩小
+     */
+    async onImageScaleDown() {
+      const image = await this.hasActiveImage();
+      DesignImageUtil.scaleDown(image);
+    },
+    /**
+     * 设计图操作 - 水平居中
+     */
+    async onImagePositionHorizontal() {
+      const image = await this.hasActiveImage();
+      DesignImageUtil.positionHorizontalCenter(image);
+    },
+    /**
+     * 设计图操作 - 垂直居中
+     */
+    async onImagePositionVertical() {
+      const image = await this.hasActiveImage();
+      DesignImageUtil.positionVerticalCenter(image);
+    },
+    /**
+     * 设计图操作 - 移除
+     */
+    async onImageDelete() {
+      const image = await this.hasActiveImage();
+      DesignImageUtil.deleteImage(image);
+    },
+    /**
+     * 设计图操作 - 上移动
+     */
+    async onImageUp() {
+      const image = await this.hasActiveImage();
+      DesignImageUtil.layerMoveUp(image);
+    },
+    /**
+     * 设计图操作 - 下移动
+     */
+    async onImageDown() {
+      const image = await this.hasActiveImage();
+      DesignImageUtil.layerMoveDown(image);
+    },
+    /**
+     * 设计图操作 - 置底
+     */
+    async onImageBottom() {
+      const image = await this.hasActiveImage();
       DesignImageUtil.layerMoveBottom(image);
     },
     /**
      * 设计图操作 - 置顶
      */
-    onImageTop() {
-      if (!DesignImageUtil.hasActiveImage()) {
-        return this.$message.warning('请先选择设计图');
-      }
-      const image = DesignImageUtil.getImage();
+    async onImageTop() {
+      const image = await this.hasActiveImage();
       DesignImageUtil.layerMoveTop(image);
     },
     /**
@@ -320,8 +404,14 @@ export default {
      * @param {import('@/design').CanvasDesign} image 设计图对象
      */
     onLayerVisible(image) {
-      if (image.attrs.name === 'image') {
-        DesignImageUtil.setImageVisible(image);
+      switch (image.attrs.name) {
+        case 'image':
+          DesignImageUtil.setImageVisible(image);
+          break;
+        case 'bgc':
+          break;
+        default:
+          break;
       }
     },
     /**

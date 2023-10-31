@@ -3,7 +3,7 @@ import { Konva } from '@/designApplication/core/canvas/konva';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 import store from '@/store';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
-import { getDesignImage, getText, layerMove, remove, setTextAttrs, visibleImage } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
+import { getDesignImage, getText, layerMove, remove, setProxyTransformer, setTextAttrs, visibleImage } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
 import { initTransformer } from '@/designApplication/core/canvas/selectBorder';
 import { uuid } from '@/designApplication/core/utils/uuid';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
@@ -207,6 +207,8 @@ export class KonvaCanvas {
    * @param {import ('@/design').AddParamOfImage} param 参数
    */
   async addImage(param) {
+    const that = this;
+
     const designImage = await getDesignImage(param, this.layer, this.hideAllTransformer);
 
     // 监听 - 设计图
@@ -216,8 +218,8 @@ export class KonvaCanvas {
     designImage.image.on('dragend', (e) => {
       this.updateTexture(33);
     });
-    designImage.image.on('mousedown', (e) => {
-      DesignerUtil.hideAllTransformer(null, designImage.image);
+    designImage.image.on('mousedown', function (e) {
+      DesignerUtil.hideAllTransformer(null, this);
     });
 
     // 监听 - 锚点
@@ -243,38 +245,13 @@ export class KonvaCanvas {
       name: canvasDefine.image,
       detail: param.detail,
       view: param.view,
+      param: param,
       konvaCanvas: this,
       transformer: designImage.transformer,
-      remove: () => {
-        remove(this, designImage.image, designImage.transformer);
-        if (param.view.activeImageUuid === designImage.image.attrs.uuid) {
-          DesignImageUtil.setActiveImageNull(param.view);
-        }
-      },
-      visibleFn: () => {
-        visibleImage(this, designImage.image, designImage.transformer);
-        if (designImage.image.visible() === false && param.view.activeImageUuid === designImage.image.attrs.uuid) {
-          DesignImageUtil.setActiveImageNull(param.view);
-        }
-      },
-      layerMoveFn: (type) => layerMove(designImage.image, type),
-      selectedFn: () => {
-        DesignerUtil.hideAllTransformer();
-        designImage.image.attrs.transformer.visible(true);
-      },
     });
 
     // 监听visible
-    designImage.transformer.attrs = new Proxy(designImage.transformer.attrs, {
-      set: (target, key, value) => {
-        if (key === 'visible' && value === true && designImage.transformer.visible() === false) {
-          // 当前视图激活的设计图
-          store.dispatch('designApplication/setActiveImageUuid', { uuid: designImage.image.attrs.uuid });
-        }
-        target[key] = value;
-        return true;
-      },
-    });
+    setProxyTransformer(designImage.transformer, designImage.image);
 
     //添加设计图
     this.clip.add(designImage.image);

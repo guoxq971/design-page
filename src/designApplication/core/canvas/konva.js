@@ -2409,7 +2409,6 @@ export var Konva;
     _drag(evt) {
       // TODO: 这个包括canvas移动 和 节点移动 和 页面移动 (这个事件会在 鼠标按下后的移动过程中一直触发)
       if (isContinue(evt)) return false; //阻止节点默认的鼠标按下
-      // console.log('鼠标移动', evt);
       const nodesToFireEvents = [];
       DD._dragElements.forEach((elem, key) => {
         const { node } = elem;

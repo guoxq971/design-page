@@ -2,6 +2,7 @@ import { initTransformer } from '@/designApplication/core/canvas/selectBorder';
 import { Konva } from '@/designApplication/core/canvas/konva';
 import { konvaRectConfig } from '@/designApplication/core/canvas/konvaConfig';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
+import store from '@/store';
 
 /**
  * 获取设计图
@@ -25,14 +26,14 @@ export async function getDesignImage(param, layer, hideAllTransformer) {
 
   // 添加监听事件
   rect.on('click', function () {
-    hideAllTransformer(layer, rect);
-    transformer.visible(true);
+    hideAllTransformer(layer, this);
+    this.attrs.transformer.visible(true);
   });
   // rect.on('mouseover', function () {});
   // rect.on('mouseout', function () {});
   rect.on('dragstart', function (event) {
-    hideAllTransformer(layer, rect);
-    transformer.visible(true);
+    hideAllTransformer(layer, this);
+    this.attrs.transformer.visible(true);
   });
   // rect.on('dragmove', function () {});
   // rect.on('dragend', function () {});
@@ -150,5 +151,23 @@ export function setTextAttrs(text, param) {
     textAnchor: param.textAlign || 'left', // 文字对齐方式
     letterSpacing: param.letterSpacing || 0, // 字间距
     lineHeight: param.lineHeight || 1, // 行间距
+  });
+}
+
+/**
+ * 给Transformer添加监听事件
+ * @param {Konva.Transformer} transformer 选中框
+ * @param {Konva.Image} image 节点
+ */
+export function setProxyTransformer(transformer, image) {
+  transformer.attrs = new Proxy(transformer.attrs, {
+    set: (target, key, value) => {
+      if (key === 'visible' && value === true && transformer.visible() === false) {
+        // 当前视图激活的设计图
+        store.dispatch('designApplication/setActiveImageUuid', { uuid: image.attrs.uuid });
+      }
+      target[key] = value;
+      return true;
+    },
   });
 }

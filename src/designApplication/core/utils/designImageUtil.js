@@ -1,4 +1,6 @@
 import store from '@/store';
+import { remove, visibleImage } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
+import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 
 /**
  * 设计图的工具
@@ -47,11 +49,30 @@ export class DesignImageUtil {
   }
 
   /**
+   * 选中设计图
+   * @param {import('@/design').CanvasImage} image
+   */
+  static selectedImage(image) {
+    DesignerUtil.hideAllTransformer();
+    image.attrs.transformer.visible(true);
+  }
+
+  /**
    * 移除当前设计图
    * @param {import('@/design').CanvasImage} image
    */
   static deleteImage(image) {
-    image.attrs.remove();
+    const view = image.attrs.view;
+    const konvaCanvas = image.attrs.konvaCanvas;
+    const activeImageUuid = view.activeImageUuid;
+
+    // 移除设计图
+    remove(konvaCanvas, image, image.attrs.transformer);
+
+    // 当前视图的激活id如果是当前移除的id,则设置激活id为空
+    if (activeImageUuid === image.attrs.uuid) {
+      DesignImageUtil.setActiveImageNull(view);
+    }
   }
 
   /**
@@ -59,7 +80,18 @@ export class DesignImageUtil {
    * @param {import('@/design').CanvasImage} image
    */
   static setImageVisible(image) {
-    image.attrs.visibleFn();
+    const view = image.attrs.view;
+    const transformer = image.attrs.transformer;
+    const konvaCanvas = image.attrs.konvaCanvas;
+    const activeImageUuid = view.activeImageUuid;
+
+    // 显示|隐藏 设计图
+    visibleImage(konvaCanvas, image, transformer);
+
+    // 当前视图的激活id如果是当前移除的id,则设置激活id为空
+    if (activeImageUuid === image.attrs.uuid) {
+      DesignImageUtil.setActiveImageNull(view);
+    }
   }
 
   /**
@@ -101,23 +133,72 @@ export class DesignImageUtil {
 
   /**
    * 定位 - 水平居中
+   * @param {import('@/design').CanvasImage} image
    */
-  static positionHorizontalCenter() {}
+  static positionHorizontalCenter(image) {
+    const konvaCanvas = image.attrs.konvaCanvas;
+    const cx = image.attrs.param.x;
+    const cy = image.attrs.param.y;
+    const offsetX = konvaCanvas.clip.attrs.x / konvaCanvas.clip.attrs.scaleX;
+    const offsetY = konvaCanvas.clip.attrs.y / konvaCanvas.clip.attrs.scaleY;
+    image.setAttr('x', -offsetX + cx);
+  }
 
   /**
    * 定位 - 垂直居中
+   * @param {import('@/design').CanvasImage} image
    */
-  static positionVerticalCenter() {}
+  static positionVerticalCenter(image) {
+    const konvaCanvas = image.attrs.konvaCanvas;
+    const cx = image.attrs.param.x;
+    const cy = image.attrs.param.y;
+    const offsetX = konvaCanvas.clip.attrs.x / konvaCanvas.clip.attrs.scaleX;
+    const offsetY = konvaCanvas.clip.attrs.y / konvaCanvas.clip.attrs.scaleY;
+    image.setAttr('y', -offsetY + cy);
+  }
 
   /**
    * 缩放 - 放大
+   * @param {import('@/design').CanvasImage} image
    */
-  static scaleUp() {}
+  static scaleUp(image) {
+    const step = 1.05;
+    const { x, y, scaleX, scaleY, param } = image.attrs;
+
+    const resultScaleX = scaleX * step;
+    const resultScaleY = scaleY * step;
+
+    const resultWidth = param.imageDOM.width * resultScaleX;
+    const resultWeight = param.imageDOM.height * resultScaleY;
+
+    const diffWidth = param.imageDOM.width * scaleX - resultWidth;
+    const diffHeight = param.imageDOM.height * scaleY - resultWeight;
+
+    const resultX = x - diffWidth / 2;
+    const resultY = y - diffHeight / 2;
+    // console.log('resultX', resultX);
+    // console.log('resultY', resultY);
+    // console.log('x', x);
+    // console.log('y', y);
+
+    image.setAttrs({
+      scaleX: resultScaleX,
+      scaleY: resultScaleY,
+    });
+
+    setTimeout(() => {
+      image.setAttrs({
+        x: resultX,
+        y: resultY,
+      });
+    });
+  }
 
   /**
    * 缩放 - 缩小
+   * @param {import('@/design').CanvasImage} image
    */
-  static scaleDown() {}
+  static scaleDown(image) {}
 
   /**
    * 缩放 - 最大化

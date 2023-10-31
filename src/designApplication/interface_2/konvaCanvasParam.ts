@@ -14,9 +14,12 @@ export interface CanvasImage extends Konva.Image {
     scaleX: number;
     scaleY: number;
     rotation: number;
+    width: number;
+    height: number;
     type: string;
     name: string;
     detail: object; //设计图的接口详情
+    param: AddParamOfImage;
     view: ParseViewItem;
     konvaCanvas: KonvaCanvas;
     transformer: Konva.Transformer;

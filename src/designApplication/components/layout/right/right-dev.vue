@@ -163,6 +163,7 @@ import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import { OperationUtil } from '@/designApplication/core/utils/operationUtil';
 import { Message } from 'element-ui';
 import { ProdType } from '@/designApplication/interface/prodItem';
+import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
 
 export default {
   data() {
@@ -308,7 +309,11 @@ export default {
      * 删除图片
      * */
     onRemove(image, type) {
-      if (['image', 'text'].includes(type)) {
+      if (['image'].includes(type)) {
+        DesignImageUtil.deleteImage(image);
+      }
+
+      if (['text'].includes(type)) {
         image.attrs.remove();
       }
 
@@ -320,7 +325,11 @@ export default {
      * 显示隐藏
      * */
     onVisible(image, type) {
-      if (['image', 'text'].includes(type)) {
+      if (['image'].includes(type)) {
+        DesignImageUtil.setImageVisible(image);
+      }
+
+      if (['text'].includes(type)) {
         image.attrs.visibleFn();
       }
 
@@ -330,9 +339,20 @@ export default {
     },
     /**
      * 图层上移下移
+     * @param {import('@/design').CanvasDesign} image 图片类型
+     * @param {string} imageType 图片类型
+     * @param {string} type 类型 up-上移 down-下移
      * */
     onLayer(image, imageType, type) {
-      if (['image', 'text'].includes(imageType)) {
+      if (['image'].includes(imageType)) {
+        if (type === 'up') {
+          DesignImageUtil.layerMoveUp(image);
+        }
+        if (type === 'down') {
+          DesignImageUtil.layerMoveDown(image);
+        }
+      }
+      if (['text'].includes(imageType)) {
         image.attrs.layerMoveFn(type);
       }
     },
@@ -340,7 +360,11 @@ export default {
      * 选中图层
      * */
     onSelected(image, type, view) {
-      if (['image', 'text'].includes(type)) {
+      if (['image'].includes(type)) {
+        DesignImageUtil.selectedImage(image);
+      }
+
+      if (['text'].includes(type)) {
         image.attrs.selectedFn();
       }
 
