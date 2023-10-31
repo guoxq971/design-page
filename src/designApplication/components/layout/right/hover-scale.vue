@@ -1,9 +1,9 @@
 <template>
   <el-popover placement="bottom" width="200" trigger="hover">
     <div class="hover-wrap">
-      <img v-title="'宽度最大化'" src="../img/宽度最大化.png" class="img" />
-      <img v-title="'高度最大化'" src="../img/高度最大化.png" class="img" />
-      <img v-title="'最大化'" src="../img/最大化.png" class="img" />
+      <img v-title="'宽度最大化'" src="../img/宽度最大化.png" class="img" @click="onImageMaxWidth" />
+      <img v-title="'高度最大化'" src="../img/高度最大化.png" class="img" @click="onImageMaxHeight" />
+      <img v-title="'最大化'" src="../img/最大化.png" class="img" @click="onImageMax" />
     </div>
 
     <div v-title="'最大化'" slot="reference">
@@ -18,6 +18,7 @@
 <script>
 import { buttonBlur } from '@/designApplication/core/utils/buttonBlur';
 import title from '@/designApplication/core/utils/title';
+import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
 
 export default {
   name: 'hover-setting',
@@ -28,6 +29,27 @@ export default {
      */
     onBlur(evt) {
       buttonBlur(evt);
+    },
+    /**
+     * 设计图操作 - 最大化
+     */
+    async onImageMax() {
+      const image = await DesignImageUtil.hasActiveImageMessage();
+      DesignImageUtil.scaleMax(image);
+    },
+    /**
+     * 设计图操作 - 宽度最大化
+     */
+    async onImageMaxWidth() {
+      const image = await DesignImageUtil.hasActiveImageMessage();
+      DesignImageUtil.scaleMaxWidth(image);
+    },
+    /**
+     * 设计图操作 - 高度度最大化
+     */
+    async onImageMaxHeight() {
+      const image = await DesignImageUtil.hasActiveImageMessage();
+      DesignImageUtil.scaleMaxHeight(image);
     },
   },
 };

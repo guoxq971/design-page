@@ -1,11 +1,28 @@
 import store from '@/store';
-import { remove, visibleImage } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
+import { getPositionCenter, getScaleMax, isCollision, remove, visibleImage } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
+import { Message } from 'element-ui';
 
 /**
  * 设计图的工具
  */
 export class DesignImageUtil {
+  static STEP_UP = 1 + 0.02;
+  static STEP_DOWN = 1 - 0.02;
+
+  /**
+   * 判断是否有激活的设计图
+   * @returns {Promise<never>|Promise<Awaited<CanvasImage|CanvasText|CanvasBgc>>}
+   */
+  static hasActiveImageMessage() {
+    if (!DesignImageUtil.hasActiveImage()) {
+      Message.warning('请先选择设计图');
+      return Promise.reject({ msg: '请先选择设计图' });
+    }
+    const image = DesignImageUtil.getImage();
+    return Promise.resolve(image);
+  }
+
   /**
    * 获取设计图相关参数
    * @param {string|null} uuid
@@ -30,6 +47,14 @@ export class DesignImageUtil {
   }
 
   /**
+   * 设置当前激活的设计图为空
+   * @param {import('@/design').ParseViewItem} view
+   */
+  static setActiveImageNull(view = null) {
+    store.dispatch('designApplication/setActiveImageUuid', { uuid: '', view });
+  }
+
+  /**
    * 设置当前激活的设计图
    * @param {import('@/design').CanvasImage} image
    * @param {import('@/design').ParseViewItem} view
@@ -38,14 +63,6 @@ export class DesignImageUtil {
     store.dispatch('designApplication/setActiveImageUuid', { uuid: image.attrs.uuid });
     image.attrs.konvaCanvas.hideAllTransformer();
     image.attrs.transformer.visible(true);
-  }
-
-  /**
-   * 设置当前激活的设计图为空
-   * @param {import('@/design').ParseViewItem} view
-   */
-  static setActiveImageNull(view = null) {
-    store.dispatch('designApplication/setActiveImageUuid', { uuid: '', view });
   }
 
   /**
@@ -118,8 +135,11 @@ export class DesignImageUtil {
 
   /**
    * 图层移动 - 置底
+   * @param {import('@/design').CanvasImage} image
    */
-  static layerMoveBottom() {}
+  static layerMoveBottom(image) {
+    image.moveToBottom();
+  }
 
   /**
    * 翻转 - 水平方向
@@ -136,12 +156,9 @@ export class DesignImageUtil {
    * @param {import('@/design').CanvasImage} image
    */
   static positionHorizontalCenter(image) {
-    const konvaCanvas = image.attrs.konvaCanvas;
-    const cx = image.attrs.param.x;
-    const cy = image.attrs.param.y;
-    const offsetX = konvaCanvas.clip.attrs.x / konvaCanvas.clip.attrs.scaleX;
-    const offsetY = konvaCanvas.clip.attrs.y / konvaCanvas.clip.attrs.scaleY;
-    image.setAttr('x', -offsetX + cx);
+    const { x } = getPositionCenter(image);
+
+    image.setAttr('x', x);
   }
 
   /**
@@ -149,12 +166,9 @@ export class DesignImageUtil {
    * @param {import('@/design').CanvasImage} image
    */
   static positionVerticalCenter(image) {
-    const konvaCanvas = image.attrs.konvaCanvas;
-    const cx = image.attrs.param.x;
-    const cy = image.attrs.param.y;
-    const offsetX = konvaCanvas.clip.attrs.x / konvaCanvas.clip.attrs.scaleX;
-    const offsetY = konvaCanvas.clip.attrs.y / konvaCanvas.clip.attrs.scaleY;
-    image.setAttr('y', -offsetY + cy);
+    const { y } = getPositionCenter(image);
+
+    image.setAttr('y', y);
   }
 
   /**
@@ -162,35 +176,21 @@ export class DesignImageUtil {
    * @param {import('@/design').CanvasImage} image
    */
   static scaleUp(image) {
-    const step = 1.05;
-    const { x, y, scaleX, scaleY, param } = image.attrs;
+    const step = this.STEP_UP;
+    const { scaleX, scaleY } = image.attrs;
 
+    // 缩放后的比例
     const resultScaleX = scaleX * step;
     const resultScaleY = scaleY * step;
 
-    const resultWidth = param.imageDOM.width * resultScaleX;
-    const resultWeight = param.imageDOM.height * resultScaleY;
-
-    const diffWidth = param.imageDOM.width * scaleX - resultWidth;
-    const diffHeight = param.imageDOM.height * scaleY - resultWeight;
-
-    const resultX = x - diffWidth / 2;
-    const resultY = y - diffHeight / 2;
-    // console.log('resultX', resultX);
-    // console.log('resultY', resultY);
-    // console.log('x', x);
-    // console.log('y', y);
+    // 碰撞检测
+    if (isCollision(image, { scaleX: resultScaleX, scaleY: resultScaleY })) {
+      return;
+    }
 
     image.setAttrs({
       scaleX: resultScaleX,
       scaleY: resultScaleY,
-    });
-
-    setTimeout(() => {
-      image.setAttrs({
-        x: resultX,
-        y: resultY,
-      });
     });
   }
 
@@ -198,30 +198,70 @@ export class DesignImageUtil {
    * 缩放 - 缩小
    * @param {import('@/design').CanvasImage} image
    */
-  static scaleDown(image) {}
+  static scaleDown(image) {
+    const step = this.STEP_DOWN;
+    const { scaleX, scaleY, param } = image.attrs;
+
+    const resultScaleX = scaleX * step;
+    const resultScaleY = scaleY * step;
+
+    image.setAttrs({
+      scaleX: resultScaleX,
+      scaleY: resultScaleY,
+    });
+  }
 
   /**
    * 缩放 - 最大化
+   * @param {import('@/design').CanvasImage} image
    */
-  static scaleMax() {}
+  static scaleMax(image) {
+    const { scaleX, scaleY } = getScaleMax(image);
+
+    image.setAttrs({
+      scaleX: scaleX,
+      scaleY: scaleY,
+    });
+  }
 
   /**
    * 缩放 - 宽度最大化
+   * @param {import('@/design').CanvasImage} image
    */
-  static scaleMaxWidth() {}
+  static scaleMaxWidth(image) {
+    const { scaleX, scaleY } = getScaleMax(image, 'width');
+
+    image.setAttrs({
+      scaleX: scaleX,
+      scaleY: scaleY,
+    });
+  }
 
   /**
    * 缩放 - 高度最大化
+   * @param {import('@/design').CanvasImage} image
    */
-  static scaleMaxHeight() {}
+  static scaleMaxHeight(image) {
+    const { scaleX, scaleY } = getScaleMax(image, 'height');
+
+    image.setAttrs({
+      scaleX: scaleX,
+      scaleY: scaleY,
+    });
+  }
 
   /**
-   * 旋转 - 右旋转
+   * 旋转
+   * @param {import('@/design').CanvasImage} image
+   * @param {number} angle 旋转角度
    */
-  static rotationUp() {}
+  static rotation(image, angle = null) {
+    if (angle === null) angle = image.rotation() + 1;
 
-  /**
-   * 旋转 - 左旋转
-   */
-  static rotationDown() {}
+    const transformer = image.attrs.transformer;
+    const resultRotation = angle;
+
+    transformer.rotation(resultRotation);
+    image.rotation(resultRotation);
+  }
 }

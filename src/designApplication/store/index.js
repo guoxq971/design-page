@@ -436,6 +436,8 @@ export default {
         imageDOM,
         detail,
         view,
+        staticView,
+        inch,
       };
 
       await view.canvas.addImage(param);

@@ -3,6 +3,7 @@ import { Konva } from '@/designApplication/core/canvas/konva';
 import { konvaRectConfig } from '@/designApplication/core/canvas/konvaConfig';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import store from '@/store';
+import { Message } from 'element-ui';
 
 /**
  * 获取设计图
@@ -157,9 +158,10 @@ export function setTextAttrs(text, param) {
 /**
  * 给Transformer添加监听事件
  * @param {Konva.Transformer} transformer 选中框
- * @param {Konva.Image} image 节点
+ * @param {import('@/design').CanvasImage} image 节点
  */
 export function setProxyTransformer(transformer, image) {
+  // 监听 visible
   transformer.attrs = new Proxy(transformer.attrs, {
     set: (target, key, value) => {
       if (key === 'visible' && value === true && transformer.visible() === false) {
@@ -170,4 +172,135 @@ export function setProxyTransformer(transformer, image) {
       return true;
     },
   });
+
+  // 监听 缩放尺寸
+  transformer.setAttr('boundBoxFunc', (oldBox, newBox) => {
+    // 是否放大
+    const isUp = newBox.width > oldBox.width || newBox.height > oldBox.height;
+
+    if (isUp && isCollision(image)) {
+      return oldBox;
+    } else {
+      return newBox;
+    }
+  });
+}
+
+/**
+ * 设计图碰撞检测
+ * @param {import('@/design').CanvasImage} image
+ * @param {{scaleX:number,scaleY:number} || null} param
+ * @returns {boolean} 是否碰撞 true-是 false-否
+ */
+let messageInstance = null;
+export function isCollision(image, param = {}) {
+  param = Object.assign({ scaleX: image.scaleX(), scaleY: image.scaleY() }, param);
+
+  const inch = image.attrs.param.inch;
+  const w = image.attrs.param.imageDOM.width * param.scaleX;
+  const h = image.attrs.param.imageDOM.height * param.scaleY;
+
+  if (w > inch.width || h > inch.height) {
+    if (!messageInstance) {
+      messageInstance = Message.warning({
+        message: '已经最大了，不能再大了',
+        onClose: () => (messageInstance = null),
+      });
+    }
+
+    image.setAttrs({
+      scaleX: param.scaleX,
+      scaleY: param.scaleY,
+    });
+
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * 最大化操作的缩放比例
+ * @param {import('@/design').CanvasImage} image
+ * @param {'width'|'height'|''} type
+ */
+export function getScaleMax(image, type = '') {
+  const param = image.attrs.param;
+  const staticView = param.staticView;
+
+  const iSize = param.inch;
+  const pSize = staticView.print;
+  const l = iSize.width / pSize.width; // l:设计图宽/打印区宽
+  const p = iSize.height / pSize.height; // p:设计图高/打印区高
+  let u = Math.min(l, p); // 取较小值
+  if ('width' === type) u = l;
+  if ('height' === type) u = p;
+  if (u < 1) u = 1;
+
+  const width = iSize.width / u;
+  const height = iSize.height / u;
+  const scaleX = width / (param.imageDOM.width * param.scaleX);
+  const scaleY = height / (param.imageDOM.height * param.scaleY);
+
+  return {
+    scaleX: scaleX * param.scaleX,
+    scaleY: scaleY * param.scaleY,
+  };
+}
+
+/**
+ * 获取居中坐标的信息
+ * @param {import('@/design').CanvasImage} image
+ */
+export function getPositionCenter(image) {
+  const { konvaCanvas, param, scaleX, scaleY } = image.attrs;
+
+  const staticView = param.staticView;
+
+  // 画布高宽
+  const canvasWidth = staticView.print.width;
+  const canvasHeight = staticView.print.height;
+
+  // 设计图高宽
+  const imageWidth = param.imageDOM.width * scaleX;
+  const imageHeight = param.imageDOM.height * scaleY;
+
+  // 居中坐标
+  const centerX = (canvasWidth - imageWidth) / 2;
+  const centerY = (canvasHeight - imageHeight) / 2;
+
+  // 画布偏移量
+  const offsetX = konvaCanvas.clip.attrs.x / konvaCanvas.clip.attrs.scaleX - staticView.offset.x;
+  const offsetY = konvaCanvas.clip.attrs.y / konvaCanvas.clip.attrs.scaleY - staticView.offset.y;
+
+  const x = -offsetX + centerX + imageWidth / 2;
+  const y = -offsetY + centerY + imageHeight / 2;
+
+  return {
+    centerX,
+    centerY,
+    offsetX,
+    offsetY,
+    x,
+    y,
+  };
+}
+
+/**
+ * 获取45度倍速的角度, 例：传入 30, 返回 45 ,传入 50, 返回 90 ，传入100, 返回 135
+ * @param {number} angle 角度
+ * @param {string} type 方向 right: 向右 left: 向左
+ * @returns {number} 角度
+ */
+export function getAngleMultiple(angle, type = 'right') {
+  let num;
+  if (type === 'right') {
+    num = Math.ceil(angle / 45);
+    angle % 45 === 0 && num++;
+  }
+  if (type === 'left') {
+    num = Math.floor(angle / 45);
+    angle % 45 === 0 && num--;
+  }
+  return num * 45;
 }

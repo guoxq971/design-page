@@ -83,6 +83,8 @@ export interface AddParamOfImage {
   imageDOM: HTMLImageElement;
   detail: object;
   view: ParseViewItem;
+  staticView: StaticViewItem;
+  inch: { width: number; height: number };
 }
 
 /**

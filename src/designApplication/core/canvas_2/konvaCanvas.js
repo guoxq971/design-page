@@ -236,8 +236,8 @@ export class KonvaCanvas {
     // 设置属性
     designImage.image.setAttrs({
       uuid: uuid(),
-      x: -this.clip.attrs.x / this.clip.attrs.scaleX + param.x,
-      y: -this.clip.attrs.y / this.clip.attrs.scaleY + param.y,
+      x: -this.clip.attrs.x / this.clip.attrs.scaleX + param.x + param.width / 2,
+      y: -this.clip.attrs.y / this.clip.attrs.scaleY + param.y + param.height / 2,
       scaleX: param.scaleX,
       scaleY: param.scaleY,
       rotation: param.rotation,

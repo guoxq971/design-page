@@ -39,7 +39,7 @@ export const konvaRectConfig = (param) => {
     id: 'rect', // id (唯一标识)
     name: 'rect', // 名称 (可重复)
     cornerRadius: 0, // 圆角
-    offset: { x: 0, y: 0 }, // 偏移量 (作用于x,y)
+    offset: { x: width / 2, y: height / 2 }, // 偏移量 (作用于x,y)
     // offsetX: 0, // 偏移量
     // offsetY: 0, // 偏移量
     opacity: 1, // 透明度

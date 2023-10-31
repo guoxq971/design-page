@@ -68,9 +68,9 @@
       <!--缩小-->
       <img src="../img/缩小.png" class="right-design-img" v-title="'缩小'" @click="onImageScaleDown" />
       <!--左旋45-->
-      <img src="../img/左旋45°.png" class="right-design-img" v-title="'左旋45'" />
+      <img src="../img/左旋45°.png" class="right-design-img" v-title="'左旋45'" @click="onImageRotateDown" />
       <!--右旋45-->
-      <img src="../img/右旋45°.png" class="right-design-img" v-title="'右旋45'" />
+      <img src="../img/右旋45°.png" class="right-design-img" v-title="'右旋45'" @click="onImageRotateUp" />
       <!--最大化-->
       <hoverScale class="right-design-img" />
       <!--平铺-->
@@ -178,7 +178,7 @@ import hoverScale from './hover-scale.vue';
 import hoverTile from './hover-tile.vue';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
 import { uuid } from '@/designApplication/core/utils/uuid';
-import { setProxyTransformer } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
+import { getAngleMultiple, setProxyTransformer } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
 
 export default {
   name: 'right-design',
@@ -264,22 +264,10 @@ export default {
   },
   methods: {
     /**
-     * 判断是否有激活的设计图
-     * @returns {Promise<never>|Promise<Awaited<CanvasImage|CanvasText|CanvasBgc>>}
-     */
-    hasActiveImage() {
-      if (!DesignImageUtil.hasActiveImage()) {
-        this.$message.warning('请先选择设计图');
-        return Promise.reject({ msg: '请先选择设计图' });
-      }
-      const image = DesignImageUtil.getImage();
-      return Promise.resolve(image);
-    },
-    /**
      * 设计图操作 - 复制
      */
     async onImageCopy() {
-      const image = await this.hasActiveImage();
+      const image = await DesignImageUtil.hasActiveImageMessage();
       if (image.attrs.type === 'image') {
         const konvaCanvas = image.attrs.konvaCanvas;
         const copyImage = image.clone();
@@ -303,66 +291,80 @@ export default {
       }
     },
     /**
+     * 设计图操作 - 左旋转
+     */
+    async onImageRotateDown() {
+      const image = await DesignImageUtil.hasActiveImageMessage();
+      DesignImageUtil.rotation(image, getAngleMultiple(image.rotation(), 'left'));
+    },
+    /**
+     * 设计图操作 - 右旋转
+     */
+    async onImageRotateUp() {
+      const image = await DesignImageUtil.hasActiveImageMessage();
+      DesignImageUtil.rotation(image, getAngleMultiple(image.rotation(), 'right'));
+    },
+    /**
      * 设计图操作 - 放大
      */
     async onImageScaleUp() {
-      const image = await this.hasActiveImage();
+      const image = await DesignImageUtil.hasActiveImageMessage();
       DesignImageUtil.scaleUp(image);
     },
     /**
      * 设计图操作 - 缩小
      */
     async onImageScaleDown() {
-      const image = await this.hasActiveImage();
+      const image = await DesignImageUtil.hasActiveImageMessage();
       DesignImageUtil.scaleDown(image);
     },
     /**
      * 设计图操作 - 水平居中
      */
     async onImagePositionHorizontal() {
-      const image = await this.hasActiveImage();
+      const image = await DesignImageUtil.hasActiveImageMessage();
       DesignImageUtil.positionHorizontalCenter(image);
     },
     /**
      * 设计图操作 - 垂直居中
      */
     async onImagePositionVertical() {
-      const image = await this.hasActiveImage();
+      const image = await DesignImageUtil.hasActiveImageMessage();
       DesignImageUtil.positionVerticalCenter(image);
     },
     /**
      * 设计图操作 - 移除
      */
     async onImageDelete() {
-      const image = await this.hasActiveImage();
+      const image = await DesignImageUtil.hasActiveImageMessage();
       DesignImageUtil.deleteImage(image);
     },
     /**
      * 设计图操作 - 上移动
      */
     async onImageUp() {
-      const image = await this.hasActiveImage();
+      const image = await DesignImageUtil.hasActiveImageMessage();
       DesignImageUtil.layerMoveUp(image);
     },
     /**
      * 设计图操作 - 下移动
      */
     async onImageDown() {
-      const image = await this.hasActiveImage();
+      const image = await DesignImageUtil.hasActiveImageMessage();
       DesignImageUtil.layerMoveDown(image);
     },
     /**
      * 设计图操作 - 置底
      */
     async onImageBottom() {
-      const image = await this.hasActiveImage();
+      const image = await DesignImageUtil.hasActiveImageMessage();
       DesignImageUtil.layerMoveBottom(image);
     },
     /**
      * 设计图操作 - 置顶
      */
     async onImageTop() {
-      const image = await this.hasActiveImage();
+      const image = await DesignImageUtil.hasActiveImageMessage();
       DesignImageUtil.layerMoveTop(image);
     },
     /**
