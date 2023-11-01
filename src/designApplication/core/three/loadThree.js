@@ -74,14 +74,14 @@ function loading3dClose() {
 /**
  * 根据材质名称获取对应的视图
  * @param {string} materialName 材质名称
- * @param {ProdItem} prodItem 产品
- * @returns {ParseViewItem|null} 视图
+ * @param {import('@/design').ProdItemData} prodItem 产品
+ * @returns {import('@/design').ParseViewItem|null} 视图
  * */
 function getViewByMaterialName(materialName, prodItem) {
   const config3dView = prodItem.config3d.viewList.find((e) => e.materialName === materialName);
   let view = null;
   if (config3dView) {
-    view = prodItem.viewList.find((e) => +e.id === config3dView.viewId);
+    view = prodItem.viewList.find((e) => e.id == config3dView.viewId);
   }
 
   return view;

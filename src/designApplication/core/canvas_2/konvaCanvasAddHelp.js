@@ -189,7 +189,7 @@ export function setProxyTransformer(transformer, image) {
 /**
  * 设计图碰撞检测
  * @param {import('@/design').CanvasImage} image
- * @param {{scaleX:number,scaleY:number} || null} param
+ * @param {{scaleX:number,scaleY:number}} param
  * @returns {boolean} 是否碰撞 true-是 false-否
  */
 let messageInstance = null;
@@ -197,10 +197,11 @@ export function isCollision(image, param = {}) {
   param = Object.assign({ scaleX: image.scaleX(), scaleY: image.scaleY() }, param);
 
   const inch = image.attrs.param.inch;
-  const w = image.attrs.param.imageDOM.width * param.scaleX;
-  const h = image.attrs.param.imageDOM.height * param.scaleY;
+  const imgSize = image.attrs.param.imageDOM;
+  const w = imgSize.width * param.scaleX;
+  const h = imgSize.height * param.scaleY;
 
-  if (w > inch.width || h > inch.height) {
+  if (w >= inch.width || h >= inch.height) {
     if (!messageInstance) {
       messageInstance = Message.warning({
         message: '已经最大了，不能再大了',
@@ -208,9 +209,10 @@ export function isCollision(image, param = {}) {
       });
     }
 
+    // 缩放到最大
     image.setAttrs({
-      scaleX: param.scaleX,
-      scaleY: param.scaleY,
+      scaleX: inch.width / imgSize.width,
+      scaleY: inch.height / imgSize.height,
     });
 
     return true;

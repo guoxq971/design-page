@@ -12,7 +12,7 @@ export class ProdUtil {
    * 处理产品数据 (通用产品)
    * @param {import('@/design').ProdListDataItem} detail 产品数据
    * @param {import('@/design').ProdConfig3dResponseData} config3d 3d配置
-   * @returns {import('@/design').ProdListDataItem} 产品
+   * @returns {import('@/design').ProdItemData} 产品
    * */
   static disposeCommon(detail, config3d) {
     // 初始化产品, 并添加到仓库

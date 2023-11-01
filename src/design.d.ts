@@ -1,4 +1,5 @@
 export {
+  ProdItemData,
   GetProdPriceApiType,
   PriceListItem,
   ProdPriceResponseData,

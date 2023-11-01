@@ -51,7 +51,7 @@ export default {
   methods: {
     /**
      * 获取重组后的表头
-     * @param {import('@/design').ProdListDataItem.priceList} list 模板价格列表
+     * @param {import('@/design').ProdItemData.priceList} list 模板价格列表
      * @returns {Object}
      * */
     getHeaderObj(list) {

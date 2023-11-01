@@ -38,7 +38,7 @@ export class ProdStore {
    * 获取激活产品
    * @param {number|null} type 产品类型 1-通用产品 2-精细产品
    * @param {null|string} sizeId 尺码id
-   * @returns {import('@/design').ProdListDataItem} 当前激活的产品
+   * @returns {import('@/design').ProdItemData} 当前激活的产品
    * */
   get(type = null, sizeId = null) {
     if (type === null) type = store.state.designApplication.activeType;
@@ -55,7 +55,7 @@ export class ProdStore {
   /**
    * 获取视图
    * @param {number|null} viewId 视图id
-   * @param {import('@/design').ProdListDataItem|null} prod 产品
+   * @param {import('@/design').ProdItemData|null} prod 产品
    * @returns {import('@/design').ParseViewItem|null} 视图
    * */
   getView(viewId = null, prod = null) {

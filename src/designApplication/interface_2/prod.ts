@@ -1,9 +1,9 @@
 import { ListData, ResponseData, ResponseDataOld } from './global';
 import { KonvaCanvas } from '../core/canvas_2/konvaCanvas.js';
 import type { Texture } from 'three';
+import { MyThree } from '../core/three/index';
 
 /**
- * @interface ProdItemResponse
  * @description: 产品列表返回值
  */
 export interface ProdItemResponse {
@@ -44,7 +44,6 @@ export interface ProdItemResponse {
 }
 
 /**
- * @interface ProdListParams
  * @description: 产品列表参数
  * @param {number} limit - 限制条数
  * @param {boolean} fullData - 是否返回完整数据
@@ -69,7 +68,6 @@ export interface ProdListParams {
 }
 
 /**
- * @interface ProdListResponseData
  * @description: 产品列表返回值
  */
 export interface ProdListResponseData extends ResponseDataOld {
@@ -79,7 +77,6 @@ export interface ProdListResponseData extends ResponseDataOld {
 }
 
 /**
- * @interface ParseColorItem
  * @description: 解析颜色数据
  */
 export interface ParseColorItem {
@@ -101,7 +98,6 @@ export interface ParseSizeItem {
 }
 
 /**
- * @interface ParseViewItem
  * @description: 解析视图数据
  */
 export interface ParseViewItem {
@@ -116,7 +112,6 @@ export interface ParseViewItem {
 }
 
 /**
- * @interface ParsePrintItem
  * @description: 解析印刷区域数据
  */
 export interface ParsePrintItem {
@@ -128,7 +123,6 @@ export interface ParsePrintItem {
 }
 
 /**
- * @interface ParsePrintoutItem
  * @description: 解析指定印刷区域数据
  */
 export interface ParsePrintoutItem {
@@ -139,7 +133,6 @@ export interface ParsePrintoutItem {
 }
 
 /**
- * @interface ShowImage
  * @description: 展示用的数据 Object
  */
 interface ShowImage {
@@ -188,8 +181,7 @@ export interface GetProdPriceApiType {
 export interface ProdPriceResponse extends ResponseData<ProdPriceResponseData> {}
 
 /**
- * @interface ProdListDataItem
- * @description: 产品列表项(解析后)
+ * @description: 产品列表项(解析后) 产品的列表数据
  */
 export interface ProdListDataItem extends ProdItemResponse {
   viewList: ParseViewItem[]; // 视图
@@ -205,13 +197,11 @@ export interface ProdListDataItem extends ProdItemResponse {
 }
 
 /**
- * @interface ProdListData
  * @description: 产品列表数据(解析后)
  */
 export interface ProdListData extends ListData<ProdListDataItem> {}
 
 /**
- * @interface ProdConfig3dViewItem
  * @description: 产品的3d配置 - viewList的item
  * @property {string} seqId 主键
  * @property {number} configType 配置类型 1-通用 2-精细
@@ -257,7 +247,6 @@ interface ProdConfig3dViewItem {
 }
 
 /**
- * @interface ProdConfig3dColorListItem
  * @description: 产品的3d配置 - colorList的list的item
  * @property {number} configType 配置类型 1-通用 2-精细
  * @property {number} viewId 视图id
@@ -292,7 +281,6 @@ interface ProdConfig3dColorListItem {
 }
 
 /**
- * @interface ProdConfig3dColorItem
  * @description: 产品的3d配置 - colorList的item
  */
 interface ProdConfig3dColorItem {
@@ -302,7 +290,6 @@ interface ProdConfig3dColorItem {
 }
 
 /**
- * @interface ProdConfig3dResponseData
  * @description 产品配置 -3d 接口返回值 data
  * @property {string} seqId 主键
  * @property {string} templateNo 模板编号
@@ -331,13 +318,11 @@ interface ProdConfig3dResponseData {
 }
 
 /**
- * @interface ProdConfig3dResponse
  * @description 产品配置 -3d 接口返回值
  */
 export interface ProdConfig3dResponse extends ResponseData<ProdConfig3dResponseData> {}
 
 /**
- * @interface ProdConfig3dResponseRefineData
  * @description 产品配置 -3d 接口返回值 (精细) data
  * @property {string} seqId 主键
  * @property {string} templateNo 模板编号
@@ -377,13 +362,11 @@ export interface ProdConfig3dResponseRefineData {
 }
 
 /**
- * @interface ProdConfig3dResponseRefine
  * @description 产品配置 -3d 接口返回值 (精细)
  */
 export interface ProdConfig3dResponseRefine extends ResponseData<ProdConfig3dResponseRefineData[]> {}
 
 /**
- * @interface ActiveStaticProdData
  * @description 当前激活产品的静态数据 - viewList的item
  * @property {string} id 视图id
  * @property {string} name 视图名称
@@ -409,12 +392,39 @@ export interface StaticViewItem {
 }
 
 /**
- * @interface ActiveStaticProdData
  * @description 当前激活产品的静态数据
  */
 export interface ActiveStaticProdData {
   // 视图列表
   viewList: StaticViewItem[];
   // 产品
-  prod: ProdListDataItem;
+  prod: ProdItemData;
+}
+
+/**
+ * @description vuex的 prodStore.list 的item
+ * @property {ProdItemResponse} detail 产品详情
+ * @property {number} type 产品类型 1-通用产品 2-精细产品
+ * @property {string} sizeId 尺码id (精细产品才有)
+ * @property {ParseViewItem[]} viewList 视图列表
+ * @property {ParseColorItem[]} colorList 颜色列表
+ * @property {ParseSizeItem[]} sizeList 尺码列表
+ * @property {MyThree} three three对象
+ * @property {ProdConfig3dResponseData|ProdConfig3dResponseRefineData|null} config3d 3d配置
+ * @property {PriceListItem[]} priceList 价格列表
+ * @property {'' | '0' | '1' | '2'} isSpecial 价格参数 ''-没有 0-尺码 1-颜色 2-正常
+ */
+export interface ProdItemData {
+  detail: ProdItemResponse;
+  type: 1 | 2;
+  sizeId: string;
+  size: string | undefined;
+  sizeType: string | undefined;
+  viewList: ParseViewItem[];
+  colorList: ParseColorItem[];
+  sizeList: ParseSizeItem[];
+  three: MyThree;
+  config3d: ProdConfig3dResponseData | ProdConfig3dResponseRefineData;
+  priceList: PriceListItem[];
+  isSpecial: '' | '0' | '1' | '2';
 }

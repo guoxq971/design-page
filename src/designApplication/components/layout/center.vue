@@ -111,7 +111,7 @@ export default {
       let price = '';
       if (!this.loading_price && !this.loading_prod) {
         /**
-         * @type {import('@/design').ProdListDataItem}
+         * @type {import('@/design').ProdItemData}
          */
         const prodItem = this.activeProd;
 
@@ -149,7 +149,7 @@ export default {
     },
     /**
      * 获取模板价格根据类型
-     * @param {import('@/design').ProdListDataItem.priceList} list 模板价格列表
+     * @param {import('@/design').ProdItemData.priceList} list 模板价格列表
      * @param {string} prop 类型 例如：尺码 | 颜色 会是激活的id
      * @param {number} isSpecial 是否是特殊模板 2-正常 1-颜色 0-尺码
      * @param {number} num 1：获取价格 2：获取数量

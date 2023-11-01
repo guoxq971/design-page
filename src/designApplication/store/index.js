@@ -50,7 +50,7 @@ const gettersProd = {
   },
   /**
    * 获取激活产品
-   * @returns {import('@/design').ProdListDataItem} 当前激活的产品
+   * @returns {import('@/design').ProdItemData} 当前激活的产品
    * */
   activeProd(state) {
     return state.prodStore.get();
@@ -171,7 +171,7 @@ const actionsProd = {
       // 加载2d canvas
       await loadCanvas();
 
-      // console.log('仓库列表', state.prodStore.list);
+      console.log('仓库列表', state.prodStore.list);
     } finally {
       state.loading_prod = false;
       console.timeEnd(`加载产品 - 通用${detail.templateNo}`);

@@ -42,7 +42,7 @@ export class DesignerUtil {
 
   /**
    * 隐藏所有的选中框
-   * @param {import('@/design').ProdListDataItem | null} prodItem
+   * @param {import('@/design').ProdItemData | null} prodItem
    * @param {Konva.Transformer|Konva.Image|null} ignore 忽略的类型
    *
    * */
@@ -56,7 +56,7 @@ export class DesignerUtil {
   /**
    * 获取view
    * @param {string|null} viewId 视图id
-   * @param {import('@/design').ProdListDataItem | null} prodItem
+   * @param {import('@/design').ProdItemData | null} prodItem
    * @returns {import('@/design').ParseViewItem} 视图
    * */
   static getView(viewId = null, prodItem = null) {
@@ -74,7 +74,7 @@ export class DesignerUtil {
   /**
    * 背景色 - 设置
    * @param {string} color 颜色
-   * @param {import('@/design').ProdListDataItem | null} prodItem
+   * @param {import('@/design').ProdItemData | null} prodItem
    * */
   static setBgc(color, prodItem = null) {
     prodItem = prodItem || this.getActiveProd();
@@ -87,7 +87,7 @@ export class DesignerUtil {
 
   /**
    * 背景色 - 移除
-   * @param {import('@/design').ProdListDataItem | null} prodItem
+   * @param {import('@/design').ProdItemData | null} prodItem
    * */
   static removeBgc(prodItem = null) {
     prodItem = prodItem || this.getActiveProd();
@@ -104,7 +104,7 @@ export class DesignerUtil {
 
   /**
    * 背景色 - 置底
-   * @param {import('@/design').ProdListDataItem | null} prodItem
+   * @param {import('@/design').ProdItemData | null} prodItem
    * */
   static moveBottomBgc(prodItem = null) {
     prodItem = prodItem || this.getActiveProd();
@@ -121,7 +121,7 @@ export class DesignerUtil {
 
   /**
    * 背景色 - 显示隐藏
-   * @param {import('@/design').ProdListDataItem | null} prodItem
+   * @param {import('@/design').ProdItemData | null} prodItem
    * */
   static visibleBgc(prodItem = null) {
     prodItem = prodItem || this.getActiveProd();
@@ -147,7 +147,7 @@ export class DesignerUtil {
   /**
    * 获取产品配置
    * @param {colorId:string, viewId:string|number ,sizeId:string|number} param 参数
-   * @param {import('@/design').ProdListDataItem | null} prodItem 产品
+   * @param {import('@/design').ProdItemData | null} prodItem 产品
    * @returns {object} 配置
    * */
   static getConfig(param = {}, prodItem = null) {
@@ -204,7 +204,7 @@ export class DesignerUtil {
 
   /**
    * 清除指定产品的canvas / three
-   * @param {import('@/design').ProdListDataItem} prodItem 产品
+   * @param {import('@/design').ProdItemData} prodItem 产品
    * */
   static clearProd(prodItem) {
     // 清除three
@@ -236,7 +236,7 @@ export class DesignerUtil {
 
   /**
    * 获取当前激活的产品
-   * @returns {import('@/design').ProdListDataItem} 当前激活的产品
+   * @returns {import('@/design').ProdItemData} 当前激活的产品
    * */
   static getActiveProd() {
     return store.getters['designApplication/activeProd'];
@@ -245,7 +245,7 @@ export class DesignerUtil {
 
 /**
  * 清除three
- * @param {import('@/design').ProdListDataItem} prodItem 产品
+ * @param {import('@/design').ProdItemData} prodItem 产品
  * */
 export function clearThree(prodItem) {
   if (prodItem.three) {

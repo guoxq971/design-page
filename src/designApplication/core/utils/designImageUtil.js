@@ -218,6 +218,9 @@ export class DesignImageUtil {
   static scaleMax(image) {
     const { scaleX, scaleY } = getScaleMax(image);
 
+    // 设计图 旋转归0
+    DesignImageUtil.rotation(image, 0);
+
     image.setAttrs({
       scaleX: scaleX,
       scaleY: scaleY,
@@ -231,6 +234,9 @@ export class DesignImageUtil {
   static scaleMaxWidth(image) {
     const { scaleX, scaleY } = getScaleMax(image, 'width');
 
+    // 设计图 旋转归0
+    DesignImageUtil.rotation(image, 0);
+
     image.setAttrs({
       scaleX: scaleX,
       scaleY: scaleY,
@@ -243,6 +249,9 @@ export class DesignImageUtil {
    */
   static scaleMaxHeight(image) {
     const { scaleX, scaleY } = getScaleMax(image, 'height');
+
+    // 设计图 旋转归0
+    DesignImageUtil.rotation(image, 0);
 
     image.setAttrs({
       scaleX: scaleX,
