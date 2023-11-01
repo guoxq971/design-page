@@ -19,8 +19,12 @@ export default {
     return {
       loading: false,
       total: 0,
-      list: [],
     };
+  },
+  computed: {
+    list() {
+      return this.$store.state.designApplication.collectImageList;
+    },
   },
   methods: {
     /**
@@ -29,7 +33,8 @@ export default {
     async getList() {
       try {
         this.loading = true;
-        this.list = await fetchCollectImageListApi();
+        const list = await fetchCollectImageListApi();
+        this.$store.commit('designApplication/setCollectImageList', list);
       } finally {
         this.loading = false;
       }

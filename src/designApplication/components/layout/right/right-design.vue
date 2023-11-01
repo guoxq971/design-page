@@ -87,7 +87,7 @@
         <div class="design-wrap" v-for="(item, index) in imageList" :class="{ active: item.attrs.uuid === activeView.activeImageUuid }">
           <div class="wrap">
             <!--设计图-->
-            <div v-if="item.attrs.name === 'image'" class="design-bd" @click="onSetActiveImage(item)">
+            <div v-if="item.attrs.name === canvasDefine.image" class="design-bd" @click="onSetActiveImage(item)">
               <div class="design">
                 <el-image :src="item.attrs.fillPatternImage.src" style="width: 100%; height: 100%" />
               </div>
@@ -95,14 +95,15 @@
             </div>
 
             <!--背景色-->
-            <template v-if="item.attrs.name === 'bgc'">
+            <template v-if="item.attrs.name === canvasDefine.bgc">
               <div class="design">
                 <div style="width: 100%; height: 100%" :style="{ backgroundColor: item.attrs.fill }" />
               </div>
             </template>
           </div>
+
           <div class="handle">
-            <template v-if="['image'].includes(item.attrs.name)">
+            <template v-if="[canvasDefine.image].includes(item.attrs.name)">
               <!--图层-上移-->
               <div class="layer-btn" v-title="'图层-上移'" @click="onLayerUp(item)">
                 <img src="../img/图层上移.png" />
@@ -116,10 +117,12 @@
             <div class="layer-btn" v-title="'图层-编辑'">
               <iconpark-icon name="write" size="20" />
             </div>
-            <!--图层-收藏-->
-            <div class="layer-btn" v-title="'图层-收藏'">
-              <iconpark-icon name="rss" size="20" />
-            </div>
+            <template v-if="item.attrs.type === canvasDefine.image">
+              <!--图层-收藏-->
+              <div class="layer-btn" v-title="'图层-收藏'" @click="onImageCollect(item)">
+                <iconpark-icon name="rss" size="20" :style="{ color: DesignImageUtil.hasCollect(item) ? '#4087ff' : '' }" />
+              </div>
+            </template>
             <!--图层-删除-->
             <div class="layer-btn" v-title="'图层-删除'" @click="onLayerDel(item)">
               <img src="../img/删除图层.png" />
@@ -179,6 +182,9 @@ import hoverTile from './hover-tile.vue';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
 import { uuid } from '@/designApplication/core/utils/uuid';
 import { getAngleMultiple, setProxyTransformer } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
+import { canvasDefine } from '@/designApplication/core/canvas_2/define';
+import { fetchCollectImageListApi, setImageCollectApi } from '@/designApplication/apis/image';
+import { fetchBackgroundCollectListApi } from '@/designApplication/apis/background';
 
 export default {
   name: 'right-design',
@@ -193,6 +199,8 @@ export default {
   },
   data() {
     return {
+      DesignImageUtil,
+      canvasDefine,
       hoverTimer: null,
     };
   },
@@ -200,6 +208,7 @@ export default {
     ...mapState({
       activeViewId: (state) => state.designApplication.activeViewId,
       activeColorId: (state) => state.designApplication.activeColorId,
+      collectImageList: (state) => state.designApplication.collectImageList,
     }),
     ...mapGetters({
       activeProdStatic: 'designApplication/activeProdStatic',
@@ -264,11 +273,53 @@ export default {
   },
   methods: {
     /**
+     * 设计图操作 - 收藏
+     * @param {import('@/design').CanvasDesign} image 设计图对象
+     */
+    async onImageCollect(image) {
+      const detail = image.attrs.detail;
+      const param = { imgId: '', seqId: '', isBg: detail.isBg };
+
+      // detail.quickimgid 有值就是从 收藏列表 进来的
+      if (detail.quickimgid) {
+        param.imgId = detail.seqId;
+        param.seqId = detail.quickimgid;
+      } else {
+        param.imgId = image.attrs.detail.id;
+      }
+
+      let flag = true;
+      const d = DesignImageUtil.hasCollect(image);
+      if (d) {
+        param.seqId = d.quickimgid;
+        flag = false;
+
+        await this.$confirm('确定取消收藏该设计图吗？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        });
+      }
+
+      // 取消|收藏 设计图
+      await setImageCollectApi(param, flag);
+      this.$message.success('操作成功');
+
+      // 重新获取收藏列表
+      if (detail.isBg) {
+        const list = await fetchBackgroundCollectListApi();
+        this.$store.commit('designApplication/setCollectBgImageList', list);
+      } else {
+        const list = await fetchCollectImageListApi();
+        this.$store.commit('designApplication/setCollectImageList', list);
+      }
+    },
+    /**
      * 设计图操作 - 复制
      */
     async onImageCopy() {
       const image = await DesignImageUtil.hasActiveImageMessage();
-      if (image.attrs.type === 'image') {
+      if (image.attrs.type === canvasDefine.image) {
         const konvaCanvas = image.attrs.konvaCanvas;
         const copyImage = image.clone();
         const copyTransformer = image.attrs.transformer.clone();
@@ -379,7 +430,7 @@ export default {
      * @param {import('@/design').CanvasDesign} image 设计图对象
      */
     onLayerUp(image) {
-      if (image.attrs.name === 'image') {
+      if (image.attrs.name === canvasDefine.image) {
         DesignImageUtil.layerMoveUp(image);
       }
     },
@@ -388,7 +439,7 @@ export default {
      * @param {import('@/design').CanvasDesign} image 设计图对象
      */
     onLayerDown(image) {
-      if (image.attrs.name === 'image') {
+      if (image.attrs.name === canvasDefine.image) {
         DesignImageUtil.layerMoveDown(image);
       }
     },
@@ -397,7 +448,7 @@ export default {
      * @param {import('@/design').CanvasDesign} image 设计图对象
      */
     onLayerDel(image) {
-      if (image.attrs.name === 'image') {
+      if (image.attrs.name === canvasDefine.image) {
         DesignImageUtil.deleteImage(image);
       }
     },
@@ -407,10 +458,10 @@ export default {
      */
     onLayerVisible(image) {
       switch (image.attrs.name) {
-        case 'image':
+        case canvasDefine.image:
           DesignImageUtil.setImageVisible(image);
           break;
-        case 'bgc':
+        case canvasDefine.bgc:
           break;
         default:
           break;

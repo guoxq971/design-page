@@ -1,3 +1,4 @@
+export { CollectImageListItem, CollectImageListResponse } from './designApplication/interface_2/image';
 export {
   ProdItemData,
   GetProdPriceApiType,

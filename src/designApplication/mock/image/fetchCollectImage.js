@@ -1,19 +1,21 @@
 import { TOKEN } from '@/designApplication/mock/config';
-import { fetchCollectImageListMock } from '@/designApplication/mock/image/fetchCollectImageListMock';
+
 /**
- * 获取列表 - 收藏图片
- * @returns {Promise<import('@/design').CollectImageListResponse>} 收藏图片
+ * 设计图收藏
+ * @param {string} imgId
+ * @returns {Promise<import('@/design').ResponseDataOld>} 子账号列表
  * */
-export async function fetchCollectImageList() {
+export async function fetchCollectImage(imgId) {
   const domain = 'http://gateway.testcustomwe.com';
-  const URL = `/base-web/CMDesignImageQuickAct/queryQuickImageListSJ.act`;
+  const URL = '/base-web/CMDesignImageQuickAct/saveQuickDesignImageSJ.act?imgId=' + imgId;
   return fetch(`${domain}${URL}`, {
     headers: {
       accept: 'application/json, text/plain, */*',
       'accept-language': 'zh-CN,zh;q=0.9',
+      'cache-control': 'no-cache',
       ssotoken: TOKEN,
     },
-    referrer: 'http://front.testcustomwe.com/',
+    referrer: 'http://devfront.testcustomwe.com:8081/',
     referrerPolicy: 'strict-origin-when-cross-origin',
     body: null,
     method: 'GET',

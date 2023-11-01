@@ -24,6 +24,8 @@ import { getProdPriceApi } from '@/designApplication/apis/prod';
  * @property {number|null} activeViewId 选中的视图
  * @property {number|null} activeType 1-通用产品 2-精细产品
  * @property {ProdStore} prodStore 产品仓库
+ * @property {import('@/design').CollectImageListItem[]} collectImageList 收藏的设计图列表
+ * @property {import('@/design').CollectImageListItem[]} collectBgImageList 收藏的背景设计图列表
  * */
 class State {
   config = new Config();
@@ -37,6 +39,9 @@ class State {
   activeViewId = null;
   activeType = null;
   prodStore = new ProdStore();
+
+  collectImageList = [];
+  collectBgImageList = [];
 }
 
 // 产品相关的getters
@@ -80,6 +85,12 @@ const gettersProd = {
 
 // 产品相关的mutations
 const mutationsProd = {
+  setCollectImageList(state, list) {
+    state.collectImageList = list;
+  },
+  setCollectBgImageList(state, list) {
+    state.collectBgImageList = list;
+  },
   setLoadingPrice(state, loading) {
     state.loading_price = loading;
   },

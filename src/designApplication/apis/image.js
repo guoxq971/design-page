@@ -12,6 +12,9 @@ import { fetchAdminImageList } from '@/designApplication/mock/image/fetchAdminIm
 import { fetchAdminImageSelect } from '@/designApplication/mock/image/fetchAdminImageSelect';
 import { fetchCollectImageList } from '@/designApplication/mock/image/fetchCollectImageList';
 import { fetchGroupImageList } from '@/designApplication/mock/image/fetchGroupImageList';
+import { fetchCollectImage } from '@/designApplication/mock/image/fetchCollectImage';
+import { fetchDelCollectImage } from '@/designApplication/mock/image/fetchDelCollectImage';
+import { fetchCollectImageBg } from '@/designApplication/mock/image/fetchCollectImageBg';
 
 /**
  * 获取设计图列表
@@ -133,7 +136,7 @@ export async function fetchAdminImageSelectApi(params) {
 
 /**
  * 获取列表 - 收藏图片
- * @returns {Promise<any[]>} 列表
+ * @returns {Promise<import('@/design').CollectImageListItem[]>} 列表
  * */
 export async function fetchCollectImageListApi() {
   const res = await fetchCollectImageList();
@@ -182,4 +185,30 @@ export async function fetchGroupImageSelectApi(params = null) {
   }
 
   return Promise.resolve(res.designCategories);
+}
+
+/**
+ * 设计图收藏
+ * @param {{imgId:string,seqId:string,isBg:boolean}} param0 参数
+ * @param {boolean} flag 是否收藏 true-收藏 false-取消收藏
+ * @returns {Promise<void>}
+ */
+export async function setImageCollectApi({ imgId, seqId, isBg }, flag = true) {
+  let res;
+  if (flag) {
+    if (isBg) {
+      res = await fetchCollectImageBg(imgId);
+    } else {
+      res = await fetchCollectImage(imgId);
+    }
+  } else {
+    res = await fetchDelCollectImage(seqId);
+  }
+  const msg = res.retMsg || '设计图收藏 失败';
+  if (res.retState !== '0') {
+    Message.warning(msg);
+    return Promise.reject(msg);
+  }
+
+  return Promise.resolve(res);
 }

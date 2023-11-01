@@ -16,8 +16,12 @@ export default {
   data() {
     return {
       loading: false,
-      list: [],
     };
+  },
+  computed: {
+    list() {
+      return this.$store.state.designApplication.collectBgImageList;
+    },
   },
   methods: {
     /**
@@ -26,7 +30,8 @@ export default {
     async getList() {
       try {
         this.loading = true;
-        this.list = await fetchBackgroundCollectListApi();
+        const list = await fetchBackgroundCollectListApi();
+        this.$store.commit('designApplication/setCollectBgImageList', list);
       } finally {
         this.loading = false;
       }
