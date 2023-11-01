@@ -19,6 +19,7 @@ export interface ProdItemResponse {
   sizes: any[]; // 尺码 Array
   printAreas: any[]; // 印刷区域 Array
   pointoutPrintAreas: any[]; // Array 指定印刷区域
+  templateId?: string; // 模板id
 
   /*以下是没有用到的字段*/
   id: string; // 产品id(模板编号)

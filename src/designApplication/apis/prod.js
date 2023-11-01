@@ -5,6 +5,8 @@ import { parseProdItemDetail } from '@/designApplication/mock/prod/prodListByCon
 import { fetchCollectSelectList } from '@/designApplication/mock/prod/fetchCollectSelectList';
 import { fetchProdPrice } from '@/designApplication/mock/prod/fetchProdPrice';
 import store from '@/store';
+import { fetchCollectProd } from '@/designApplication/mock/prod/fetchCollectProd';
+import { fetchDelCollectProd } from '@/designApplication/mock/prod/fetchDelCollectProd';
 
 /**
  * 获取产品列表 - FBA专用产品
@@ -72,4 +74,32 @@ export async function getProdPriceApi(templateNo) {
     store.commit('designApplication/setLoadingPrice', false);
   }
   return Promise.resolve(result);
+}
+
+/**
+ * 产品收藏
+ * @param {string} templateId
+ */
+export async function setCollectProdApi(templateId) {
+  const res = await fetchCollectProd(templateId);
+  if (res.code !== 0) {
+    Message.warning('收藏产品失败');
+    return Promise.reject('收藏产品失败');
+  }
+
+  return Promise.resolve(res);
+}
+
+/**
+ * 产品取消收藏
+ * @param {string} collectId
+ */
+export async function setDelCollectProdApi(collectId) {
+  const res = await fetchDelCollectProd(collectId);
+  if (res.code !== 0) {
+    Message.warning('取消收藏产品失败');
+    return Promise.reject('取消收藏产品失败');
+  }
+
+  return Promise.resolve(res);
 }

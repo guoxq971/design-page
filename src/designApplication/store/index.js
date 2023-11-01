@@ -40,7 +40,11 @@ class State {
   activeType = null;
   prodStore = new ProdStore();
 
+  // 收藏产品
+  collectProdList = [];
+  // 收藏设计图
   collectImageList = [];
+  // 收藏背景图
   collectBgImageList = [];
 }
 
@@ -85,6 +89,9 @@ const gettersProd = {
 
 // 产品相关的mutations
 const mutationsProd = {
+  setCollectProdList(state, list) {
+    state.collectProdList = list;
+  },
   setCollectImageList(state, list) {
     state.collectImageList = list;
   },

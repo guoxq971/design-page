@@ -2,7 +2,7 @@
 <template>
   <div>
     <headerContainer :params="params" :loading="loading" :getList="getList" />
-    <boxList :list="list" v-loading="loading" />
+    <boxList @onContextmenu="onContextmenu" :list="list" v-loading="loading" />
     <pageContainer :get-list="getList" :param="params" :total="total" />
   </div>
 </template>
@@ -38,6 +38,13 @@ export default {
       } finally {
         this.loading = false;
       }
+    },
+    /**
+     * 右键菜单
+     * @param {import('@/design').ProdListDataItem} data
+     */
+    onContextmenu(data) {
+      this.$emit('onContextmenu', data);
     },
   },
   mounted() {

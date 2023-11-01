@@ -41,6 +41,49 @@ export class DesignerUtil {
   }
 
   /**
+   * 当前产品是否是收藏产品
+   * @param {import('@/design').ProdListDataItem} prod 产品
+   * @returns {boolean|import('@/design').ProdListDataItem} 是否是收藏产品
+   */
+  static hasCollectProd(prod) {
+    const result = store.state.designApplication.collectProdList.find((e) => e.id === prod.id);
+    if (result) {
+      return result;
+    }
+
+    return false;
+  }
+
+  /**
+   * 当前产品是否是收藏设计图
+   * @param {import('@/design').ImageListItem} image 设计图
+   * @returns {boolean|import('@/design').ImageListItem} 是否是收藏产品
+   */
+  static hasCollectImage(image) {
+    const detail = image;
+    let collectImageList = [];
+    if (detail.isBg) {
+      collectImageList = store.state.designApplication.collectBgImageList;
+    } else {
+      collectImageList = store.state.designApplication.collectImageList;
+    }
+
+    let id = '';
+    // detail.quickimgid 有值就是从 收藏列表 进来的
+    if (detail.quickimgid) {
+      id = detail.seqId;
+    } else {
+      id = detail.id;
+    }
+
+    const result = collectImageList.find((e) => e.seqId === id);
+    if (result) {
+      return result;
+    }
+    return false;
+  }
+
+  /**
    * 隐藏所有的选中框
    * @param {import('@/design').ProdItemData | null} prodItem
    * @param {Konva.Transformer|Konva.Image|null} ignore 忽略的类型

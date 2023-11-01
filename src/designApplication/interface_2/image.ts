@@ -68,3 +68,44 @@ export interface CollectImageListItem {
 export interface CollectImageListResponse extends ResponseDataOld {
   list: CollectImageListItem[];
 }
+
+/**
+ * 设计图列表的接口返回值的 list 的 item
+ */
+export interface ImageListItem {
+  name: string;
+  description: string;
+  isAll: string;
+  imageCode: string;
+  orderNums: string;
+  count: string;
+  dpi: string;
+  standard: {
+    width: string;
+    height: string;
+    size: string;
+    unit: string;
+  };
+  creator: string;
+  size: {
+    width: string;
+    height: string;
+    unit: string;
+  };
+  colors: [];
+  designCategories: [
+    {
+      id: string;
+    },
+  ];
+  id: string;
+  isBg: boolean;
+  tortType: string;
+  previewImg: string;
+  designImg: string;
+  hdDesignImage: string;
+  isRisk: string;
+  lowRiskWords: string;
+  highRiskWords: string;
+  isHasRisk: string;
+}

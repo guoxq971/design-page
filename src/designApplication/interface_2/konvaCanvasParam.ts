@@ -1,6 +1,7 @@
 import { ParseViewItem, StaticViewItem } from './prod';
 import type Konva from 'konva';
 import { KonvaCanvas } from '../core/canvas_2/konvaCanvas.js';
+import { ImageListItem } from './image';
 
 /**
  * @interface CanvasImage
@@ -18,7 +19,7 @@ export interface CanvasImage extends Konva.Image {
     height: number;
     type: string;
     name: string;
-    detail: object; //设计图的接口详情
+    detail: ImageListItem; //设计图的接口详情
     param: AddParamOfImage;
     view: ParseViewItem;
     konvaCanvas: KonvaCanvas;

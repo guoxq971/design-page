@@ -9,7 +9,7 @@
 
       <!--数据盒子-->
       <div class="list" v-else>
-        <div class="box-wrap" v-for="item in list" :key="'myImage' + item.id" @click="onSetImage(item)">
+        <div class="box-wrap" v-for="item in list" :key="'myImage' + item.id" @click="onSetImage(item)" @contextmenu="(e) => onContextmenu(e, item)">
           <boxContainer style="background-color: rgb(245, 247, 250)" @mouseleave="mouseleave" @mouseenter="mouseenter" :detail="item" :src="item.previewImg" />
         </div>
         <div v-for="item in 4" class="box-wrap" />
@@ -47,6 +47,15 @@ export default {
     };
   },
   methods: {
+    /**
+     * 右键菜单
+     * @param {any} e
+     * @param {import('@/design').ImageListItem} item
+     */
+    onContextmenu(e, item) {
+      e.preventDefault();
+      this.$emit('onContextmenu', item);
+    },
     // 选中设计图
     onSetImage(item) {
       this.$store.dispatch('designApplication/setImage', item);

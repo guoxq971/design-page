@@ -1,21 +1,27 @@
 <template>
-  <el-tabs class="tabs" v-model="active">
-    <el-tab-pane label="我的图库" name="my">
-      <myImage :parentLoading="loading" :exclusive="exclusive" />
-    </el-tab-pane>
-    <el-tab-pane label="小组图库" name="group">
-      <groupImage />
-    </el-tab-pane>
-    <el-tab-pane label="共享图库" name="share">
-      <shareImage :parentLoading="loading" :share="share" />
-    </el-tab-pane>
-    <el-tab-pane label="管理图库" name="admin">
-      <adminImage />
-    </el-tab-pane>
-    <el-tab-pane label="收藏图片" name="collect">
-      <collectImage />
-    </el-tab-pane>
-  </el-tabs>
+  <div>
+    <el-tabs v-model="active">
+      <el-tab-pane label="我的图库" name="my">
+        <myImage @onContextmenu="onContextmenu" :parentLoading="loading" :exclusive="exclusive" />
+      </el-tab-pane>
+      <el-tab-pane label="小组图库" name="group">
+        <groupImage @onContextmenu="onContextmenu" />
+      </el-tab-pane>
+      <el-tab-pane label="共享图库" name="share">
+        <shareImage @onContextmenu="onContextmenu" :parentLoading="loading" :share="share" />
+      </el-tab-pane>
+      <el-tab-pane label="管理图库" name="admin">
+        <adminImage @onContextmenu="onContextmenu" />
+      </el-tab-pane>
+      <el-tab-pane label="收藏图片" name="collect">
+        <span slot="label" v-title="'对设计图鼠标右键可【收藏】/【取消收藏】设计图'">收藏图片</span>
+        <collectImage @onContextmenu="onContextmenu" />
+      </el-tab-pane>
+    </el-tabs>
+
+    <!--右键菜单-->
+    <contextMenu ref="Contextmenu" :itemList="menuItemList" :visible.sync="menuVisible" />
+  </div>
 </template>
 
 <script>
@@ -25,8 +31,14 @@ import adminImage from './adminImage';
 import collectImage from './collectImage';
 import groupImage from './groupImage';
 import { getImageCategoryApi } from '@/designApplication/apis/image';
+import title from '@/designApplication/core/utils/title';
+import contextMenu from '@/designApplication/components/contextmen.vue';
+import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
+import { collectImageFn } from '@/designApplication/core/utils/common';
 export default {
+  directives: { title },
   components: {
+    contextMenu,
     myImage,
     shareImage,
     adminImage,
@@ -45,6 +57,10 @@ export default {
         label: '共享类',
         value: '',
       },
+      // 右键菜单是否展示
+      menuVisible: false,
+      // 右键菜单
+      menuItemList: [{ key: '1', icon: 'el-icon-caret-left', text: '', fn: null }],
     };
   },
   methods: {
@@ -77,6 +93,21 @@ export default {
       } finally {
         this.loading = false;
       }
+    },
+    /**
+     * 右键菜单
+     * @param {import('@/design').ImageListItem} data
+     */
+    onContextmenu(data) {
+      // 注册收藏产品的事件
+      const item = this.menuItemList[0];
+      item.text = DesignerUtil.hasCollectImage(data) ? '取消收藏设计图' : '收藏设计图';
+      item.fn = async () => {
+        await collectImageFn(data);
+      };
+
+      // 打开弹窗
+      this.menuVisible = true;
     },
   },
   mounted() {

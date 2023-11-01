@@ -17,26 +17,7 @@ export class DesignImageUtil {
    */
   static hasCollect(image) {
     const detail = image.attrs.detail;
-    let collectImageList = [];
-    if (detail.isBg) {
-      collectImageList = store.state.designApplication.collectBgImageList;
-    } else {
-      collectImageList = store.state.designApplication.collectImageList;
-    }
-
-    let id = '';
-    // detail.quickimgid 有值就是从 收藏列表 进来的
-    if (detail.quickimgid) {
-      id = detail.seqId;
-    } else {
-      id = image.attrs.detail.id;
-    }
-
-    const result = collectImageList.find((e) => e.seqId === id);
-    if (result) {
-      return result;
-    }
-    return false;
+    return DesignerUtil.hasCollectImage(detail);
   }
 
   /**

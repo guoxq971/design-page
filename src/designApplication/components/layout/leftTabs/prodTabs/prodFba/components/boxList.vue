@@ -9,7 +9,7 @@
 
       <!--数据盒子-->
       <div class="list" v-else>
-        <div class="box-wrap" v-for="item in list" :key="'commonProd' + item.seqId" @click="onSetProd(item)">
+        <div class="box-wrap" v-for="item in list" :key="'commonProd' + item.seqId" @click="onSetProd(item)" @contextmenu="(e) => onContextmenu(e, item)">
           <boxContainer @mouseleave="mouseleave" @mouseenter="mouseenter" :detail="item" :active="isActive(item)" :prod="item.showImage.thumbImg" :bg="item.showImage.texture" />
         </div>
         <div v-for="item in 4" class="box-wrap" />
@@ -52,6 +52,15 @@ export default {
     },
   },
   methods: {
+    /**
+     * 右键菜单
+     * @param {any} e
+     * @param {import('@/design').ProdListDataItem} item
+     */
+    onContextmenu(e, item) {
+      e.preventDefault();
+      this.$emit('onContextmenu', item);
+    },
     // 选中产品
     onSetProd(item) {
       // 如果一样的产品，不做处理

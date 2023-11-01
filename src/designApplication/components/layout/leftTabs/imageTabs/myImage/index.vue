@@ -2,7 +2,7 @@
 <template>
   <div>
     <headerContainer :accountList="accountList" :params="params" :loading="loading" :getList="getList" />
-    <boxList :list="list" v-loading="loading" />
+    <boxList :list="list" v-loading="loading" @onContextmenu="onContextmenu" />
     <pageContainer :get-list="getList" :param="params" :total="total" />
   </div>
 </template>
@@ -42,6 +42,13 @@ export default {
     },
   },
   methods: {
+    /**
+     * 右键菜单
+     * @param {import('@/design').ImageListItem} data
+     */
+    onContextmenu(data) {
+      this.$emit('onContextmenu', data);
+    },
     /**
      * 获取设计图列表
      * */

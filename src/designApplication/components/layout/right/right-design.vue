@@ -183,8 +183,7 @@ import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil'
 import { uuid } from '@/designApplication/core/utils/uuid';
 import { getAngleMultiple, setProxyTransformer } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
-import { fetchCollectImageListApi, setImageCollectApi } from '@/designApplication/apis/image';
-import { fetchBackgroundCollectListApi } from '@/designApplication/apis/background';
+import { collectImageFn } from '@/designApplication/core/utils/common';
 
 export default {
   name: 'right-design',
@@ -278,41 +277,7 @@ export default {
      */
     async onImageCollect(image) {
       const detail = image.attrs.detail;
-      const param = { imgId: '', seqId: '', isBg: detail.isBg };
-
-      // detail.quickimgid 有值就是从 收藏列表 进来的
-      if (detail.quickimgid) {
-        param.imgId = detail.seqId;
-        param.seqId = detail.quickimgid;
-      } else {
-        param.imgId = image.attrs.detail.id;
-      }
-
-      let flag = true;
-      const d = DesignImageUtil.hasCollect(image);
-      if (d) {
-        param.seqId = d.quickimgid;
-        flag = false;
-
-        await this.$confirm('确定取消收藏该设计图吗？', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-        });
-      }
-
-      // 取消|收藏 设计图
-      await setImageCollectApi(param, flag);
-      this.$message.success('操作成功');
-
-      // 重新获取收藏列表
-      if (detail.isBg) {
-        const list = await fetchBackgroundCollectListApi();
-        this.$store.commit('designApplication/setCollectBgImageList', list);
-      } else {
-        const list = await fetchCollectImageListApi();
-        this.$store.commit('designApplication/setCollectImageList', list);
-      }
+      await collectImageFn(detail);
     },
     /**
      * 设计图操作 - 复制

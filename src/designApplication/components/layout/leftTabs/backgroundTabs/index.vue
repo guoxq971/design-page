@@ -7,6 +7,7 @@
       <colorBackground />
     </el-tab-pane>
     <el-tab-pane label="收藏背景" name="collect">
+      <span slot="label" v-title="'对背景图鼠标右键可【收藏】/【取消收藏】背景'">收藏背景</span>
       <collectBackground />
     </el-tab-pane>
   </el-tabs>
@@ -16,7 +17,9 @@
 import imageBackground from './imageBackground';
 import collectBackground from './collectBackground';
 import colorBackground from './colorBackground';
+import title from '@/designApplication/core/utils/title';
 export default {
+  directives: { title },
   components: {
     imageBackground,
     collectBackground,
