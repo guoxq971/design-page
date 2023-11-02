@@ -5,6 +5,7 @@
       <box-adaptive class="box-wrap" :class="{ active: item.id === activeViewId }" @click.native="onPreview(item)">
         <img :src="item.showImage.image" alt="" class="full" style="position: absolute" />
         <img :src="item.showImage.texture" alt="" class="full" style="position: absolute" />
+        <div class="dot" :class="{ 'dot-active': imageLength(item.view) }"></div>
       </box-adaptive>
     </el-tooltip>
   </div>
@@ -18,6 +19,7 @@ export default {
   components: { boxContainer },
   computed: {
     ...mapGetters({
+      activeProd: 'designApplication/activeProd',
       activeProdStatic: 'designApplication/activeProdStatic',
     }),
     ...mapState({
@@ -25,6 +27,14 @@ export default {
       loading_prod: (state) => state.designApplication.loading_prod,
       activeViewId: (state) => state.designApplication.activeViewId,
     }),
+    imageLength() {
+      /**
+       * @param {import('@/design').ParseViewItem} view
+       */
+      return (view) => {
+        return view.canvas?.getImageList().length;
+      };
+    },
   },
   methods: {
     // 选择视图
@@ -58,5 +68,18 @@ export default {
     margin-bottom: 8px;
     padding: 1px;
   }
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  background-color: #ccc;
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  border-radius: 50%;
+}
+.dot-active {
+  background-color: limegreen;
 }
 </style>

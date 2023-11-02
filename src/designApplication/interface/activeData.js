@@ -23,8 +23,10 @@ export class ActiveData {
  * @property {string|null|undefined} v 中间的车线(红色)
  * @property {object} print 视图打印区域
  * @property {object} printout 视图打印区域
+ * @property {import('@/design').ParseViewItem} view
  * */
 export class StaticViewItem {
+  view;
   id; // 视图id
   name; // 视图名称
   prod; // 视图产品图

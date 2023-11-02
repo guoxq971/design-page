@@ -66,6 +66,14 @@ export default {
      * @param {typeof ProdType} type 产品类型
      * */
     async onClick(type) {
+      // 切换精细 且 设计图有数据
+      if (type === ProdType.refine && DesignerUtil.getActiveProd().viewList.some((view) => view.canvas.getImageList().length)) {
+        await this.$confirm('切换设计类型后，当前设计数据将会清空，是否继续？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        });
+      }
       await this.$store.dispatch('designApplication/changeProd', { type });
     },
   },

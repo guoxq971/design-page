@@ -97,6 +97,7 @@ export class ProdStore {
       }
 
       const staticViewItem = new StaticViewItem();
+      staticViewItem.view = view;
       staticViewItem.id = view.id;
       staticViewItem.name = view.name;
       // staticViewItem.prod = color.thumbImg;

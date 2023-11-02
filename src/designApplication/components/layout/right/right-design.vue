@@ -20,7 +20,7 @@
       <el-button class="btn btn2 btn5 btn6" type="warning" @click="onBlur" v-title="'全颜色合成'">全颜色合成</el-button>
 
       <!--保存产品-->
-      <el-button class="btn btn2 btn5" type="primary" @click="onBlur" v-title="'保存产品'">保存产品</el-button>
+      <el-button class="btn btn2 btn5" type="primary" @click="onSave" v-title="'保存产品'">保存产品</el-button>
     </el-card>
 
     <!--操作区域-2-->
@@ -283,6 +283,14 @@ export default {
     },
   },
   methods: {
+    /**
+     * 保存产品
+     */
+    onSave(e) {
+      this.onBlur(e);
+      const prodItem = DesignerUtil.getActiveProd();
+      console.log(prodItem);
+    },
     /**
      * 开启|关闭 图层
      */
