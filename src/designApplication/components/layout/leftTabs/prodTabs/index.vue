@@ -22,7 +22,7 @@
 import prodCommon from './prodCommon';
 import prodFba from './prodFba';
 import prodCollect from './prodCollect';
-import title from '@/designApplication/core/utils/title';
+import title from '@/designApplication/core/utils/directives/title/title';
 import contextMenu from '@/designApplication/components/contextmen.vue';
 import { fetchProdListApi, setCollectProdApi, setDelCollectProdApi } from '@/designApplication/apis/prod';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';

@@ -35,10 +35,14 @@
       <hoverClear class="btn4" />
 
       <!--关闭图层-->
-      <el-button class="btn4 btn5" @click="onBlur" v-title="'图层'">关闭图层</el-button>
+      <el-button class="btn4 btn5" @click="onLayer" v-title="'图层'" :class="{ 'hover-color': visible_layer }">
+        {{ visible_layer ? '关闭图层' : '开启图层' }}
+      </el-button>
 
       <!--开启收藏-->
-      <el-button class="btn4 btn5" @click="onBlur" v-title="'收藏'">开启收藏</el-button>
+      <el-button class="btn4 btn5" @click="onCollect" v-title="'收藏'" :class="{ 'hover-color': visible_collect }">
+        {{ visible_collect ? '关闭收藏' : '开启收藏' }}
+      </el-button>
     </el-card>
 
     <!--设计图操作-->
@@ -82,7 +86,7 @@
     </el-card>
 
     <!--设计图列表-->
-    <el-card class="one-handle" shadow="never" v-if="imageList.length">
+    <el-card v-show="visible_layer" class="one-handle" shadow="never" v-if="imageList.length">
       <div class="design-group">
         <div class="design-wrap" v-for="(item, index) in imageList" :class="{ active: item.attrs.uuid === activeView.activeImageUuid }">
           <div class="wrap">
@@ -165,6 +169,8 @@
 
     <!--设计说明-->
     <hoverDesignDetail ref="hoverDesignDetail" @mouseenter.native="enter()" @mouseleave.native="leave()" />
+    <!--收藏列表-->
+    <collectPop v-show="visible_collect" />
   </div>
 </template>
 
@@ -173,23 +179,25 @@ import { mapGetters, mapState } from 'vuex';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import multiAngleFold from '@/designApplication/components/multiAngleFold.vue';
 import { buttonBlur } from '@/designApplication/core/utils/buttonBlur';
-import title from '@/designApplication/core/utils/title';
-import hoverDesignDetail from './hover-designDetail.vue';
-import hoverSetting from './hover-setting.vue';
-import hoverClear from './hover-clear.vue';
-import hoverScale from './hover-scale.vue';
-import hoverTile from './hover-tile.vue';
+import title from '@/designApplication/core/utils/directives/title/title';
+import hoverDesignDetail from './hoverComponents/hover-designDetail.vue';
+import hoverSetting from './hoverComponents/hover-setting.vue';
+import hoverClear from './hoverComponents/hover-clear.vue';
+import hoverScale from './hoverComponents/hover-scale.vue';
+import hoverTile from './hoverComponents/hover-tile.vue';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
 import { uuid } from '@/designApplication/core/utils/uuid';
 import { getAngleMultiple, setProxyTransformer } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 import { collectImageFn } from '@/designApplication/core/utils/common';
+import collectPop from './collectPop.vue';
 
 export default {
   name: 'right-design',
   directives: { title },
   components: {
     multiAngleFold,
+    collectPop,
     hoverDesignDetail,
     hoverSetting,
     hoverClear,
@@ -198,6 +206,10 @@ export default {
   },
   data() {
     return {
+      // 收藏弹窗
+      visible_collect: false,
+      // 图层
+      visible_layer: true,
       DesignImageUtil,
       canvasDefine,
       hoverTimer: null,
@@ -271,6 +283,20 @@ export default {
     },
   },
   methods: {
+    /**
+     * 开启|关闭 图层
+     */
+    onLayer(e) {
+      this.onBlur(e);
+      this.visible_layer = !this.visible_layer;
+    },
+    /**
+     * 开启|关闭 收藏
+     */
+    onCollect(e) {
+      this.onBlur(e);
+      this.visible_collect = !this.visible_collect;
+    },
     /**
      * 设计图操作 - 收藏
      * @param {import('@/design').CanvasDesign} image 设计图对象
@@ -533,6 +559,12 @@ export default {
 // 多角度-左右切换按钮
 ::v-deep .el-carousel__arrow {
   background-color: #1f2d3d7d;
+}
+
+.hover-color {
+  color: #409eff !important;
+  border-color: #c6e2ff !important;
+  background-color: #ecf5ff !important;
 }
 
 /deep/ .el-card__body {

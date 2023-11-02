@@ -140,6 +140,15 @@ export class KonvaCanvas {
   }
 
   /**
+   * 清空设计图
+   */
+  clear() {
+    this.clip.removeChildren();
+    this.clipBg.removeChildren();
+    this.layer.draw();
+  }
+
+  /**
    * 获取当前所有的设计图
    * @returns {import ('@/design').CanvasDesign[]} 当前所有的设计图
    */

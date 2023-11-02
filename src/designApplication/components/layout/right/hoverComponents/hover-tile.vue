@@ -13,7 +13,7 @@
 
 <script>
 import { buttonBlur } from '@/designApplication/core/utils/buttonBlur';
-import title from '@/designApplication/core/utils/title';
+import title from '@/designApplication/core/utils/directives/title/title';
 
 export default {
   name: 'hover-setting',
@@ -31,7 +31,7 @@ export default {
 </script>
 
 <style scoped lang="less">
-@import url('./commonStyle');
+@import url('../commonStyle');
 /deep/ .el-popover__reference-wrapper {
   width: 100%;
   height: 100%;

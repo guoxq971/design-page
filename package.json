@@ -9,7 +9,6 @@
   "dependencies": {
     "@tweenjs/tween.js": "^21.0.0",
     "@types/three": "^0.157.2",
-    "ant-design-vue": "^1.7.2",
     "core-js": "^3.8.3",
     "element-ui": "^2.15.14",
     "exceljs": "^4.4.0",
@@ -31,7 +30,6 @@
     "@vue/cli-service": "~5.0.0",
     "less": "^4.0.0",
     "less-loader": "^8.0.0",
-    "typescript": "^5.2.2",
     "vue-template-compiler": "^2.6.14"
   }
 }

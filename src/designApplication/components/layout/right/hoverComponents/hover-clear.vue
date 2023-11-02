@@ -16,7 +16,8 @@
 
 <script>
 import { buttonBlur } from '@/designApplication/core/utils/buttonBlur';
-import title from '@/designApplication/core/utils/title';
+import title from '@/designApplication/core/utils/directives/title/title';
+import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 
 export default {
   name: 'hover-setting',
@@ -25,11 +26,29 @@ export default {
     /**
      * 清空设计 - 全部
      */
-    onClearAll() {},
+    async onClearAll() {
+      await this.$confirm('是否确认清空设计？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      });
+      const prod = DesignerUtil.getActiveProd();
+      prod.viewList.forEach((view) => {
+        view.canvas.clear();
+      });
+    },
     /**
      * 清空设计 - 当前
      */
-    onClearCur() {},
+    async onClearCur() {
+      await this.$confirm('是否确认清空设计？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      });
+      const view = DesignerUtil.getView();
+      view.canvas.clear();
+    },
     /**
      * 失焦
      */
@@ -41,5 +60,5 @@ export default {
 </script>
 
 <style scoped lang="less">
-@import url('./commonStyle');
+@import url('../commonStyle');
 </style>

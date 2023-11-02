@@ -1,4 +1,4 @@
-import { bindInit } from '@/designApplication/core/utils/titleUtil';
+import { bindInit } from '@/designApplication/core/utils/directives/title/titleUtil';
 
 /**
  * 样式组装函数

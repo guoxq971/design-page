@@ -17,7 +17,7 @@
 import imageBackground from './imageBackground';
 import collectBackground from './collectBackground';
 import colorBackground from './colorBackground';
-import title from '@/designApplication/core/utils/title';
+import title from '@/designApplication/core/utils/directives/title/title';
 export default {
   directives: { title },
   components: {

@@ -16,7 +16,7 @@
 
 <script>
 import { buttonBlur } from '@/designApplication/core/utils/buttonBlur';
-import title from '@/designApplication/core/utils/title';
+import title from '@/designApplication/core/utils/directives/title/title';
 
 export default {
   name: 'hover-setting',
@@ -41,5 +41,5 @@ export default {
 </script>
 
 <style scoped lang="less">
-@import url('./commonStyle');
+@import url('../commonStyle');
 </style>

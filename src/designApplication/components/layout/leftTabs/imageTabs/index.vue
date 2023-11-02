@@ -31,7 +31,7 @@ import adminImage from './adminImage';
 import collectImage from './collectImage';
 import groupImage from './groupImage';
 import { getImageCategoryApi } from '@/designApplication/apis/image';
-import title from '@/designApplication/core/utils/title';
+import title from '@/designApplication/core/utils/directives/title/title';
 import contextMenu from '@/designApplication/components/contextmen.vue';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import { collectImageFn } from '@/designApplication/core/utils/common';

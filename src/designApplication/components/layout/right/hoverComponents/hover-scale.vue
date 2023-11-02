@@ -1,13 +1,13 @@
 <template>
   <el-popover placement="bottom" width="200" trigger="hover">
     <div class="hover-wrap">
-      <img v-title="'宽度最大化'" src="../img/宽度最大化.png" class="img" @click="onImageMaxWidth" />
-      <img v-title="'高度最大化'" src="../img/高度最大化.png" class="img" @click="onImageMaxHeight" />
-      <img v-title="'最大化'" src="../img/最大化.png" class="img" @click="onImageMax" />
+      <img v-title="'宽度最大化'" src="../../img/宽度最大化.png" class="img" @click="onImageMaxWidth" />
+      <img v-title="'高度最大化'" src="../../img/高度最大化.png" class="img" @click="onImageMaxHeight" />
+      <img v-title="'最大化'" src="../../img/最大化.png" class="img" @click="onImageMax" />
     </div>
 
     <div v-title="'最大化'" slot="reference">
-      <img src="../img/最大化.png" style="width: 100%; height: 100%" />
+      <img src="../../img/最大化.png" style="width: 100%; height: 100%" />
       <div class="right-bottom-corner">
         <div class="interior" />
       </div>
@@ -17,7 +17,7 @@
 
 <script>
 import { buttonBlur } from '@/designApplication/core/utils/buttonBlur';
-import title from '@/designApplication/core/utils/title';
+import title from '@/designApplication/core/utils/directives/title/title';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
 
 export default {
@@ -56,7 +56,7 @@ export default {
 </script>
 
 <style scoped lang="less">
-@import url('./commonStyle');
+@import url('../commonStyle');
 .hover-wrap {
   width: 100%;
   display: flex;
