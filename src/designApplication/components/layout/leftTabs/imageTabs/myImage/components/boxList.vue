@@ -24,7 +24,6 @@
 <script>
 import boxContainer from '@/designApplication/components/boxContainer.vue';
 import hoverDetailImage from '@/designApplication/components/hoverDetailImage.vue';
-import { ParseProdItem } from '@/designApplication/interface/commonProdParse';
 
 export default {
   components: {

@@ -2,6 +2,7 @@ import { fetchCollectImageListApi, setImageCollectApi } from '@/designApplicatio
 import { fetchBackgroundCollectListApi } from '@/designApplication/apis/background';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import store from '@/store';
+import { Message, MessageBox } from 'element-ui';
 
 /**
  * 收藏|取消收藏 设计图
@@ -24,7 +25,7 @@ export async function collectImageFn(detail) {
     param.seqId = d.quickimgid;
     flag = false;
 
-    await this.$confirm('确定取消收藏该设计图吗？', '提示', {
+    await MessageBox.confirm('确定取消收藏该设计图吗？', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning',
@@ -33,7 +34,7 @@ export async function collectImageFn(detail) {
 
   // 取消|收藏 设计图
   await setImageCollectApi(param, flag);
-  this.$message.success('操作成功');
+  Message.success('操作成功');
 
   // 重新获取收藏列表
   if (detail.isBg) {

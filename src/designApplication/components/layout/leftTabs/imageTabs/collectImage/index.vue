@@ -1,7 +1,7 @@
 <!--收藏图片-->
 <template>
   <div>
-    <boxList :list="list" v-loading="loading" />
+    <boxList :list="list" v-loading="loading" @onContextmenu="onContextmenu" />
   </div>
 </template>
 
@@ -27,6 +27,13 @@ export default {
     },
   },
   methods: {
+    /**
+     * 右键菜单
+     * @param {import('@/design').ImageListItem} data
+     */
+    onContextmenu(data) {
+      this.$emit('onContextmenu', data);
+    },
     /**
      * 获取设计图列表
      * */
