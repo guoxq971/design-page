@@ -110,6 +110,7 @@ export interface ParseViewItem {
   updateTexture: (num: number | string | null) => void;
   rect: { x: number; y: number; width: number; height: number };
   activeImageUuid: string;
+  isCollide: boolean;
 }
 
 /**
@@ -414,6 +415,7 @@ export interface ActiveStaticProdData {
  * @property {ProdConfig3dResponseData|ProdConfig3dResponseRefineData|null} config3d 3d配置
  * @property {PriceListItem[]} priceList 价格列表
  * @property {'' | '0' | '1' | '2'} isSpecial 价格参数 ''-没有 0-尺码 1-颜色 2-正常
+ * @property {boolean} isCollide 是否碰撞 true-碰撞 false-不碰撞
  */
 export interface ProdItemData {
   detail: ProdItemResponse;
@@ -428,4 +430,5 @@ export interface ProdItemData {
   config3d: ProdConfig3dResponseData | ProdConfig3dResponseRefineData;
   priceList: PriceListItem[];
   isSpecial: '' | '0' | '1' | '2';
+  isCollide: boolean;
 }

@@ -288,8 +288,20 @@ export default {
      */
     onSave(e) {
       this.onBlur(e);
+
+      // 当前的产品数据
       const prodItem = DesignerUtil.getActiveProd();
-      console.log(prodItem);
+      // console.log(prodItem);
+
+      // 设计图碰撞检测
+      const isCollide = prodItem.viewList.some((view) => view.canvas.getImageList().some((image) => image.attrs.isCollide));
+      if (isCollide) {
+        this.$message.warning('你所设计的图案超过了打印的区域');
+        return;
+      }
+      // 组装 o
+      // 区分 自产产品、外采产品
+      // 是否有管理图库的设计图参与设计
     },
     /**
      * 开启|关闭 图层
@@ -338,6 +350,10 @@ export default {
 
         konvaCanvas.clip.add(copyImage);
         konvaCanvas.layer.add(copyTransformer);
+
+        await this.$nextTick();
+        // 碰撞检测
+        DesignImageUtil.isCollide(copyImage);
       }
     },
     /**
@@ -346,6 +362,10 @@ export default {
     async onImageRotateDown() {
       const image = await DesignImageUtil.hasActiveImageMessage();
       DesignImageUtil.rotation(image, getAngleMultiple(image.rotation(), 'left'));
+
+      await this.$nextTick();
+      // 碰撞检测
+      DesignImageUtil.isCollide(image);
     },
     /**
      * 设计图操作 - 右旋转
@@ -353,6 +373,10 @@ export default {
     async onImageRotateUp() {
       const image = await DesignImageUtil.hasActiveImageMessage();
       DesignImageUtil.rotation(image, getAngleMultiple(image.rotation(), 'right'));
+
+      await this.$nextTick();
+      // 碰撞检测
+      DesignImageUtil.isCollide(image);
     },
     /**
      * 设计图操作 - 放大
@@ -360,6 +384,10 @@ export default {
     async onImageScaleUp() {
       const image = await DesignImageUtil.hasActiveImageMessage();
       DesignImageUtil.scaleUp(image);
+
+      await this.$nextTick();
+      // 碰撞检测
+      DesignImageUtil.isCollide(image);
     },
     /**
      * 设计图操作 - 缩小
@@ -367,6 +395,10 @@ export default {
     async onImageScaleDown() {
       const image = await DesignImageUtil.hasActiveImageMessage();
       DesignImageUtil.scaleDown(image);
+
+      await this.$nextTick();
+      // 碰撞检测
+      DesignImageUtil.isCollide(image);
     },
     /**
      * 设计图操作 - 水平居中
@@ -374,6 +406,10 @@ export default {
     async onImagePositionHorizontal() {
       const image = await DesignImageUtil.hasActiveImageMessage();
       DesignImageUtil.positionHorizontalCenter(image);
+
+      await this.$nextTick();
+      // 碰撞检测
+      DesignImageUtil.isCollide(image);
     },
     /**
      * 设计图操作 - 垂直居中
@@ -381,6 +417,10 @@ export default {
     async onImagePositionVertical() {
       const image = await DesignImageUtil.hasActiveImageMessage();
       DesignImageUtil.positionVerticalCenter(image);
+
+      await this.$nextTick();
+      // 碰撞检测
+      DesignImageUtil.isCollide(image);
     },
     /**
      * 设计图操作 - 移除

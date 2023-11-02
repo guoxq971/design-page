@@ -2,6 +2,7 @@ import store from '@/store';
 import { getPositionCenter, getScaleMax, isCollision, remove, visibleImage } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import { Message } from 'element-ui';
+import { isCollide } from '@/designApplication/core/utils/common';
 
 /**
  * 设计图的工具
@@ -9,6 +10,34 @@ import { Message } from 'element-ui';
 export class DesignImageUtil {
   static STEP_UP = 1 + 0.02;
   static STEP_DOWN = 1 - 0.02;
+
+  /**
+   * 对设计图进行碰撞检测
+   * @param {import('@/design').CanvasImage} image
+   */
+  static isCollide(image) {
+    if (!image.attrs.view.isCollide) return;
+    const path = image.attrs.view.canvas.konvaPath;
+
+    // 碰撞检测
+    const result = isCollide(image, path);
+    image.attrs.isCollide = result;
+
+    // 碰撞检测后的样式
+    if (result) {
+      image.attrs.transformer.setAttrs({
+        borderDash: [5, 5],
+        borderStroke: 'red',
+        borderStrokeWidth: 2.5,
+      });
+    } else {
+      image.attrs.transformer.setAttrs({
+        borderDash: [],
+        borderStroke: '#4087ff',
+        borderStrokeWidth: 1.5,
+      });
+    }
+  }
 
   /**
    * 传入的设计图是否已经被收藏

@@ -161,6 +161,11 @@ export function setTextAttrs(text, param) {
  * @param {import('@/design').CanvasImage} image 节点
  */
 export function setProxyTransformer(transformer, image) {
+  transformer.setAttrs({
+    view: image.attrs.view,
+    image: image,
+  });
+
   // 监听 visible
   transformer.attrs = new Proxy(transformer.attrs, {
     set: (target, key, value) => {

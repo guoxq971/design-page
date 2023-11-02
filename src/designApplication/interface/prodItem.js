@@ -25,6 +25,9 @@ export class ProdUtil {
     prod.sizeList = detail.sizeList;
     prod.three = null;
     prod.config3d = config3d;
+    prod.isCollide = detail.printoutList.length === 0;
+
+    prod.viewList.forEach((view) => (view.isCollide = prod.isCollide));
 
     return prod;
   }
@@ -54,6 +57,9 @@ export class ProdUtil {
     prod.sizeList = [];
     prod.three = null;
     prod.config3d = refineItemResponse;
+    prod.isCollide = !!detail.printoutList.length;
+
+    prod.viewList.forEach((view) => (view.isCollide = prod.isCollide));
 
     return prod;
   }
@@ -86,6 +92,7 @@ export class ProdItem {
   config3d;
   priceList = [];
   isSpecial = '';
+  isCollide = false;
 }
 
 /**

@@ -7,6 +7,7 @@ import { getDesignImage, getText, layerMove, remove, setProxyTransformer, setTex
 import { initTransformer } from '@/designApplication/core/canvas/selectBorder';
 import { uuid } from '@/designApplication/core/utils/uuid';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
+import { isCollide } from '@/designApplication/core/utils/common';
 
 /**
  * KonvaCanvas
@@ -221,11 +222,14 @@ export class KonvaCanvas {
     const designImage = await getDesignImage(param, this.layer, this.hideAllTransformer);
 
     // 监听 - 设计图
-    designImage.image.on('dragmove', (e) => {
-      this.updateTexture(3);
+    designImage.image.on('dragmove', function (e) {
+      that.updateTexture(3);
+
+      // 设计图的碰撞检测
+      DesignImageUtil.isCollide(this);
     });
-    designImage.image.on('dragend', (e) => {
-      this.updateTexture(33);
+    designImage.image.on('dragend', function (e) {
+      that.updateTexture(33);
     });
     designImage.image.on('mousedown', function (e) {
       DesignerUtil.hideAllTransformer(null, this);
@@ -235,11 +239,11 @@ export class KonvaCanvas {
     designImage.transformer.on('visibleChange', (event) => {
       this.updateTexture(11, 50);
     });
-    designImage.transformer.on('transform', (e) => {
-      this.updateTexture(4);
-    });
-    designImage.transformer.on('transformend', () => {
-      this.updateTexture(9, 50);
+    designImage.transformer.on('transform', function (e) {
+      that.updateTexture(4);
+
+      // 设计图的碰撞检测
+      DesignImageUtil.isCollide(this.attrs.image);
     });
 
     // 设置属性
@@ -257,10 +261,14 @@ export class KonvaCanvas {
       param: param,
       konvaCanvas: this,
       transformer: designImage.transformer,
+      isCollide: param.view.isCollide,
     });
 
     // 监听visible
     setProxyTransformer(designImage.transformer, designImage.image);
+
+    // 碰撞检测
+    DesignImageUtil.isCollide(designImage.image);
 
     //添加设计图
     this.clip.add(designImage.image);

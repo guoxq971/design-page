@@ -91,7 +91,6 @@ export default {
       immediate: true,
       deep: true,
       handler() {
-        console.log('this.list', this.list);
         if (this.data.length === 0) {
           this.list = [];
           return;

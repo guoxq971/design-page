@@ -6,7 +6,7 @@
       <img v-title="'最大化'" src="../../img/最大化.png" class="img" @click="onImageMax" />
     </div>
 
-    <div v-title="'最大化'" slot="reference">
+    <div v-title="'最大化'" slot="reference" @click="onImageMax">
       <img src="../../img/最大化.png" style="width: 100%; height: 100%" />
       <div class="right-bottom-corner">
         <div class="interior" />
@@ -36,6 +36,8 @@ export default {
     async onImageMax() {
       const image = await DesignImageUtil.hasActiveImageMessage();
       DesignImageUtil.scaleMax(image);
+      DesignImageUtil.positionHorizontalCenter(image);
+      DesignImageUtil.positionVerticalCenter(image);
     },
     /**
      * 设计图操作 - 宽度最大化
@@ -43,6 +45,8 @@ export default {
     async onImageMaxWidth() {
       const image = await DesignImageUtil.hasActiveImageMessage();
       DesignImageUtil.scaleMaxWidth(image);
+      DesignImageUtil.positionHorizontalCenter(image);
+      DesignImageUtil.positionVerticalCenter(image);
     },
     /**
      * 设计图操作 - 高度度最大化
@@ -50,6 +54,8 @@ export default {
     async onImageMaxHeight() {
       const image = await DesignImageUtil.hasActiveImageMessage();
       DesignImageUtil.scaleMaxHeight(image);
+      DesignImageUtil.positionHorizontalCenter(image);
+      DesignImageUtil.positionVerticalCenter(image);
     },
   },
 };

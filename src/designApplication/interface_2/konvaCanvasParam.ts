@@ -9,6 +9,7 @@ import { ImageListItem } from './image';
  */
 export interface CanvasImage extends Konva.Image {
   attrs: {
+    isCollide: boolean; //是否碰撞
     uuid: string;
     x: number;
     y: number;
@@ -71,6 +72,8 @@ export interface CustomCanvasDesign {
  * @property {number} scaleY - y轴缩放比例
  * @property {number} rotation - 旋转角度
  * @property {HTMLImageElement} imageDOM - 图片DOM
+ * @property {ParseViewItem} view - 视图数据
+ * @property {StaticViewItem} staticView - 静态视图数据
  * @property {object} detail - 详情
  */
 export interface AddParamOfImage {

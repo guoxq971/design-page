@@ -1,6 +1,6 @@
 // import Konva from 'konva';
 import { Konva } from '@/designApplication/core/canvas/konva';
-import { konvaTransformerConfig } from './konvaConfig';
+import { konvaTransformerConfig } from '@/designApplication/core/canvas/konvaConfig';
 
 class CustomTransformer extends Konva.Transformer {
   customName = 'CustomTransformer';
