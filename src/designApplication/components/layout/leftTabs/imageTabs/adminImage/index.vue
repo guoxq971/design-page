@@ -60,6 +60,7 @@ export default {
         params.limit = params.pageSize;
 
         const { list, total } = await fetchAdminImageListApi(params);
+        list.forEach((image) => (image.isAdminOrg = true));
 
         this.list = list;
         this.total = total;

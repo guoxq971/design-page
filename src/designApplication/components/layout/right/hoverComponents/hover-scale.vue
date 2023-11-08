@@ -38,6 +38,8 @@ export default {
       DesignImageUtil.scaleMax(image);
       DesignImageUtil.positionHorizontalCenter(image);
       DesignImageUtil.positionVerticalCenter(image);
+      // 碰撞检测
+      DesignImageUtil.isCollide(image);
     },
     /**
      * 设计图操作 - 宽度最大化
@@ -47,6 +49,8 @@ export default {
       DesignImageUtil.scaleMaxWidth(image);
       DesignImageUtil.positionHorizontalCenter(image);
       DesignImageUtil.positionVerticalCenter(image);
+      // 碰撞检测
+      DesignImageUtil.isCollide(image);
     },
     /**
      * 设计图操作 - 高度度最大化
@@ -56,6 +60,8 @@ export default {
       DesignImageUtil.scaleMaxHeight(image);
       DesignImageUtil.positionHorizontalCenter(image);
       DesignImageUtil.positionVerticalCenter(image);
+      // 碰撞检测
+      DesignImageUtil.isCollide(image);
     },
   },
 };

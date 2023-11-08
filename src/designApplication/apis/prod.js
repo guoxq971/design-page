@@ -7,6 +7,8 @@ import { fetchProdPrice } from '@/designApplication/mock/prod/fetchProdPrice';
 import store from '@/store';
 import { fetchCollectProd } from '@/designApplication/mock/prod/fetchCollectProd';
 import { fetchDelCollectProd } from '@/designApplication/mock/prod/fetchDelCollectProd';
+import { fetchSaveProd } from '@/designApplication/mock/prod/fetchSaveProd';
+import { SubmitParamType } from '@/designApplication/interface_2/params';
 
 /**
  * 获取产品列表 - FBA专用产品
@@ -102,4 +104,19 @@ export async function setDelCollectProdApi(collectId) {
   }
 
   return Promise.resolve(res);
+}
+
+/**
+ * 保存产品
+ * @param {SubmitParamType} param
+ * @returns {Promise<import('@/design').SaveProdResponse>}
+ */
+export async function saveProdApi(param) {
+  const res = await fetchSaveProd(param);
+  if (!res.status) {
+    Message.warning('保存产品失败');
+    return Promise.reject({ msg: '保存产品失败' });
+  }
+
+  return res;
 }

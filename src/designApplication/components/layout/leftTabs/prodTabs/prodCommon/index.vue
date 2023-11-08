@@ -39,7 +39,9 @@ export default {
         this.list = list;
         this.total = total;
         if (this.list.length === 0) return;
-        await this.$store.dispatch('designApplication/setProd', this.list[0]);
+        if (!this.$store.getters['designApplication/activeProd']) {
+          await this.$store.dispatch('designApplication/setProd', this.list[0]);
+        }
       } finally {
         this.loading = false;
       }

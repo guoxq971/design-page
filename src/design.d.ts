@@ -1,5 +1,7 @@
-export { ImageListItem, CollectImageListItem, CollectImageListResponse } from './designApplication/interface_2/image';
+export { ImageListItem, CollectImageListItem, CollectImageListResponse, GetListImageAdmin } from './designApplication/interface_2/image';
 export {
+  SaveProdResponseDataItem,
+  SaveProdResponse,
   ProdItemData,
   GetProdPriceApiType,
   PriceListItem,

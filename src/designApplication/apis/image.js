@@ -100,7 +100,7 @@ export async function getImageCategoryByShareOfTwoApi(parentId) {
 /**
  *  获取管理员图库列表
  *  @param {Object} params 参数
- *  @returns {Promise<any[]>} 管理员图库列表
+ *  @returns {Promise<import('@/design').GetListImageAdmin>} 管理员图库列表
  * */
 export async function fetchAdminImageListApi(params) {
   const res = await fetchAdminImageList(params);

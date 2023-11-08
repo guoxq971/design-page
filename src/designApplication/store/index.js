@@ -15,6 +15,7 @@ import { getProdPriceApi } from '@/designApplication/apis/prod';
  * designApplication store
  * @class State
  * @property {Config} config 配置
+ * @property {boolean} loading_save 是否正在保存产品
  * @property {boolean} loading_prod 是否正在加载产品
  * @property {boolean} loading_price 是否正在加载价格
  * @property {boolean} loading_2d 是否正在加载2d canvas
@@ -30,6 +31,7 @@ import { getProdPriceApi } from '@/designApplication/apis/prod';
 class State {
   config = new Config();
   show3d = false;
+  loading_save = false;
   loading_price = false;
   loading_prod = false;
   loading_2d = false;
@@ -89,6 +91,9 @@ const gettersProd = {
 
 // 产品相关的mutations
 const mutationsProd = {
+  setLoadingSave(state, loading) {
+    state.loading_save = loading;
+  },
   setCollectProdList(state, list) {
     state.collectProdList = list;
   },

@@ -108,4 +108,15 @@ export interface ImageListItem {
   lowRiskWords: string;
   highRiskWords: string;
   isHasRisk: string;
+
+  /*自定义*/
+  isAdminOrg?: boolean; //是否是管理图库的图
+}
+
+/**
+ * 管理图库的接口返回
+ */
+export interface GetListImageAdmin {
+  total: number;
+  list: ImageListItem[];
 }

@@ -20,6 +20,7 @@ export interface ProdItemResponse {
   printAreas: any[]; // 印刷区域 Array
   pointoutPrintAreas: any[]; // Array 指定印刷区域
   templateId?: string; // 模板id
+  emptyCopy?: string; // 空白复制
 
   /*以下是没有用到的字段*/
   id: string; // 产品id(模板编号)
@@ -431,4 +432,27 @@ export interface ProdItemData {
   priceList: PriceListItem[];
   isSpecial: '' | '0' | '1' | '2';
   isCollide: boolean;
+}
+
+/**
+ * 保存产品的接口返回值的 data 的 item
+ */
+export interface SaveProdResponseDataItem {
+  id: string;
+  code: number;
+  imgUrl: string;
+  designMain: number;
+  designSize: string | null;
+}
+
+/**
+ * 保存产品的接口返回值
+ */
+export interface SaveProdResponse {
+  imgUrl: string;
+  code: number;
+  data: SaveProdResponseDataItem[];
+  id: string;
+  href: string;
+  status: boolean;
 }
