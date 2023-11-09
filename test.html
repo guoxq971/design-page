@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .main{
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+        }
+        .left{
+            flex:40;
+            border:1px solid pink;
+        }
+
+        .center{
+            flex:50;
+            border:1px solid green;
+        }
+
+        .right{
+            flex:10;
+            border:1px solid blue;
+            display: flex;
+            flex-direction: column;
+        }
+        .right .top{
+            flex:2;
+        }
+        .right .bottom{border: 1px solid red;
+            height: 50%;
+            overflow: hidden;
+            background: red;
+        }
+        .context{
+            height: 1000px;
+            background: pink;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="main">
+    <div class="left"></div>
+    <div class="center"></div>
+    <div class="right">
+        <div class="top"></div>
+        <div class="bottom">
+<!--            <div class="context">-->
+                <div style="height: 200px;">我是文字</div>
+                <div style="height: 200px;">我是文字</div>
+                <div style="height: 200px;">我是文字</div>
+                <div style="height: 200px;">我是文字</div>
+                <div style="height: 200px;">我是文字</div>
+                <div style="height: 200px;">我是文字</div>
+                <div style="height: 200px;">我是文字</div>
+            </div>
+<!--        </div>-->
+    </div>
+</div>
+</body>
+</html>

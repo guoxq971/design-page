@@ -7,7 +7,7 @@
 
 <script>
 import pageContainer from './components/page.vue';
-import boxList from './components/boxList.vue';
+import boxList from '@/designApplication/components/boxListImage.vue';
 import { fetchCollectImageListApi } from '@/designApplication/apis/image';
 
 export default {
@@ -41,6 +41,9 @@ export default {
       try {
         this.loading = true;
         const list = await fetchCollectImageListApi();
+        for (let item of list) {
+          item.previewImg = item.designImg;
+        }
         this.$store.commit('designApplication/setCollectImageList', list);
       } finally {
         this.loading = false;

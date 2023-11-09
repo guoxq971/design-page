@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import filterPop from './filterPop.vue';
+import filterPop from '@/designApplication/components/filterPop.vue';
 import { fetchGroupImageSelectApi } from '@/designApplication/apis/image';
 
 // 搜索指定字符串

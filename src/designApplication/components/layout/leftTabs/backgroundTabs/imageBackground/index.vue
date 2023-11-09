@@ -9,10 +9,8 @@
 
 <script>
 import headerContainer from './components/header.vue';
-import pageContainer from './components/page.vue';
-import boxList from './components/boxList.vue';
-import { getImageListApi } from '@/designApplication/apis/image';
-import { ImageListParams } from '@/designApplication/interface/image/imageListParams';
+import pageContainer from '@/designApplication/components/page.vue';
+import boxList from '@/designApplication/components/boxListImage.vue';
 import { fetchBackgroundImageListApi } from '@/designApplication/apis/background';
 import { BackgroundImageParams } from '@/designApplication/interface/background/background';
 

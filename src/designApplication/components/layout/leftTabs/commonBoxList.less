@@ -2,7 +2,7 @@
 .list-container {
   position: relative;
   .box-list {
-    min-height: 580px;
+    //min-height: 580px;
     overflow: auto;
 
     .list {
@@ -25,6 +25,13 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      position: relative;
+      flex-wrap: wrap;
+
+      /deep/ .el-empty {
+        position: absolute;
+        top: 0;
+      }
     }
   }
 }

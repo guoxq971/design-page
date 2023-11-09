@@ -1,4 +1,4 @@
-<!--通用产品-头部搜索-->
+<!--产品-头部搜索-->
 <template>
   <div class="header-container">
     <el-input class="ipt-wrap" placeholder="请输入名称/编号" v-model="params.tempalteNoOrName" @keyup.enter.native="getList(true)">
@@ -33,13 +33,12 @@
 
 <script>
 import { fetchProdCategoryList } from '@/designApplication/mock/prod/prodCategoryList';
-import { FbaProdParams } from '@/designApplication/interface/commonProdParams';
 
 export default {
   props: {
     /**
      * 请求参数
-     * @type {FbaProdParams}
+     * @type {CommonProdParams}
      * */
     params: Object,
     loading: Boolean,

@@ -1,4 +1,4 @@
-import { initTransformer } from '@/designApplication/core/canvas/selectBorder';
+import { drawRotation, initTransformer } from '@/designApplication/core/canvas/selectBorder';
 import { Konva } from '@/designApplication/core/canvas/konva';
 import { konvaRectConfig } from '@/designApplication/core/canvas/konvaConfig';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
@@ -180,6 +180,9 @@ export function setProxyTransformer(transformer, image) {
 
   // 监听 缩放尺寸
   transformer.setAttr('boundBoxFunc', (oldBox, newBox) => {
+    // 绘制旋转角度
+    drawRotation(transformer, oldBox, newBox);
+
     // 是否放大
     const isUp = newBox.width > oldBox.width || newBox.height > oldBox.height;
 

@@ -9,6 +9,7 @@ export class CommonProdParams {
   fullData = true;
   isFbaTemplate = 0;
   pageNo = 1;
+  pageNum = 1;
   pageSize = 4 * 7;
   category1;
   category2;

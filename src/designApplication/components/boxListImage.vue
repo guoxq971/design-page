@@ -1,10 +1,11 @@
-<!--共享图库-列表-->
+<!--我的图库-列表-->
 <template>
   <div class="list-container">
     <div class="box-list">
       <!--空数据-->
       <div class="empty" v-if="list.length === 0">
         <el-empty description="" />
+        <boxAdaptive width="25%" v-for="item in 24 - list.length" :key="item" />
       </div>
 
       <!--数据盒子-->
@@ -12,7 +13,7 @@
         <div class="box-wrap" v-for="item in list" :key="'myImage' + item.id" @click="onSetImage(item)" @contextmenu="(e) => onContextmenu(e, item)">
           <boxContainer style="background-color: rgb(245, 247, 250)" @mouseleave="mouseleave" @mouseenter="mouseenter" :detail="item" :src="item.previewImg" />
         </div>
-        <div v-for="item in 4" class="box-wrap" />
+        <boxAdaptive width="25%" v-for="item in 24 - list.length" :key="item" />
       </div>
     </div>
 
@@ -24,11 +25,13 @@
 <script>
 import boxContainer from '@/designApplication/components/boxContainer.vue';
 import hoverDetailImage from '@/designApplication/components/hoverDetailImage.vue';
+import boxAdaptive from '@/designApplication/components/boxAdaptive.vue';
 
 export default {
   components: {
     boxContainer,
     hoverDetailImage,
+    boxAdaptive,
   },
   props: {
     // 获取设计图列表

@@ -1,9 +1,9 @@
-<!--百分比盒子-->
+<!--自适应盒子-->
 <template>
-  <div class="my-box-container" :style="{ width: width }">
-    <div class="my-box-wrap" :style="{ paddingBottom: height }">
-      <div class="my-box-item">
-        <slot />
+  <div class="my-adaptive-wrap" :style="{ width: boxWidth, margin: margin }">
+    <div class="my-adaptive-bd" :style="{ paddingBottom: height }">
+      <div class="my-adaptive-context-bd">
+        <slot></slot>
       </div>
     </div>
   </div>
@@ -11,29 +11,42 @@
 
 <script>
 export default {
+  name: 'adaptiveBox',
   props: {
-    // 宽度
     width: { type: String, default: '100%' },
-    // 高度 (高度是宽度的百分比 || 固定值 px)
-    height: { type: String, default: '100%' },
+    height: { type: [String, Number], default: '100%' },
+    margin: { type: String, default: '0.52%' },
+  },
+  computed: {
+    boxWidth() {
+      return `calc(${this.width} - ${this.margin} * 2)`;
+    },
   },
 };
 </script>
 
 <style scoped lang="less">
-.my-box-container {
+.my-adaptive-wrap {
   //width: 25%;
-  .my-box-wrap {
+  .my-adaptive-bd {
+    position: relative;
+    top: 0;
     width: 100%;
     height: 0;
-    //padding-bottom: 45%;
-    position: relative;
-    .my-box-item {
+    //padding-bottom: 100%;
+
+    .my-adaptive-context-bd {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
+      //padding: 3px;
+
+      .my-adaptive-context {
+        width: 100%;
+        height: 100%;
+      }
     }
   }
 }

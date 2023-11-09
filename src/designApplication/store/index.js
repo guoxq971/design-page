@@ -10,6 +10,7 @@ import { Message } from 'element-ui';
 import store from '@/store';
 import { loadImage } from '@/designApplication/core/utils/loadImage';
 import { getProdPriceApi } from '@/designApplication/apis/prod';
+import { cloneDeep } from 'lodash';
 
 /**
  * designApplication store
@@ -167,6 +168,8 @@ const actionsProd = {
     }
 
     let prod;
+    // 产品详情
+    detail = cloneDeep(detail);
 
     try {
       state.loading_prod = true;

@@ -5,6 +5,7 @@
       <el-input class="ipt-wrap" placeholder="请输入图片标题/编号" v-model="params.query" @keyup.enter.native="getList(true)">
         <el-button slot="append" icon="el-icon-search" :loading="loading" @click="getList(true)" />
       </el-input>
+
       <!--筛选-->
       <el-popover placement="bottom" width="550" trigger="click">
         <filterPop :param="params" :get-list="getList" />
@@ -13,8 +14,12 @@
           <i class="el-icon-arrow-down el-icon--right"></i>
         </el-button>
       </el-popover>
+
+      <!--上传图片-->
       <el-button type="primary">上传图片</el-button>
     </div>
+
+    <!--请选择图片来源-->
     <el-select placeholder="请选择图片来源" @change="getList" v-model="params.customerId">
       <el-option v-for="item in accountList" :key="item.value" :label="item.label" :value="item.value" />
     </el-select>
@@ -22,7 +27,7 @@
 </template>
 
 <script>
-import filterPop from './filterPop.vue';
+import filterPop from '@/designApplication/components/filterPop.vue';
 export default {
   components: {
     filterPop,

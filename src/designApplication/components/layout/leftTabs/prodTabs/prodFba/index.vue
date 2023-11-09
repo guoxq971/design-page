@@ -3,14 +3,14 @@
   <div>
     <headerContainer :params="params" :loading="loading" :getList="getList" />
     <boxList @onContextmenu="onContextmenu" :list="list" v-loading="loading" />
-    <pageContainer :get-list="getList" :param="params" :total="total" />
+    <pageContainer num-key="pageNo" :get-list="getList" :param="params" :total="total" />
   </div>
 </template>
 
 <script>
-import headerContainer from './components/header.vue';
-import pageContainer from './components/page.vue';
-import boxList from './components/boxList.vue';
+import headerContainer from '@/designApplication/components/headerProd.vue';
+import pageContainer from '@/designApplication/components/page.vue';
+import boxList from '@/designApplication/components/boxListProd.vue';
 import { FbaProdParams } from '@/designApplication/interface/commonProdParams';
 import { fetchProdListApi } from '@/designApplication/apis/prod';
 

@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import filterPop from './filterPop.vue';
+import filterPop from '@/designApplication/components/filterPop.vue';
 import { getImageCategoryByShareApi, getImageCategoryByShareOfTwoApi } from '@/designApplication/apis/image';
 export default {
   components: {

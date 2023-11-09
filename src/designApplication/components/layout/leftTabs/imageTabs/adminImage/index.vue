@@ -9,8 +9,8 @@
 
 <script>
 import headerContainer from './components/header.vue';
-import pageContainer from './components/page.vue';
-import boxList from './components/boxList.vue';
+import pageContainer from '@/designApplication/components/page.vue';
+import boxList from '@/designApplication/components/boxListImage.vue';
 import { fetchAdminImageListApi } from '@/designApplication/apis/image';
 import { AdminImageListParams } from '@/designApplication/interface/image/imageListParams';
 

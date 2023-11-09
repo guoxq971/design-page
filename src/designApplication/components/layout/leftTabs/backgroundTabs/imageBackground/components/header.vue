@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import filterPop from './filterPop.vue';
+import filterPop from '@/designApplication/components/filterPop.vue';
 export default {
   components: {
     filterPop,

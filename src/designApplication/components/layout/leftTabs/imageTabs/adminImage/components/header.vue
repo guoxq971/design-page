@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import filterPop from './filterPop.vue';
+import filterPop from '@/designApplication/components/filterPop.vue';
 import { fetchAdminImageSelectApi } from '@/designApplication/apis/image';
 import { AdminImageListParams } from '@/designApplication/interface/image/imageListParams';
 
