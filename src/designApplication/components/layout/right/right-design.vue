@@ -12,7 +12,7 @@
       <hoverSetting />
 
       <!--历史记录-->
-      <el-button class="btn" @click="onBlur" v-title="'历史记录'">
+      <el-button class="btn" @click="onHistory" v-title="'历史记录'">
         <iconpark-icon name="history" size="20" />
       </el-button>
 
@@ -170,7 +170,7 @@
     </el-card>
 
     <!--历史设计记录-->
-    <historyPop ref="historyPop" />
+    <historyPop ref="historyPop" v-show="visible_history" />
     <!--设计说明-->
     <hoverDesignDetail ref="hoverDesignDetail" @mouseenter.native="enter()" @mouseleave.native="leave()" />
     <!--收藏列表-->
@@ -180,25 +180,27 @@
 
 <script>
 import { mapGetters, mapState } from 'vuex';
-import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import multiAngleFold from '@/designApplication/components/multiAngleFold.vue';
-import { buttonBlur } from '@/designApplication/core/utils/buttonBlur';
 import title from '@/designApplication/core/utils/directives/title/title';
 import hoverDesignDetail from './hoverComponents/hover-designDetail.vue';
 import hoverSetting from './hoverComponents/hover-setting.vue';
 import hoverClear from './hoverComponents/hover-clear.vue';
 import hoverScale from './hoverComponents/hover-scale.vue';
 import hoverTile from './hoverComponents/hover-tile.vue';
-import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
-import { uuid } from '@/designApplication/core/utils/uuid';
-import { getAngleMultiple, setProxyTransformer } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
-import { collectImageFn } from '@/designApplication/core/utils/common';
 import collectPop from './collectPop.vue';
 import store from '@/store';
-import { SubmitParamType, ConfigurationItem } from '@/designApplication/interface_2/params';
-import { saveProdApi } from '@/designApplication/apis/prod';
 import historyPop from '@/designApplication/components/layout/right/historyPop.vue';
+
+import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
+import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
+import { SubmitParamType, ConfigurationItem } from '@/designApplication/interface_2/params';
+
+import { buttonBlur } from '@/designApplication/core/utils/buttonBlur';
+import { uuid } from '@/designApplication/core/utils/uuid';
+import { collectImageFn } from '@/designApplication/core/utils/common';
+import { saveProdApi } from '@/designApplication/apis/prod';
+import { getAngleMultiple, setProxyTransformer } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
 
 export default {
   name: 'right-design',
@@ -215,10 +217,6 @@ export default {
   },
   data() {
     return {
-      // 收藏弹窗
-      visible_collect: false,
-      // 图层
-      visible_layer: true,
       DesignImageUtil,
       canvasDefine,
       hoverTimer: null,
@@ -226,6 +224,9 @@ export default {
   },
   computed: {
     ...mapState({
+      visible_layer: (state) => state.designApplication.visible_layer,
+      visible_history: (state) => state.designApplication.visible_history,
+      visible_collect: (state) => state.designApplication.visible_collect,
       loadingSave: (state) => state.designApplication.loading_save,
       activeViewId: (state) => state.designApplication.activeViewId,
       activeColorId: (state) => state.designApplication.activeColorId,
@@ -293,6 +294,13 @@ export default {
     },
   },
   methods: {
+    /**
+     * 历史设计记录
+     */
+    onHistory(e) {
+      this.onBlur(e);
+      this.$store.commit('designApplication/setHistoryVisible', !this.visible_history);
+    },
     /**
      * 保存产品
      * @param {Event} e
@@ -415,8 +423,11 @@ export default {
       console.log(submitParam);
 
       try {
+        const historyItem = { loading: true, id: '123', imgUrl: '', name: '' };
+        this.$store.commit('designApplication/addHistoryItem', historyItem);
         this.$store.commit('designApplication/setLoadingSave', true);
         const res = await saveProdApi(submitParam);
+        this.$store.dispatch('designApplication/getHistoryList');
         this.$message.success('保存成功');
       } finally {
         this.$store.commit('designApplication/setLoadingSave', false);
@@ -427,14 +438,14 @@ export default {
      */
     onLayer(e) {
       this.onBlur(e);
-      this.visible_layer = !this.visible_layer;
+      this.$store.commit('designApplication/setVisibleLayer', !this.visible_layer);
     },
     /**
      * 开启|关闭 收藏
      */
     onCollect(e) {
       this.onBlur(e);
-      this.visible_collect = !this.visible_collect;
+      this.$store.commit('designApplication/setVisibleCollect', !this.visible_collect);
     },
     /**
      * 设计图操作 - 收藏

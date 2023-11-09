@@ -1,15 +1,17 @@
+import store from '@/store';
+import { Message } from 'element-ui';
+
 import { ProdStore } from '@/designApplication/store/prodStore';
 import { ProdItem, ProdType, ProdUtil } from '@/designApplication/interface/prodItem';
 import { Config } from '@/designApplication/core/config';
+import { config3dUtil } from '@/designApplication/interface/Config3d/config3dOfCommonResponse';
+import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
+
 import { loadCanvas } from '@/designApplication/core/canvas/loadCanvas';
 import { loadThree } from '@/designApplication/core/three/loadThree';
 import { gerRefineProdConfig3dByTemplateNoWithSizeApi, getProd3dConfigByCommonApi, getProd3dConfigByRefineListApi, getRefineProdDetailByTemplateNoWithSizeApi } from '@/designApplication/apis/common';
-import { config3dUtil } from '@/designApplication/interface/Config3d/config3dOfCommonResponse';
-import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
-import { Message } from 'element-ui';
-import store from '@/store';
 import { loadImage } from '@/designApplication/core/utils/loadImage';
-import { getProdPriceApi } from '@/designApplication/apis/prod';
+import { getHistoryList, getProdPriceApi } from '@/designApplication/apis/prod';
 import { cloneDeep } from 'lodash';
 
 /**
@@ -28,6 +30,10 @@ import { cloneDeep } from 'lodash';
  * @property {ProdStore} prodStore 产品仓库
  * @property {import('@/design').CollectImageListItem[]} collectImageList 收藏的设计图列表
  * @property {import('@/design').CollectImageListItem[]} collectBgImageList 收藏的背景设计图列表
+ * @property {import('@/design').HistoryItem[]} historyList 历史设计记录
+ * @property {boolean} visible_history 历史设计记录-弹窗开关
+ * @property {boolean} visible_collect 收藏的设计图列表-弹窗开关
+ * @property {boolean} visible_layer 图层列表开关
  * */
 class State {
   config = new Config();
@@ -43,7 +49,13 @@ class State {
   activeType = null;
   prodStore = new ProdStore();
 
+  // 图层
+  visible_layer = true;
+  // 历史设计记录
+  visible_history = false;
+  historyList = [];
   // 收藏产品
+  visible_collect = false;
   collectProdList = [];
   // 收藏设计图
   collectImageList = [];
@@ -92,6 +104,23 @@ const gettersProd = {
 
 // 产品相关的mutations
 const mutationsProd = {
+  setVisibleLayer(state, visible) {
+    state.visible_layer = visible;
+  },
+  setVisibleCollect(state, visible) {
+    state.visible_collect = visible;
+  },
+  setHistoryVisible(state, visible) {
+    state.visible_history = visible;
+  },
+  /**
+   * 历史设计记录新增一条记录 (loading状态)
+   * @param state
+   * @param {import('@/design').HistoryItem} item
+   */
+  addHistoryItem(state, item) {
+    state.historyList.unshift(item);
+  },
   setLoadingSave(state, loading) {
     state.loading_save = loading;
   },
@@ -377,6 +406,12 @@ export default {
    * */
   actions: {
     ...actionsProd,
+    /**
+     * 获取历史设计揭露
+     */
+    async getHistoryList({ state, commit, dispatch, getters }) {
+      state.historyList = await getHistoryList();
+    },
     /**
      * 设置价格
      * @param {*} vuex context

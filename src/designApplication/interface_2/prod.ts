@@ -456,3 +456,24 @@ export interface SaveProdResponse {
   href: string;
   status: boolean;
 }
+
+/**
+ * 历史设计记录的接口返回值 - item
+ */
+export interface HistoryItem {
+  name: string;
+  id: string;
+  imgUrl: string;
+  code: string;
+
+  /*自定义属性*/
+  loading: boolean;
+}
+
+/**
+ * 历史设计记录的接口返回值
+ */
+export interface HistoryListResponse extends ResponseDataOld {
+  count: number;
+  products: HistoryItem[];
+}

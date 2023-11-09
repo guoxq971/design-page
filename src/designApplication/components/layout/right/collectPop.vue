@@ -1,7 +1,7 @@
 <!--收藏列表-->
 <template>
   <transition name="el-fade-in-linear">
-    <div class="list-group" v-drag-pop="{ left: 1350, top: 90 }">
+    <div class="list-group" v-dragPop="{ left: 1350, top: 90 }">
       <div class="img-warp" style="position: relative">
         <div class="title drag1">收藏图片</div>
         <div class="list-wrap">
