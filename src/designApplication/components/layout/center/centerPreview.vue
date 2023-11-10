@@ -65,7 +65,7 @@ export default {
     border: 1px solid #888;
     border-radius: 4px;
     cursor: pointer;
-    margin-bottom: 8px;
+    margin-bottom: 8px !important;
     padding: 1px;
   }
 }

@@ -11,8 +11,11 @@ import { loadCanvas } from '@/designApplication/core/canvas/loadCanvas';
 import { loadThree } from '@/designApplication/core/three/loadThree';
 import { gerRefineProdConfig3dByTemplateNoWithSizeApi, getProd3dConfigByCommonApi, getProd3dConfigByRefineListApi, getRefineProdDetailByTemplateNoWithSizeApi } from '@/designApplication/apis/common';
 import { loadImage } from '@/designApplication/core/utils/loadImage';
-import { getHistoryList, getProdPriceApi } from '@/designApplication/apis/prod';
+import { getProdPriceApi } from '@/designApplication/apis/prod';
 import { cloneDeep } from 'lodash';
+
+import { actions_history, getters_history, mutations_history, state_history } from '@/designApplication/store/history';
+import { collect_mutations, collect_state } from '@/designApplication/store/collect';
 
 /**
  * designApplication store
@@ -28,40 +31,29 @@ import { cloneDeep } from 'lodash';
  * @property {number|null} activeViewId 选中的视图
  * @property {number|null} activeType 1-通用产品 2-精细产品
  * @property {ProdStore} prodStore 产品仓库
- * @property {import('@/design').CollectImageListItem[]} collectImageList 收藏的设计图列表
- * @property {import('@/design').CollectImageListItem[]} collectBgImageList 收藏的背景设计图列表
- * @property {import('@/design').HistoryItem[]} historyList 历史设计记录
- * @property {boolean} visible_history 历史设计记录-弹窗开关
- * @property {boolean} visible_collect 收藏的设计图列表-弹窗开关
  * @property {boolean} visible_layer 图层列表开关
  * */
-class State {
-  config = new Config();
-  show3d = false;
-  loading_save = false;
-  loading_price = false;
-  loading_prod = false;
-  loading_2d = false;
-  loading_3d = false;
-  activeColorId = null;
-  activeSizeId = null;
-  activeViewId = null;
-  activeType = null;
-  prodStore = new ProdStore();
+const state = {
+  config: new Config(),
+  show3d: false,
+  loading_save: false,
+  loading_price: false,
+  loading_prod: false,
+  loading_2d: false,
+  loading_3d: false,
+  activeColorId: null,
+  activeSizeId: null,
+  activeViewId: null,
+  activeType: null,
+  prodStore: new ProdStore(),
 
   // 图层
-  visible_layer = true;
+  visible_layer: true,
   // 历史设计记录
-  visible_history = false;
-  historyList = [];
+  ...state_history,
   // 收藏产品
-  visible_collect = false;
-  collectProdList = [];
-  // 收藏设计图
-  collectImageList = [];
-  // 收藏背景图
-  collectBgImageList = [];
-}
+  ...collect_state,
+};
 
 // 产品相关的getters
 const gettersProd = {
@@ -106,32 +98,6 @@ const gettersProd = {
 const mutationsProd = {
   setVisibleLayer(state, visible) {
     state.visible_layer = visible;
-  },
-  setVisibleCollect(state, visible) {
-    state.visible_collect = visible;
-  },
-  setHistoryVisible(state, visible) {
-    state.visible_history = visible;
-  },
-  /**
-   * 历史设计记录新增一条记录 (loading状态)
-   * @param state
-   * @param {import('@/design').HistoryItem} item
-   */
-  addHistoryItem(state, item) {
-    state.historyList.unshift(item);
-  },
-  setLoadingSave(state, loading) {
-    state.loading_save = loading;
-  },
-  setCollectProdList(state, list) {
-    state.collectProdList = list;
-  },
-  setCollectImageList(state, list) {
-    state.collectImageList = list;
-  },
-  setCollectBgImageList(state, list) {
-    state.collectBgImageList = list;
   },
   setLoadingPrice(state, loading) {
     state.loading_price = loading;
@@ -390,28 +356,28 @@ const actionsProd = {
  * */
 export default {
   namespaced: true,
-  state: new State(),
+  state: { ...state },
   getters: {
     // 产品相关的getters
     ...gettersProd,
+    ...getters_history,
     activeView(state) {
       return state.prodStore.getView(state.activeViewId);
     },
   },
   mutations: {
+    ...collect_mutations,
     ...mutationsProd,
+    ...mutations_history,
   },
   /**
    * actions => 工具(designerUtil) && 操作(actions | operationUtil)
    * */
   actions: {
+    // 产品
     ...actionsProd,
-    /**
-     * 获取历史设计揭露
-     */
-    async getHistoryList({ state, commit, dispatch, getters }) {
-      state.historyList = await getHistoryList();
-    },
+    // 历史设计记录
+    ...actions_history,
     /**
      * 设置价格
      * @param {*} vuex context

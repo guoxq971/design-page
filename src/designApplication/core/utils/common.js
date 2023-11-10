@@ -61,32 +61,29 @@ export function isCollide(rect, path) {
   const isRectBig = rectBoundingBox.width > pathBoundingBox.width || rectBoundingBox.height > pathBoundingBox.height;
 
   // 矩形比 Path 小, 判断是否每个店都在 Path 内部
-  if (!isRectBig) {
-    // 获取矩形的4个角点坐标
-    const rectTopLeft = { x: rectBoundingBox.x, y: rectBoundingBox.y };
-    const rectTopRight = { x: rectBoundingBox.x + rectBoundingBox.width, y: rectBoundingBox.y };
-    const rectBottomLeft = { x: rectBoundingBox.x, y: rectBoundingBox.y + rectBoundingBox.height };
-    const rectBottomRight = { x: rectBoundingBox.x + rectBoundingBox.width, y: rectBoundingBox.y + rectBoundingBox.height };
+  if (isRectBig) return true;
 
-    // 检查每个角点是否在 Path 内部
-    const topLeftInside = path.intersects(rectTopLeft);
-    const topRightInside = path.intersects(rectTopRight);
-    const bottomLeftInside = path.intersects(rectBottomLeft);
-    const bottomRightInside = path.intersects(rectBottomRight);
-    if (topLeftInside && topRightInside && bottomLeftInside && bottomRightInside) {
-      // 与车线完全没有碰撞
-      // console.log('矩形的四个角点都在 Path 内部');
-      return false;
-    } else if (topLeftInside || topRightInside || bottomLeftInside || bottomRightInside) {
-      // 有可能存在内部的车线与矩形的某个角点碰撞, 也有可能是矩形的某个角点在车线外部
-      // console.log('矩形的四个角点中至少一个在 Path 内部');
-      return true;
-    } else {
-      // console.log('矩形的四个角点都在 Path 外部');
-      return true;
-    }
+  // 获取矩形的4个角点坐标
+  const rectTopLeft = { x: rectBoundingBox.x, y: rectBoundingBox.y };
+  const rectTopRight = { x: rectBoundingBox.x + rectBoundingBox.width, y: rectBoundingBox.y };
+  const rectBottomLeft = { x: rectBoundingBox.x, y: rectBoundingBox.y + rectBoundingBox.height };
+  const rectBottomRight = { x: rectBoundingBox.x + rectBoundingBox.width, y: rectBoundingBox.y + rectBoundingBox.height };
+
+  // 检查每个角点是否在 Path 内部
+  const topLeftInside = path.intersects(rectTopLeft);
+  const topRightInside = path.intersects(rectTopRight);
+  const bottomLeftInside = path.intersects(rectBottomLeft);
+  const bottomRightInside = path.intersects(rectBottomRight);
+  if (topLeftInside && topRightInside && bottomLeftInside && bottomRightInside) {
+    // 与车线完全没有碰撞
+    // console.log('矩形的四个角点都在 Path 内部');
+    return false;
+  } else if (topLeftInside || topRightInside || bottomLeftInside || bottomRightInside) {
+    // 有可能存在内部的车线与矩形的某个角点碰撞, 也有可能是矩形的某个角点在车线外部
+    // console.log('矩形的四个角点中至少一个在 Path 内部');
+    return true;
   } else {
-    // console.log('矩形比 Path 大');
+    // console.log('矩形的四个角点都在 Path 外部');
     return true;
   }
 }

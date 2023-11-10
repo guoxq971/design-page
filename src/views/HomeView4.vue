@@ -16,7 +16,8 @@ export default {
   async mounted() {
     const t = new MyThree({ id: 'three' });
     // 加载模型
-    const result = await loadModel('/2424-M.glb');
+    // const result = await loadModel('/2424-M.glb');
+    const result = await loadModel('/1602-2.glb');
     t.scene.add(result.model);
     t.model = result.model;
     t.meshList = result.meshList;
@@ -28,27 +29,45 @@ export default {
     const fn = (name) => {
       const mesh = t.meshList.find((e) => e.material.name === name);
 
-      // const canvas = document.createElement('canvas');
-      // canvas.width = 1;
-      // canvas.height = 1;
-      // // 红色
-      // const ctx = canvas.getContext('2d');
-      // ctx.fillStyle = 'red';
-      // ctx.fillRect(0, 0, 1, 1);
+      mesh.material.opacity = 1;
+
+      const canvas = document.createElement('canvas');
+      const width = 500;
+      const height = 500;
+      canvas.width = width;
+      canvas.height = height;
+      // 透明
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = 'rgba(0,0,0,0)';
+      ctx.fillRect(0, 0, width, height);
+
+      // 画一张图片
+      const img = new Image();
+      // img.src = '/test.jpg';
+      img.src = '/test-2.png';
+      img.onload = () => {
+        img.width = 300;
+        img.height = 300;
+        ctx.drawImage(img, 50, 50, 300, 300);
+        mesh.material.map = new THREE.CanvasTexture(canvas);
+        mesh.material.map.needsUpdate = true;
+        mesh.material.needsUpdate = true;
+      };
+
       // mesh.material.map = new THREE.CanvasTexture(canvas);
       // mesh.material.map.needsUpdate = true;
 
-      mesh.material.opacity = 1;
-      mesh.material.color = new THREE.Color(0xff0000);
-      mesh.material.needsUpdate = true;
+      // mesh.material.opacity = 1;
+      // mesh.material.color = new THREE.Color(0xff0000);
+      // mesh.material.needsUpdate = true;
 
       console.log(mesh);
     };
 
-    fn('inside');
-    fn('cap_back');
-    fn('cap_head');
     fn('logo');
+    // fn('inside');
+    // fn('cap_back');
+    // fn('cap_head');
   },
 };
 </script>

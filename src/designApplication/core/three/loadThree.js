@@ -107,9 +107,13 @@ function loadCanvasTexture(meshPlusList) {
     }
 
     // 如果是玻璃材质，不需要处理
-    if (DesignerUtil.hasGlass(color3dItem.colorCode)) return;
+    if (DesignerUtil.hasGlass(color3dItem.colorCode)) {
+      console.log('玻璃材质', mesh.name);
+      return;
+    }
     // 这是没有canvas的mesh, 要设置底色
     if (!view) {
+      console.log('没有canvas的mesh', mesh.name);
       mesh.material.color.set(color3dItem.colorCode);
       return;
     }
@@ -120,7 +124,6 @@ function loadCanvasTexture(meshPlusList) {
       return;
     }
     const targetCanvas = canvas[0];
-
     item.canvas = targetCanvas;
 
     const texture = new THREE.CanvasTexture(targetCanvas);

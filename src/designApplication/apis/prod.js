@@ -10,6 +10,7 @@ import { fetchDelCollectProd } from '@/designApplication/mock/prod/fetchDelColle
 import { fetchSaveProd } from '@/designApplication/mock/prod/fetchSaveProd';
 import { SubmitParamType } from '@/designApplication/interface_2/params';
 import { fetchHistoryList } from '@/designApplication/mock/prod/fetchHistoryList';
+import { fetchDelHistoryItem } from '@/designApplication/mock/prod/fetchDelHistoryItem';
 
 /**
  * 获取产品列表 - FBA专用产品
@@ -132,6 +133,24 @@ export async function getHistoryList() {
     Message.warning('历史设计记录');
     return Promise.reject({ msg: '历史设计记录' });
   }
-
+  for (let item of res.products) {
+    item.loading = false;
+    item.visible = false;
+  }
   return res.products;
+}
+
+/**
+ * 删除历史记录
+ * @param {string} seqIds historyItem.id
+ * @returns {Promise<null>}
+ */
+export async function delHistory(seqIds) {
+  const res = await fetchDelHistoryItem(seqIds);
+  if (res.code !== 0) {
+    Message.warning('删除历史记录');
+    return Promise.reject({ msg: '删除历史记录' });
+  }
+
+  return Promise.resolve(null);
 }

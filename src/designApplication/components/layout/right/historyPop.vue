@@ -9,10 +9,19 @@
       </div>
 
       <!--列表-->
-      <div class="body">
+      <div class="body" v-loading="loading_history">
         <box-adaptive width="33.33%" height="120%" margin="1%" v-for="item in showList">
           <div class="box-wrap" v-loading="item.loading" @mousedown.stop>
-            <div class="close el-icon-circle-close"></div>
+            <!--删除按钮-->
+            <el-popover popper-class="history-popover" placement="bottom" width="160" v-model="item.visible">
+              <p>是否确认删除该产品？</p>
+              <div style="text-align: right; margin: 0">
+                <el-button size="mini" type="text" @click="item.visible = false">取消</el-button>
+                <el-button type="primary" size="mini" @click="onDel(item)">确定</el-button>
+              </div>
+              <div slot="reference" class="close el-icon-circle-close" />
+            </el-popover>
+
             <box-adaptive margin="0" class="pic">
               <el-image :src="item.imgUrl" />
             </box-adaptive>
@@ -21,22 +30,24 @@
         </box-adaptive>
 
         <!--空盒子-->
-        <box-adaptive width="33%" height="120%" margin="1%" v-for="item in 6 - showList.length" />
+        <box-adaptive width="33.33%" height="120%" margin="1%" v-for="item in 6 - showList.length" />
       </div>
 
       <!--分页-->
       <div class="footer">
-        <pageContainer :get-list="getList" :param="params" :total="total" />
+        <pageContainer @mousedown.native.stop :get-list="getList" :param="params" :total="total" />
       </div>
     </div>
   </transition>
 </template>
 
 <script>
-import pageContainer from '@/designApplication/components/page.vue';
-import { getHistoryList } from '@/designApplication/apis/prod';
-import dragPop from '@/designApplication/core/utils/directives/drag/drag';
 import { mapState } from 'vuex';
+import pageContainer from '@/designApplication/components/page.vue';
+import dragPop from '@/designApplication/core/utils/directives/drag/drag';
+
+import { delHistory } from '@/designApplication/apis/prod';
+
 export default {
   directives: { dragPop },
   components: {
@@ -55,6 +66,8 @@ export default {
   },
   computed: {
     ...mapState({
+      visible_history: (state) => state.designApplication.visible_history,
+      loading_history: (state) => state.designApplication.loading_history,
       historyList: (state) => state.designApplication.historyList,
     }),
     total() {
@@ -65,6 +78,19 @@ export default {
     },
   },
   methods: {
+    /**
+     * 删除历史记录
+     */
+    async onDel(data) {
+      try {
+        data.visible = false;
+        data.loading = true;
+        await delHistory(data.id);
+      } finally {
+        this.getList();
+      }
+    },
+
     /**
      * 关闭弹窗
      */
@@ -77,9 +103,6 @@ export default {
     getList() {
       this.$store.dispatch('designApplication/getHistoryList');
     },
-  },
-  mounted() {
-    this.getList();
   },
 };
 </script>

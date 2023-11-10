@@ -468,6 +468,7 @@ export interface HistoryItem {
 
   /*自定义属性*/
   loading: boolean;
+  visible: boolean;
 }
 
 /**
