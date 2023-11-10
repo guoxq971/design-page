@@ -60,7 +60,7 @@ export default {
     },
     // 选中设计图
     onSetImage(item) {
-      this.$store.dispatch('designApplication/setImage', item);
+      this.$store.dispatch('designApplication/setImage', { detail: item });
     },
     // 鼠标进入
     mouseenter(item) {

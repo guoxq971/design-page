@@ -24,9 +24,10 @@ export const image_actions = {
    * 选中设计图
    * @param {*} vuex context
    * @param {ImageListByMyImage} detail 设计图详情
+   * @param {string|number|null} viewId
    * */
-  async setImage({ state, commit, dispatch, getters }, detail) {
-    const viewId = store.state.designApplication.activeViewId;
+  async setImage({ state, commit, dispatch, getters }, { detail, viewId }) {
+    viewId = viewId || store.state.designApplication.activeViewId;
     const view = state.prodStore.getView(viewId);
 
     /**

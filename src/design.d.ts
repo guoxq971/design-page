@@ -1,5 +1,6 @@
 export { ImageListItem, CollectImageListItem, CollectImageListResponse, GetListImageAdmin } from './designApplication/interface_2/image';
 export {
+  HistoryDetailResponse,
   HistoryItem,
   HistoryListResponse,
   SaveProdResponseDataItem,

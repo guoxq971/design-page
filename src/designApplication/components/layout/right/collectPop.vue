@@ -59,14 +59,14 @@ export default {
      * @param {import('@/design').CollectImageListItem} image
      */
     onClickImage(image) {
-      this.$store.dispatch('designApplication/setImage', image);
+      this.$store.dispatch('designApplication/setImage', { detail: image });
     },
     /**
      * 选择设计图 - 背景图
      * @param {import('@/design').CollectImageListItem} image
      */
     onClickImageBg(image) {
-      this.$store.dispatch('designApplication/setImage', image);
+      this.$store.dispatch('designApplication/setImage', { detail: image });
     },
   },
 };

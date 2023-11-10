@@ -1,6 +1,6 @@
 <template>
   <el-dropdown>
-    <el-button style="width: 100%; height: 100%" @click="onBlur" v-title="'清空设计'">
+    <el-button style="width: 100%; height: 100%" @click="onClearAll" v-title="'清空设计'">
       <iconpark-icon name="clear" size="20" />
       <div class="right-bottom-corner">
         <div class="interior" />
@@ -26,7 +26,8 @@ export default {
     /**
      * 清空设计 - 全部
      */
-    async onClearAll() {
+    async onClearAll(evt) {
+      evt && this.onBlur(evt);
       await this.$confirm('是否确认清空设计？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

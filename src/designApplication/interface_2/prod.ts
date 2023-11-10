@@ -478,3 +478,168 @@ export interface HistoryListResponse extends ResponseDataOld {
   count: number;
   products: HistoryItem[];
 }
+
+/**
+ * 历史记录的详情接口返回值 - configurations 的 item
+ */
+interface configurationsItem {
+  content: {
+    dpi: number;
+    unit: string;
+    svg: {
+      image: {
+        designId: string;
+        height: number;
+        width: number;
+        transform: string;
+        printColorRGBs: string;
+        tileType: string;
+        hspacing: number;
+        vspacing: number;
+        isBg: number;
+        name: string;
+        size: {
+          width: string;
+          height: string;
+        };
+        href: string;
+      };
+    };
+  };
+  offset: {
+    unit: string;
+    x: number;
+    y: number;
+  };
+  printArea: {
+    id: string;
+  };
+  printType: {
+    id: number;
+  };
+  restrictions: {
+    changeable: true;
+  };
+  type: string;
+  isText: false;
+  textId: string;
+  bmParam: {
+    type: string;
+    designId: string;
+    orgDesignId: string;
+    imageCode: string;
+    imageOrgUrl: string;
+    size: {
+      image: {
+        width: number;
+        height: number;
+      };
+      inch: {
+        width: number;
+        height: number;
+      };
+      px: {
+        width: string;
+        height: string;
+      };
+      org: {
+        width: string;
+        height: string;
+      };
+    };
+    isTiled: number;
+    tiledParam: {
+      type: string;
+      horizontal: number;
+      vertical: number;
+      stagger: number;
+      staggerType: number;
+      mirrorType: number;
+    };
+    isReverse: false;
+    reverseParam: {
+      reverse: {
+        org: string;
+        base64Org: string;
+        curBase64: string;
+        x: string;
+        y: string;
+        xy: string;
+      };
+      reverseType: string;
+      reverseX: number;
+      reverseY: number;
+    };
+    matrixObj: {
+      imgBd: string;
+      img: string;
+      center: string;
+    };
+  };
+}
+
+/**
+ * 历史记录的详情接口返回值 - tempCutImgList 的 item
+ */
+export interface tempCutImgListItem {
+  bgcolor: string;
+  createtime: {
+    date: number;
+    day: number;
+    hours: number;
+    minutes: number;
+    month: number;
+    seconds: number;
+    time: number;
+    timezoneOffset: number;
+    year: number;
+  };
+  height: number;
+  imageId: string;
+  imgpath: string;
+  productId: string;
+  seqId: string;
+  sortno: number;
+  viewId: string;
+  width: number;
+  x: number;
+  y: number;
+}
+
+/**
+ * 历史记录的详情接口返回值
+ */
+export interface HistoryDetailResponse {
+  fullSvg: object;
+  appearance: {
+    id: number;
+  };
+  defaultValues: {
+    defaultView: {
+      id: string;
+    };
+  };
+  productType: {
+    id: string;
+    size: string;
+    sizeType: string;
+  };
+  restrictions: {
+    freeColorSelection: boolean;
+    example: boolean;
+  };
+  creator: string;
+  saveNumBtn: number;
+  templateType: string;
+  configurations: configurationsItem[];
+  isUseMirror: string;
+  static_batchid: string;
+  adminImage: string;
+  designMain: string;
+  orgProductName: string;
+  tempCutImgList: tempCutImgListItem[];
+  name: string;
+  id: string;
+  wordFlag: boolean;
+  wordList: any[];
+}

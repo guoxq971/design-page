@@ -33,6 +33,19 @@ export class SubmitParamType {
  * 设计图参数
  */
 export class ConfigurationItem {
+  bmParam = {
+    type: 'img',
+    designId: '',
+    orgDesignId: '',
+    imageCode: '',
+    imageOrgUrl: '',
+    size: {},
+    isTiled: 0,
+    tiledParam: {},
+    isReverse: false,
+    reverseParam: {},
+    matrixObj: {},
+  };
   isText = false;
   textId = '';
   content = {

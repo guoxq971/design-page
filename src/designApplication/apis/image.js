@@ -19,7 +19,7 @@ import { fetchCollectImageBg } from '@/designApplication/mock/image/fetchCollect
 /**
  * 获取设计图列表
  * @param {ImageListParams} params 参数
- * @returns {Promise<GetListByMyImage>} 设计图列表
+ * @returns {Promise<import('@/design').GetListImageAdmin>} 设计图列表
  * */
 export async function getImageListApi(params) {
   const res = await fetchImageList(params);

@@ -225,6 +225,7 @@ export default {
 
           // 存储的item
           const configurationItem = new ConfigurationItem();
+          configurationItem.bmParam.imageCode = image.attrs.detail.imageCode;
           configurationItem.printArea.id = view.id;
 
           // 设计图 - offset (x,y 的坐标)

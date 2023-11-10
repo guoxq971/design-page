@@ -11,6 +11,7 @@ import { fetchSaveProd } from '@/designApplication/mock/prod/fetchSaveProd';
 import { SubmitParamType } from '@/designApplication/interface_2/params';
 import { fetchHistoryList } from '@/designApplication/mock/prod/fetchHistoryList';
 import { fetchDelHistoryItem } from '@/designApplication/mock/prod/fetchDelHistoryItem';
+import { fetchHistoryDetail } from '@/designApplication/mock/prod/fetchHistoryDetail';
 
 /**
  * 获取产品列表 - FBA专用产品
@@ -153,4 +154,14 @@ export async function delHistoryApi(seqIds) {
   }
 
   return Promise.resolve(null);
+}
+
+/**
+ * 获取历史设计记录的详情
+ * @param {string} seqId
+ * @returns {Promise<import('@/design').HistoryDetailResponse>}
+ */
+export async function getHistoryDetailApi(seqId) {
+  const res = await fetchHistoryDetail(seqId);
+  return res;
 }

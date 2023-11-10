@@ -246,6 +246,7 @@ export default {
       margin-right: 10px;
       margin-bottom: 10px;
       /deep/ .el-input__suffix {
+        user-select: none;
         font-size: 14px;
         display: flex;
         align-items: center;

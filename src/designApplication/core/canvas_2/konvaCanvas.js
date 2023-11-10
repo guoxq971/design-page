@@ -144,6 +144,12 @@ export class KonvaCanvas {
    * 清空设计图
    */
   clear() {
+    // 隐藏所有的选中器
+    for (let image of this.getImageList()) {
+      if (image.attrs.name === canvasDefine.image && image.visible()) {
+        DesignImageUtil.setImageVisible(image);
+      }
+    }
     this.clip.removeChildren();
     this.clipBg.removeChildren();
     this.layer.draw();
