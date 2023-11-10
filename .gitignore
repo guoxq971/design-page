@@ -2,6 +2,7 @@
 node_modules
 /dist
 
+/public/*.glb
 
 # local env files
 .env.local
