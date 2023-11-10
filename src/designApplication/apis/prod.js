@@ -127,7 +127,7 @@ export async function saveProdApi(param) {
  * 历史设计记录
  * @returns {Promise<import('@/design').HistoryItem[]>}
  */
-export async function getHistoryList() {
+export async function getHistoryListApi() {
   const res = await fetchHistoryList();
   if (res.retState !== '0') {
     Message.warning('历史设计记录');
@@ -145,7 +145,7 @@ export async function getHistoryList() {
  * @param {string} seqIds historyItem.id
  * @returns {Promise<null>}
  */
-export async function delHistory(seqIds) {
+export async function delHistoryApi(seqIds) {
   const res = await fetchDelHistoryItem(seqIds);
   if (res.code !== 0) {
     Message.warning('删除历史记录');

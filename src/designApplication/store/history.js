@@ -1,4 +1,4 @@
-import { getHistoryList } from '@/designApplication/apis/prod';
+import { getHistoryListApi } from '@/designApplication/apis/prod';
 
 /**
  * @typedef {object} HistoryState 历史设计记录
@@ -51,7 +51,7 @@ export const actions_history = {
   async getHistoryList({ state, commit, dispatch, getters }) {
     try {
       state.loading_history = true;
-      state.historyList = await getHistoryList();
+      state.historyList = await getHistoryListApi();
     } finally {
       state.loading_history = false;
       state.isInit_history = true;

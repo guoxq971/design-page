@@ -46,7 +46,7 @@ import { mapState } from 'vuex';
 import pageContainer from '@/designApplication/components/page.vue';
 import dragPop from '@/designApplication/core/utils/directives/drag/drag';
 
-import { delHistory } from '@/designApplication/apis/prod';
+import { delHistoryApi } from '@/designApplication/apis/prod';
 
 export default {
   directives: { dragPop },
@@ -85,7 +85,7 @@ export default {
       try {
         data.visible = false;
         data.loading = true;
-        await delHistory(data.id);
+        await delHistoryApi(data.id);
       } finally {
         this.getList();
       }
