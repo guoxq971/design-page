@@ -2,20 +2,20 @@
   <div>
     <el-tabs v-model="active">
       <el-tab-pane label="我的图库" name="my">
-        <myImage @onContextmenu="onContextmenu" :parentLoading="loading" :exclusive="exclusive" />
+        <myImage ref="my" @onContextmenu="onContextmenu" :parentLoading="loading" :exclusive="exclusive" />
       </el-tab-pane>
       <el-tab-pane label="小组图库" name="group">
-        <groupImage @onContextmenu="onContextmenu" />
+        <groupImage ref="group" @onContextmenu="onContextmenu" />
       </el-tab-pane>
       <el-tab-pane label="共享图库" name="share">
-        <shareImage @onContextmenu="onContextmenu" :parentLoading="loading" :share="share" />
+        <shareImage ref="share" @onContextmenu="onContextmenu" :parentLoading="loading" :share="share" />
       </el-tab-pane>
       <el-tab-pane label="管理图库" name="admin">
-        <adminImage @onContextmenu="onContextmenu" />
+        <adminImage ref="admin" @onContextmenu="onContextmenu" />
       </el-tab-pane>
       <el-tab-pane label="收藏图片" name="collect">
         <span slot="label" v-title="'对设计图鼠标右键可【收藏】/【取消收藏】设计图'">收藏图片</span>
-        <collectImage @onContextmenu="onContextmenu" />
+        <collectImage ref="collect" @onContextmenu="onContextmenu" />
       </el-tab-pane>
     </el-tabs>
 
@@ -25,15 +25,17 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import myImage from './myImage';
 import shareImage from './shareImage';
 import adminImage from './adminImage';
 import collectImage from './collectImage';
 import groupImage from './groupImage';
-import { getImageCategoryApi } from '@/designApplication/apis/image';
 import title from '@/designApplication/core/utils/directives/title/title';
 import contextMenu from '@/designApplication/components/contextmen.vue';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
+
+import { getImageCategoryApi } from '@/designApplication/apis/image';
 import { collectImageFn } from '@/designApplication/core/utils/common';
 export default {
   directives: { title },
@@ -62,6 +64,56 @@ export default {
       // 右键菜单
       menuItemList: [{ key: '1', icon: 'el-icon-caret-left', text: '', fn: null }],
     };
+  },
+  computed: {
+    ...mapState({
+      isInit_image_my: (state) => state.designApplication.isInit_image_my,
+      isInit_image_group: (state) => state.designApplication.isInit_image_group,
+      isInit_image_share: (state) => state.designApplication.isInit_image_share,
+      isInit_image_admin: (state) => state.designApplication.isInit_image_admin,
+      isInit_image_collect: (state) => state.designApplication.isInit_image_collect,
+    }),
+  },
+  watch: {
+    active: {
+      immediate: true,
+      handler(val) {
+        switch (val) {
+          case 'my':
+            if (!this.isInit_image_my) {
+              this.$nextTick(() => this.$refs.my.getList());
+              this.$store.commit('designApplication/setInit', { type: 'image_my' });
+            }
+            break;
+          case 'group':
+            if (!this.isInit_image_group) {
+              this.$nextTick(() => this.$refs.group.getList());
+              this.$store.commit('designApplication/setInit', { type: 'image_group' });
+            }
+            break;
+          case 'share':
+            if (!this.isInit_image_share) {
+              this.$nextTick(() => this.$refs.share.getList());
+              this.$store.commit('designApplication/setInit', { type: 'image_share' });
+            }
+            break;
+          case 'admin':
+            if (!this.isInit_image_admin) {
+              this.$nextTick(() => this.$refs.admin.getList());
+              this.$store.commit('designApplication/setInit', { type: 'image_admin' });
+            }
+            break;
+          case 'collect':
+            if (!this.isInit_image_collect) {
+              // this.$nextTick(() => this.$refs.collect.getList());
+              // this.$store.commit('designApplication/setInit', { type: 'image_collect' });
+            }
+            break;
+          default:
+            break;
+        }
+      },
+    },
   },
   methods: {
     /**

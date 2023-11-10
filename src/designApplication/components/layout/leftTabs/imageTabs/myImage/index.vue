@@ -103,7 +103,7 @@ export default {
     },
   },
   async mounted() {
-    this.getList();
+    // this.getList();
   },
 };
 </script>

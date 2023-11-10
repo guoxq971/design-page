@@ -36,7 +36,7 @@ export default {
     parentLoading(val) {
       if (!val) {
         this.params.typeId = this.share.value;
-        this.getList();
+        // this.getList();
       }
     },
   },

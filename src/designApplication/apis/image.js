@@ -146,6 +146,9 @@ export async function fetchCollectImageListApi() {
     return Promise.reject(msg + ' 失败');
   }
 
+  for (let item of res.list) {
+    item.previewImg = item.designImg;
+  }
   return Promise.resolve(res.list);
 }
 

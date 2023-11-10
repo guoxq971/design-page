@@ -5,11 +5,11 @@
         <prodCommon @onContextmenu="onContextmenu" />
       </el-tab-pane>
       <el-tab-pane label="FBA专用产品" name="fba">
-        <prodFba @onContextmenu="onContextmenu" />
+        <prodFba ref="prodFba" @onContextmenu="onContextmenu" />
       </el-tab-pane>
       <el-tab-pane label="收藏产品" name="collect">
         <span slot="label" v-title="'对产品鼠标右键可【收藏】/【取消收藏】产品'">收藏产品</span>
-        <prodCollect @onContextmenu="onContextmenu" />
+        <prodCollect ref="prodCollect" @onContextmenu="onContextmenu" />
       </el-tab-pane>
     </el-tabs>
 
@@ -27,6 +27,7 @@ import contextMenu from '@/designApplication/components/contextmen.vue';
 import { fetchProdListApi, setCollectProdApi, setDelCollectProdApi } from '@/designApplication/apis/prod';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import { CollectProdParams } from '@/designApplication/interface/commonProdParams';
+import { mapState } from 'vuex';
 
 export default {
   directives: { title },
@@ -44,6 +45,39 @@ export default {
       // 右键菜单
       menuItemList: [{ key: '1', icon: 'el-icon-caret-left', text: '', fn: null }],
     };
+  },
+  computed: {
+    ...mapState({
+      isInit_prod_common: (state) => state.designApplication.isInit_prod_common,
+      isInit_prod_fba: (state) => state.designApplication.isInit_prod_fba,
+      isInit_prod_collect: (state) => state.designApplication.isInit_prod_collect,
+    }),
+  },
+  watch: {
+    active: {
+      immediate: true,
+      handler(val) {
+        switch (val) {
+          case 'common':
+            if (!this.isInit_prod_common) {
+              this.$store.commit('designApplication/setInit', { type: 'prod_common' });
+            }
+            break;
+          case 'fba':
+            if (!this.isInit_prod_fba) {
+              this.$refs.prodFba.getList();
+              this.$store.commit('designApplication/setInit', { type: 'prod_fba' });
+            }
+            break;
+          case 'collect':
+            if (!this.isInit_prod_collect) {
+              this.$refs.prodCollect.getList();
+              this.$store.commit('designApplication/setInit', { type: 'prod_collect' });
+            }
+            break;
+        }
+      },
+    },
   },
   methods: {
     /**

@@ -86,6 +86,7 @@ import { SubmitParamType, ConfigurationItem } from '@/designApplication/interfac
 
 import { buttonBlur } from '@/designApplication/core/utils/buttonBlur';
 import { saveProdApi } from '@/designApplication/apis/prod';
+import { fetchCollectImageListApi } from '@/designApplication/apis/image';
 
 export default {
   name: 'right-design',
@@ -113,6 +114,7 @@ export default {
   computed: {
     ...mapState({
       visible_layer: (state) => state.designApplication.visible_layer,
+      isInit_image_collect: (state) => state.designApplication.isInit_image_collect,
       visible_history: (state) => state.designApplication.visible_history,
       visible_collect: (state) => state.designApplication.visible_collect,
       loadingSave: (state) => state.designApplication.loading_save,
@@ -276,7 +278,7 @@ export default {
     /**
      * 开启|关闭 收藏
      */
-    onCollect(e) {
+    async onCollect(e) {
       this.onBlur(e);
       this.$store.commit('designApplication/setVisibleCollect', !this.visible_collect);
     },

@@ -41,9 +41,6 @@ export default {
       try {
         this.loading = true;
         const list = await fetchCollectImageListApi();
-        for (let item of list) {
-          item.previewImg = item.designImg;
-        }
         this.$store.commit('designApplication/setCollectImageList', list);
       } finally {
         this.loading = false;
@@ -52,6 +49,7 @@ export default {
   },
   mounted() {
     this.getList();
+    this.$store.commit('designApplication/setInit', { type: 'image_collect' });
   },
 };
 </script>

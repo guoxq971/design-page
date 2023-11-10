@@ -50,6 +50,16 @@ const state = {
   activeType: null,
   prodStore: new ProdStore(),
 
+  // 初始化数据
+  isInit_prod_common: false,
+  isInit_prod_fba: false,
+  isInit_prod_collect: false,
+  isInit_image_my: false,
+  isInit_image_group: false,
+  isInit_image_share: false,
+  isInit_image_collect: false,
+  isInit_image_admin: false,
+
   // 图层
   visible_layer: true,
   // 位置和变换
@@ -81,6 +91,10 @@ export default {
     ...getters_history,
   },
   mutations: {
+    // 设置初始化
+    setInit(state, { type }) {
+      state[`isInit_${type}`] = true;
+    },
     // 位置和变换
     setVisiblePosition(state, visible) {
       state.visible_position = visible;
