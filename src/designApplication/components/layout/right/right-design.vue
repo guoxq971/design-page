@@ -213,18 +213,21 @@ export default {
         for (let image of view.canvas.getImageList()) {
           // console.log(image);
 
+          // 获取设计图信息
+          const result = DesignImageUtil.getImageInfo(image);
+
           // 设计图数据解析
-          const imgWidth = image.width() * image.scaleX();
-          const imgHeight = image.height() * image.scaleY();
-          const angle = image.rotation() < 0 ? 360 + image.rotation() : image.rotation();
+          const imgWidth = result.width;
+          const imgHeight = result.height;
+          const angle = result.rotation;
 
           // 存储的item
           const configurationItem = new ConfigurationItem();
           configurationItem.printArea.id = view.id;
 
           // 设计图 - offset (x,y 的坐标)
-          configurationItem.offset.x = image.x() - imgWidth / 2;
-          configurationItem.offset.y = image.y() - imgHeight / 2;
+          configurationItem.offset.x = result.x;
+          configurationItem.offset.y = result.y;
 
           // TODO: 这个要考虑 翻转图片、平铺图片、文字、背景图的 情况
           // TODO: 要考虑 obj.isNeedCopy === '1' 的情况
@@ -304,12 +307,6 @@ export default {
 
 <style scoped lang="less">
 @import url('./commonStyle');
-
-.hover-color {
-  color: #409eff !important;
-  border-color: #c6e2ff !important;
-  background-color: #ecf5ff !important;
-}
 
 /deep/ .el-card__body {
   padding: 4px;

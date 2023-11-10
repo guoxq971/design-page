@@ -34,31 +34,37 @@
     <!--平铺-->
     <hoverTile class="right-design-img" />
     <!--位置-->
-    <div class="right-design-img" v-title="'位置'">
+    <div class="right-design-img" v-title="'位置'" :class="{ 'hover-color': visible_position }" @click="onPosition">
       <span class="el-icon-aim" style="font-size: 27px" />
     </div>
+
+    <!--位置和变换-->
+    <positionPop v-if="visible_position" />
   </el-card>
 </template>
 
 <script>
-import hoverScale from '@/designApplication/components/layout/right/hoverComponents/hover-scale.vue';
-import hoverTile from '@/designApplication/components/layout/right/hoverComponents/hover-tile.vue';
-import { canvasDefine } from '@/designApplication/core/canvas_2/define';
-import title from '@/designApplication/core/utils/directives/title/title';
 import { mapGetters, mapState } from 'vuex';
+import title from '@/designApplication/core/utils/directives/title/title';
+
+import hoverScale from '@/designApplication/components/layout/right/hoverComponents/hover-scale.vue';
+import positionPop from './positionPop.vue';
+import hoverTile from '@/designApplication/components/layout/right/hoverComponents/hover-tile.vue';
 
 import { getAngleMultiple, setProxyTransformer } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
 import { uuid } from '@/designApplication/core/utils/uuid';
 
+import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 
 export default {
   name: 'designHandleCard',
   directives: { title },
-  components: { hoverTile, hoverScale },
+  components: { hoverTile, hoverScale, positionPop },
   computed: {
     ...mapState({
+      visible_position: (state) => state.designApplication.visible_position,
       visible_layer: (state) => state.designApplication.visible_layer,
       visible_history: (state) => state.designApplication.visible_history,
       visible_collect: (state) => state.designApplication.visible_collect,
@@ -75,6 +81,12 @@ export default {
     },
   },
   methods: {
+    /**
+     * 位置和变换
+     */
+    onPosition() {
+      this.$store.commit('designApplication/setVisiblePosition', !this.visible_position);
+    },
     /**
      * 设计图操作 - 复制
      */

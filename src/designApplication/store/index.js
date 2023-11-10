@@ -52,6 +52,8 @@ const state = {
 
   // 图层
   visible_layer: true,
+  // 位置和变换
+  visible_position: false,
   // 历史设计记录
   ...state_history,
   // 收藏产品
@@ -69,7 +71,9 @@ const state = {
  * */
 export default {
   namespaced: true,
-  state: { ...state },
+  state: {
+    ...state,
+  },
   getters: {
     // 产品
     ...prod_getters,
@@ -77,6 +81,10 @@ export default {
     ...getters_history,
   },
   mutations: {
+    // 位置和变换
+    setVisiblePosition(state, visible) {
+      state.visible_position = visible;
+    },
     // 收藏产品
     ...collect_mutations,
     // 产品

@@ -283,8 +283,41 @@ export function getPositionCenter(image) {
   const offsetX = konvaCanvas.clip.attrs.x / konvaCanvas.clip.attrs.scaleX - staticView.offset.x;
   const offsetY = konvaCanvas.clip.attrs.y / konvaCanvas.clip.attrs.scaleY - staticView.offset.y;
 
+  // 居中坐标
   const x = -offsetX + centerX + imageWidth / 2;
   const y = -offsetY + centerY + imageHeight / 2;
+
+  // 左上角坐标
+  const leftTopX = x - centerX;
+  const leftTopY = y - centerY;
+
+  // 右上角坐标
+  const rightTopX = x + centerX;
+  const rightTopY = y - centerY;
+
+  // 左下角坐标
+  const leftBottomX = x - centerX;
+  const leftBottomY = y + centerY;
+
+  // 右下角坐标
+  const rightBottomX = x + centerX;
+  const rightBottomY = y + centerY;
+
+  // 左中坐标
+  const leftCenterX = x - centerX;
+  const leftCenterY = y;
+
+  // 右中坐标
+  const rightCenterX = x + centerX;
+  const rightCenterY = y;
+
+  // 上中坐标
+  const topCenterX = x;
+  const topCenterY = y - centerY;
+
+  // 下中坐标
+  const bottomCenterX = x;
+  const bottomCenterY = y + centerY;
 
   return {
     centerX,
@@ -293,6 +326,22 @@ export function getPositionCenter(image) {
     offsetY,
     x,
     y,
+    leftTopX,
+    leftTopY,
+    rightTopX,
+    rightTopY,
+    leftBottomX,
+    leftBottomY,
+    rightBottomX,
+    rightBottomY,
+    leftCenterX,
+    leftCenterY,
+    rightCenterX,
+    rightCenterY,
+    topCenterX,
+    topCenterY,
+    bottomCenterX,
+    bottomCenterY,
   };
 }
 

@@ -12,6 +12,33 @@ export class DesignImageUtil {
   static STEP_DOWN = 1 - 0.02;
 
   /**
+   * 获取设计图信息
+   */
+  static getImageInfo(image) {
+    if (!image) {
+      console.error('获取设计图信息失败, image is null');
+      return;
+    }
+    const width = image.width() * image.scaleX();
+    const height = image.height() * image.scaleY();
+
+    const x = image.x() - width / 2;
+    const y = image.y() - height / 2;
+
+    const rotation = image.rotation() < 0 ? 360 + image.rotation() : image.rotation();
+
+    return {
+      image,
+      x,
+      y,
+      width,
+      height,
+      rotation,
+      scaleX: image.scaleX(),
+      scaleY: image.scaleY(),
+    };
+  }
+  /**
    * 对设计图进行碰撞检测
    * @param {import('@/design').CanvasImage} image
    */
