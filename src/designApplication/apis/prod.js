@@ -117,8 +117,9 @@ export async function setDelCollectProdApi(collectId) {
 export async function saveProdApi(param) {
   const res = await fetchSaveProd(param);
   if (!res.status) {
-    Message.warning('保存产品失败');
-    return Promise.reject({ msg: '保存产品失败' });
+    Message.error(res.msg);
+    // Message.warning('保存产品失败');
+    return Promise.reject({ msg: res.msg });
   }
 
   return res;

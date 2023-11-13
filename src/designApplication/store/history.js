@@ -46,6 +46,16 @@ export const actions_history = {
     dispatch('setHistoryVisible', true);
   },
   /**
+   * 清除指定的历史设计记录
+   */
+  async clearHistoryItem({ state, commit, dispatch, getters }, item) {
+    const index = state.historyList.findIndex((e) => e.id === item.id);
+    if (index !== -1) {
+      state.historyList.splice(index, 1);
+    }
+    console.log('clearHistoryItem', item, index, state.historyList);
+  },
+  /**
    * 获取历史设计记录
    */
   async getHistoryList({ state, commit, dispatch, getters }) {

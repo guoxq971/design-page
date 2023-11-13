@@ -216,14 +216,15 @@ export default {
           // console.log(image);
 
           const configurationItem = new ConfigurationItem();
-          configurationItem.type = canvasDefine.bgc;
+          configurationItem.type = image.attrs.name;
           configurationItem.content.dpi = prodItem.detail.dpi;
           configurationItem.printArea.id = view.id;
-
+          console.log('image', image);
           switch (image.attrs.name) {
             // 背景色
             case canvasDefine.bgc:
-              configurationItem.content.svg = '';
+              configurationItem.bmParam.type = image.attrs.name;
+              configurationItem.content.svg = image.attrs.fill;
 
               configurationItem.offset.x = 1;
               configurationItem.offset.y = 1;
@@ -264,16 +265,19 @@ export default {
       console.log(submitParam);
 
       // 发送提交接口
+      // 往历史设计记录的弹窗插入一条loading的数据
+      const historyItem = { loading: true, id: '123', imgUrl: '', name: '' };
+      await this.$store.dispatch('designApplication/addHistoryItem', historyItem);
+      this.$store.commit('designApplication/setLoadingSave', true);
       try {
-        // 往历史设计记录的弹窗插入一条loading的数据
-        const historyItem = { loading: true, id: '123', imgUrl: '', name: '' };
-        await this.$store.dispatch('designApplication/addHistoryItem', historyItem);
-
-        this.$store.commit('designApplication/setLoadingSave', true);
         const res = await saveProdApi(submitParam);
         this.$message.success('保存成功');
-      } finally {
         this.$store.dispatch('designApplication/getHistoryList');
+      } catch (err) {
+        setTimeout(() => {
+          this.$store.dispatch('designApplication/clearHistoryItem', historyItem);
+        }, 1000);
+      } finally {
         this.$store.commit('designApplication/setLoadingSave', false);
       }
     },

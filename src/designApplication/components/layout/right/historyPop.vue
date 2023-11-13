@@ -58,6 +58,8 @@ import { CommonProdParams } from '@/designApplication/interface/commonProdParams
 import { ImageListParams } from '@/designApplication/interface/image/imageListParams';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
 import { getPositionCenter } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
+import { canvasDefine } from '@/designApplication/core/canvas_2/define';
+import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 
 export default {
   directives: { dragPop },
@@ -108,9 +110,18 @@ export default {
       // console.log('产品详情', prodDetail);
     },
     /**
+     * 处理背景色
+     */
+    async dispose_bgc(bgcList) {
+      if (!bgcList.length) return;
+      DesignerUtil.setBgc(bgcList[0].content.svg);
+    },
+    /**
      * 处理设计图
      */
     async dispose_image(designList) {
+      if (!designList.length) return;
+
       const errorImageList = [];
       const successImageList = [];
       const imageCodeList = [...new Set(designList.map((e) => e.bmParam.imageCode))];
@@ -183,8 +194,12 @@ export default {
       // 设计图类型 TODO: 还有其他类型, 背景色、文字
 
       // 处理设计图类型 (这个只处理 设计图)
-      const designList = res.configurations.filter((e) => e.type === 'design');
+      const designList = res.configurations.filter((e) => e.type === canvasDefine.image);
       await this.dispose_image(designList);
+
+      // 处理背景色
+      const bgcList = res.configurations.filter((e) => e.type === canvasDefine.bgc);
+      await this.dispose_bgc(bgcList);
     },
     /**
      * 删除历史记录
