@@ -211,7 +211,7 @@ export default {
       submitParam.configurations = [];
 
       // 组装设计图
-      for (let view of prodItem.viewList) {
+      for (let view of prodItem.viewList.toReversed()) {
         for (let image of view.canvas.getImageList()) {
           // console.log(image);
 
@@ -258,7 +258,7 @@ export default {
               configurationItem.content.svg.image.transform = `rotate(${angle},${imgWidth / 2},${imgHeight / 2})`;
               break;
           }
-          submitParam.configurations.push(configurationItem);
+          submitParam.configurations.unshift(configurationItem);
         }
       }
 

@@ -20,9 +20,9 @@
               <p>是否确认删除该产品？</p>
               <div style="text-align: right; margin: 0">
                 <el-button size="mini" type="text" @click="item.visible = false">取消</el-button>
-                <el-button type="primary" size="mini" @click="onDel(item)">确定</el-button>
+                <el-button type="primary" size="mini" @click.stop="onDel(item)">确定</el-button>
               </div>
-              <div slot="reference" class="close el-icon-circle-close" />
+              <div slot="reference" class="close el-icon-circle-close" @click.stop />
             </el-popover>
 
             <box-adaptive margin="0" class="pic">
@@ -140,7 +140,7 @@ export default {
       }
 
       if (errorImageList.length) {
-        this.$message.warning(`未找到${errorImageList.length}张设计图, ${errorImageList.join(',')}`);
+        this.$message.warning(`未找到${errorImageList.length}张设计图`);
       }
 
       console.log('成功列表 addImage的详情', successImageList);
@@ -191,7 +191,7 @@ export default {
 
       // 渲染设计图
       // console.log('设计图列表', res.configurations);
-      // 设计图类型 TODO: 还有其他类型, 背景色、文字
+      // 设计图类型 TODO: 还有其他类型, 文字
 
       // 处理设计图类型 (这个只处理 设计图)
       const designList = res.configurations.filter((e) => e.type === canvasDefine.image);
@@ -209,8 +209,9 @@ export default {
         data.visible = false;
         data.loading = true;
         await delHistoryApi(data.id);
+        this.$store.dispatch('designApplication/clearHistoryItem', { id: data.id });
       } finally {
-        this.getList();
+        data.loading = false;
       }
     },
 
