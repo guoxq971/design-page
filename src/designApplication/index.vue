@@ -39,7 +39,7 @@ export default {
   .design-center {
     flex: 3;
     position: relative;
-    z-index: 2;
+    z-index: 6;
   }
   .design-right {
     //flex: 1;

@@ -9,8 +9,23 @@ import { loadThree } from '@/designApplication/core/three/loadThree';
 
 import { getProdPriceApi } from '@/designApplication/apis/prod';
 import { gerRefineProdConfig3dByTemplateNoWithSizeApi, getProd3dConfigByCommonApi, getProd3dConfigByRefineListApi, getRefineProdDetailByTemplateNoWithSizeApi } from '@/designApplication/apis/common';
+import { Config } from '@/designApplication/core/config';
+import { ProdStore } from '@/designApplication/store/prodStore';
 
-export const prod_state = {};
+export const prod_state = {
+  config: new Config(),
+  show3d: false, //是否展示3d
+  loading_save: false, //保存loading
+  loading_price: false, //价格loading
+  loading_prod: false, //产品loading
+  loading_2d: false, //2d加载loading
+  loading_3d: false, //3d加载loading
+  activeColorId: null, //当前激活的颜色id
+  activeSizeId: null, //当前激活的尺码id
+  activeViewId: null, //当前激活的视图id
+  activeType: null, //当前激活的产品类型
+  prodStore: new ProdStore(), //产品仓库
+};
 
 export const prod_getters = {
   /**
@@ -98,6 +113,27 @@ export const prod_mutations = {
 
 export const prod_actions = {
   /**
+   * 获取精细配置
+   * @param {*} vuex context
+   * @param {import('@/design').ProdListDataItem} prod 产品详情
+   * @returns {Promise<void>}
+   */
+  async getRefineConfig({ state, commit, dispatch, getters }, prod) {
+    const templateNo = prod.detail.templateNo;
+    const detail = prod.detail;
+
+    getProd3dConfigByRefineListApi(templateNo).then((refineList) => {
+      // 获取3d配置 - 精细 (并添加到仓库)
+      const refineListFilter = config3dUtil.getOpenRefineList(refineList);
+      refineListFilter.forEach((refine) => {
+        const prodItem = ProdUtil.disposeRefine(refine, detail);
+        prodItem.isSpecial = prod.isSpecial;
+        prodItem.priceList = prod.priceList;
+        state.prodStore.add(prodItem);
+      });
+    });
+  },
+  /**
    * 设置产品价格
    * @param {*} vuex context
    * @returns {Promise<void>}
@@ -108,6 +144,7 @@ export const prod_actions = {
     // 获取价格列表
     const priceResult = await getProdPriceApi(prodItem.detail.templateNo);
 
+    // 给该产品的所有尺码设置价格
     state.prodStore.list.forEach((prod) => {
       prodItem.isSpecial = priceResult.isSpecial;
       prodItem.priceList = priceResult.list;
@@ -184,24 +221,20 @@ export const prod_actions = {
       console.timeEnd(`加载产品 - 通用${detail.templateNo}`);
 
       if (prod) {
-        // 获取产品价格
+        // 推荐参数
+        commit('setVisibleRecommend', true);
+        setTimeout(() => commit('setVisibleRecommend', false), 3 * 1000);
+
+        // 获取产品价格 TODO: 需要加权限判断
         dispatch('setPrice');
 
         // 加载3d three
         if (config3dUtil.isLoad3d(prod.config3d)) {
           loadThree({ prodItem: prod, loading: true });
         }
+
         // 获取3d配置 - 精细
-        getProd3dConfigByRefineListApi(detail.templateNo).then((refineList) => {
-          // 获取3d配置 - 精细 (并添加到仓库)
-          const refineListFilter = config3dUtil.getOpenRefineList(refineList);
-          refineListFilter.forEach((refine) => {
-            const prodItem = ProdUtil.disposeRefine(refine, detail);
-            prodItem.isSpecial = prod.isSpecial;
-            prodItem.priceList = prod.priceList;
-            state.prodStore.add(prodItem);
-          });
-        });
+        dispatch('getRefineConfig', prod);
       }
     }
   },

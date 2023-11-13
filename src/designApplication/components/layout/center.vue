@@ -7,6 +7,7 @@
       <!--标题-->
       <div class="title layer-top" @click="onShow3d">
         {{ activeProd.detail.templateNameShow }}
+        <recommendParam />
       </div>
 
       <div class="body-wrap layer-top">
@@ -73,14 +74,16 @@
 </template>
 
 <script>
+import { mapGetters, mapState } from 'vuex';
 import centerPreview from './center/centerPreview.vue';
 import centerProdInfo from './center/centerProdInfo.vue';
-import { mapGetters, mapState } from 'vuex';
 import centerSwitchProdType from './center/centerSwitchProdType.vue';
 import centerPriceIcon from './center/centerPriceIcon.vue';
+import recommendParam from './center/recommendParam.vue';
 
 export default {
   components: {
+    recommendParam,
     centerPreview,
     centerProdInfo,
     centerSwitchProdType,
@@ -219,6 +222,7 @@ export default {
     display: flex;
     justify-content: center;
     margin-bottom: 7px;
+    z-index: 11;
   }
 
   //价格

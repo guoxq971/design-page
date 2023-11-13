@@ -248,7 +248,7 @@ export default {
               configurationItem.offset.x = result.x;
               configurationItem.offset.y = result.y;
 
-              // TODO: 这个要考虑 翻转图片、平铺图片、文字、背景图的 情况
+              // TODO: 这个要考虑 翻转图片、平铺图片、文字的 情况
               // TODO: 要考虑 obj.isNeedCopy === '1' 的情况
               // 设计图 - content (width,height,scale,id等)
               configurationItem.content.svg.image.designId = image.attrs.detail.id;

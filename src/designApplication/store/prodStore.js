@@ -6,7 +6,7 @@ import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 /**
  * 产品仓库
  * @class
- * @property {ProdItem[]} list 产品列表
+ * @property {import('@/design').ProdItemData[]} list 产品列表
  * @method add 添加prodItem
  * @method get 获取激活产品(或者指定类型和尺码的产品)
  * @method getView 获取视图
