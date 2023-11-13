@@ -2,9 +2,9 @@
  * canvas用的常量
  */
 export const canvasDefine = {
-  image: 'image',
+  image: 'design',
   text: 'text',
-  bgc: 'bgc',
+  bgc: 'backgroundColor',
   back: 'back',
   Transformer: 'Transformer',
   CustomTransformer: 'CustomTransformer',

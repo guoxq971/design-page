@@ -215,33 +215,48 @@ export default {
         for (let image of view.canvas.getImageList()) {
           // console.log(image);
 
-          // 获取设计图信息
-          const result = DesignImageUtil.getImageInfo(image);
-
-          // 设计图数据解析
-          const imgWidth = result.width;
-          const imgHeight = result.height;
-          const angle = result.rotation;
-
-          // 存储的item
           const configurationItem = new ConfigurationItem();
-          configurationItem.bmParam.imageCode = image.attrs.detail.imageCode;
+          configurationItem.type = canvasDefine.bgc;
+          configurationItem.content.dpi = prodItem.detail.dpi;
           configurationItem.printArea.id = view.id;
 
-          // 设计图 - offset (x,y 的坐标)
-          configurationItem.offset.x = result.x;
-          configurationItem.offset.y = result.y;
+          switch (image.attrs.name) {
+            // 背景色
+            case canvasDefine.bgc:
+              configurationItem.content.svg = '';
 
-          // TODO: 这个要考虑 翻转图片、平铺图片、文字、背景图的 情况
-          // TODO: 要考虑 obj.isNeedCopy === '1' 的情况
-          // 设计图 - content (width,height,scale,id等)
-          configurationItem.content.dpi = prodItem.detail.dpi;
-          configurationItem.content.svg.image.designId = image.attrs.detail.id;
-          configurationItem.content.svg.image.width = imgWidth;
-          configurationItem.content.svg.image.height = imgHeight;
-          configurationItem.content.svg.image.isBg = image.attrs.detail.isBg;
-          configurationItem.content.svg.image.transform = `rotate(${angle},${imgWidth / 2},${imgHeight / 2})`;
+              configurationItem.offset.x = 1;
+              configurationItem.offset.y = 1;
 
+              break;
+
+            // 设计图
+            case canvasDefine.image:
+              // 获取设计图信息
+              const result = DesignImageUtil.getImageInfo(image);
+
+              // 设计图数据解析
+              const imgWidth = result.width;
+              const imgHeight = result.height;
+              const angle = result.rotation;
+
+              // 存储的item
+              configurationItem.bmParam.imageCode = image.attrs.detail.imageCode;
+
+              // 设计图 - offset (x,y 的坐标)
+              configurationItem.offset.x = result.x;
+              configurationItem.offset.y = result.y;
+
+              // TODO: 这个要考虑 翻转图片、平铺图片、文字、背景图的 情况
+              // TODO: 要考虑 obj.isNeedCopy === '1' 的情况
+              // 设计图 - content (width,height,scale,id等)
+              configurationItem.content.svg.image.designId = image.attrs.detail.id;
+              configurationItem.content.svg.image.width = imgWidth;
+              configurationItem.content.svg.image.height = imgHeight;
+              configurationItem.content.svg.image.isBg = image.attrs.detail.isBg;
+              configurationItem.content.svg.image.transform = `rotate(${angle},${imgWidth / 2},${imgHeight / 2})`;
+              break;
+          }
           submitParam.configurations.push(configurationItem);
         }
       }

@@ -3,11 +3,12 @@ import store from '@/store';
 import { disposeThree } from '@/designApplication/core/utils/clearThree';
 import { Config } from '@/designApplication/core/config';
 import { config3dUtil } from '@/designApplication/interface/Config3d/config3dOfCommonResponse';
+import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 
 export class DesignType {
-  static bgc = 'bgc';
-  static text = 'text';
-  static image = 'image';
+  static bgc = canvasDefine.bgc;
+  static text = canvasDefine.text;
+  static image = canvasDefine.image;
 
   static getLabel(type) {
     switch (type) {
@@ -137,7 +138,7 @@ export class DesignerUtil {
     for (let view of prodItem.viewList) {
       if (view.canvas) {
         view.canvas.getImageList().forEach((e) => {
-          if (e.attrs.name === 'bgc') {
+          if (e.attrs.name === canvasDefine.bgc) {
             e.attrs.remove();
           }
         });
@@ -154,7 +155,7 @@ export class DesignerUtil {
     for (let view of prodItem.viewList) {
       if (view.canvas) {
         view.canvas.getImageList().forEach((e) => {
-          if (e.attrs.name === 'bgc') {
+          if (e.attrs.name === canvasDefine.bgc) {
             e.moveToBottom();
           }
         });
@@ -171,7 +172,7 @@ export class DesignerUtil {
     for (let view of prodItem.viewList) {
       if (view.canvas) {
         view.canvas.getImageList().forEach((e) => {
-          if (e.attrs.name === 'bgc') {
+          if (e.attrs.name === canvasDefine.bgc) {
             e.attrs.visibleFn();
           }
         });

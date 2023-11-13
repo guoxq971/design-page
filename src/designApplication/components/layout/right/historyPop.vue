@@ -38,7 +38,7 @@
 
       <!--分页-->
       <div class="footer">
-        <pageContainer @mousedown.native.stop :get-list="getList" :param="params" :total="total" />
+        <pageContainer @mousedown.native.stop :param="params" :total="total" />
       </div>
     </div>
   </transition>
@@ -56,6 +56,8 @@ import { getImageListApi } from '@/designApplication/apis/image';
 
 import { CommonProdParams } from '@/designApplication/interface/commonProdParams';
 import { ImageListParams } from '@/designApplication/interface/image/imageListParams';
+import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
+import { getPositionCenter } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
 
 export default {
   directives: { dragPop },
@@ -88,35 +90,31 @@ export default {
   },
   methods: {
     /**
-     * 选中
+     * 渲染产品
      */
-    async onSel(data) {
-      // 获取历史记录中的 提交数据 的详情
-      const res = await getHistoryDetailApi(data.id);
-      console.log('历史记录详情', res);
-
-      // 渲染产品
-      const productCode = res.productType.id;
+    async dispose_prod(prodCode) {
+      // 获取产品详情
       const param = new CommonProdParams();
-      param.tempalteNoOrName = productCode;
+      param.tempalteNoOrName = prodCode;
       const prodList = await getCommonProdListApi(param);
       if (prodList.total === 0) {
-        this.$message.warning(`未找到产品${productCode}`);
+        this.$message.warning(`未找到产品${prodCode}`);
         return;
       }
       const prodDetail = prodList.list[0];
+
+      // 渲染产品
       await this.$store.dispatch('designApplication/setProd', prodDetail);
-      console.log('产品详情', prodDetail);
-
-      // 渲染设计图
-      console.log('设计图列表', res.configurations);
-      // 设计图类型 TODO: 还有其他类型, 背景色、文字
-
-      // 处理设计图类型 --start
+      // console.log('产品详情', prodDetail);
+    },
+    /**
+     * 处理设计图
+     */
+    async dispose_image(designList) {
       const errorImageList = [];
       const successImageList = [];
-      const designList = res.configurations.filter((e) => e.type === 'design');
       const imageCodeList = [...new Set(designList.map((e) => e.bmParam.imageCode))];
+
       // 获取设计图详情
       for (let imageCode of imageCodeList) {
         const imageParam = new ImageListParams();
@@ -129,18 +127,64 @@ export default {
         // 成功还能访问的设计图
         successImageList.push(resImage.list[0]);
       }
+
       if (errorImageList.length) {
         this.$message.warning(`未找到${errorImageList.length}张设计图, ${errorImageList.join(',')}`);
       }
-      console.log('成功列表', successImageList);
+
+      console.log('成功列表 addImage的详情', successImageList);
+
+      // 渲染设计图
       for (let item of designList) {
-        const image = successImageList.find((e) => e.imageCode === item.bmParam.imageCode);
-        if (!image) console.error('未找到设计图', item.bmParam.imageCode);
+        const imageDetail = successImageList.find((e) => e.imageCode === item.bmParam.imageCode);
+        if (!imageDetail) console.error('未找到设计图', item.bmParam.imageCode);
         const viewId = item.printArea.id;
-        this.$store.dispatch('designApplication/setImage', { detail: image, viewId: viewId });
-        // TODO: 已经成功添加到 view 中了, 还需设置 旋转、缩放、移动、平铺、翻转
+        // 将设计图插入到画布
+        const image = await this.$store.dispatch('designApplication/setImage', { detail: imageDetail, viewId: viewId });
+        // TODO: 已经成功添加到 view 中了, 还需设置 平铺、翻转
+
+        // 解析坐标和角度
+        const transform = item.content.svg.image.transform.replace('rotate(', '').replace(')', '').split(',');
+        if (transform.length > 0) {
+          // 设置旋转
+          const rotate = transform[0];
+          DesignImageUtil.rotation(image, rotate);
+
+          // 设置缩放
+          const scaleX = item.content.svg.image.width / image.attrs.param.width;
+          const scaleY = item.content.svg.image.height / image.attrs.param.height;
+          image.setAttrs({
+            scaleX: scaleX * image.scaleX(),
+            scaleY: scaleY * image.scaleY(),
+          });
+
+          // 设置坐标
+          const { leftTopX, leftTopY } = getPositionCenter(image);
+          image.setAttrs({
+            x: leftTopX + item.offset.x,
+            y: leftTopY + item.offset.y,
+          });
+        }
       }
-      // 处理设计图类型 --end
+    },
+    /**
+     * 选中
+     */
+    async onSel(data) {
+      // 获取历史记录中的 提交数据 的详情
+      const res = await getHistoryDetailApi(data.id);
+      // console.log('历史记录详情', res);
+
+      // 渲染产品
+      await this.dispose_prod(res.productType.id);
+
+      // 渲染设计图
+      // console.log('设计图列表', res.configurations);
+      // 设计图类型 TODO: 还有其他类型, 背景色、文字
+
+      // 处理设计图类型 (这个只处理 设计图)
+      const designList = res.configurations.filter((e) => e.type === 'design');
+      await this.dispose_image(designList);
     },
     /**
      * 删除历史记录

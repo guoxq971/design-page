@@ -64,27 +64,27 @@
             <div class="layer-group">
               <div v-for="image in imageList(view)" class="layer-item" :class="{ 'active-layer': image.attrs.transformer.attrs.visible }">
                 <!--背景色-->
-                <div v-if="image.attrs.name === 'bgc'" class="img-wrap" @click="onSelected(image, image.attrs.name, view)">
+                <div v-if="image.attrs.name === canvasDefine.bgc" class="img-wrap" @click="onSelected(image, image.attrs.name, view)">
                   <div class="img" :style="{ backgroundColor: image.attrs.fill }"></div>
                   <div class="img-name">{{ image.attrs.fill }}</div>
                 </div>
 
                 <!--文字-->
-                <div v-else-if="image.attrs.name === 'text'" class="img-wrap" @click="onSelected(image, image.attrs.name, view)">
+                <div v-else-if="image.attrs.name === canvasDefine.text" class="img-wrap" @click="onSelected(image, image.attrs.name, view)">
                   <!--<el-input :value="image.attrs.text" @input="(val) => onInput(image, view, val)" />-->
                   <div class="text">文</div>
                   <div class="img-name">{{ image.attrs.text }}</div>
                 </div>
 
                 <!--设计图-->
-                <div v-else-if="image.attrs.name === 'image'" class="img-wrap" @click="onSelected(image, image.attrs.name, view)">
+                <div v-else-if="image.attrs.name === canvasDefine.image" class="img-wrap" @click="onSelected(image, image.attrs.name, view)">
                   <el-image :src="image.attrs.fillPatternImage.src" class="img" />
                   <div class="img-name">{{ image.attrs.detail.name }}</div>
                 </div>
 
                 <div class="btn-layer">
                   <!--图层上移动-->
-                  <template v-if="!['bgc'].includes(image.attrs.name)">
+                  <template v-if="![canvasDefine.bgc].includes(image.attrs.name)">
                     <div class="btn" @click="onLayer(image, image.attrs.name, 'up')">
                       <div class="el-icon-top"></div>
                     </div>
@@ -119,20 +119,20 @@
 
       <div v-if="activeDesign">
         <!--设计信息-->
-        <div v-if="activeDesign.attrs.name === 'image'" class="img-wrap-2">
+        <div v-if="activeDesign.attrs.name === canvasDefine.image" class="img-wrap-2">
           <div class="image-bd">
             <el-image :src="activeDesign.attrs.fillPatternImage.src" class="image" />
           </div>
           <div class="img-name-2">{{ activeDesign.attrs.detail.name }}</div>
         </div>
-        <div v-if="activeDesign.attrs.name === 'text'" class="text-wrap-2">
+        <div v-if="activeDesign.attrs.name === canvasDefine.text" class="text-wrap-2">
           <el-input type="textarea" :rows="4" :value="activeDesign.attrs.text" @input="(val) => onInput(activeDesign, val)" />
         </div>
 
         <!--操作区域-->
         <div class="layer-item" style="padding: 0">
           <!--图层上移动-->
-          <template v-if="!['bgc'].includes(activeDesign.attrs.name)">
+          <template v-if="![canvasDefine.bgc].includes(activeDesign.attrs.name)">
             <div class="btn" @click="onLayer(activeDesign, activeDesign.attrs.name, 'up')">
               <div class="el-icon-top"></div>
             </div>
@@ -164,6 +164,7 @@ import { OperationUtil } from '@/designApplication/core/utils/operationUtil';
 import { Message } from 'element-ui';
 import { ProdType } from '@/designApplication/interface/prodItem';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
+import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 
 export default {
   data() {
@@ -175,6 +176,9 @@ export default {
     };
   },
   computed: {
+    canvasDefine() {
+      return canvasDefine;
+    },
     ...mapState({
       vuexShow3d: (state) => state.designApplication.show3d,
       config: (state) => state.designApplication.config,
@@ -309,15 +313,15 @@ export default {
      * 删除图片
      * */
     onRemove(image, type) {
-      if (['image'].includes(type)) {
+      if ([canvasDefine.image].includes(type)) {
         DesignImageUtil.deleteImage(image);
       }
 
-      if (['text'].includes(type)) {
+      if ([canvasDefine.text].includes(type)) {
         image.attrs.remove();
       }
 
-      if (['bgc'].includes(type)) {
+      if ([canvasDefine.bgc].includes(type)) {
         DesignerUtil.removeBgc();
       }
     },
@@ -325,15 +329,15 @@ export default {
      * 显示隐藏
      * */
     onVisible(image, type) {
-      if (['image'].includes(type)) {
+      if ([canvasDefine.image].includes(type)) {
         DesignImageUtil.setImageVisible(image);
       }
 
-      if (['text'].includes(type)) {
+      if ([canvasDefine.text].includes(type)) {
         image.attrs.visibleFn();
       }
 
-      if (['bgc'].includes(type)) {
+      if ([canvasDefine.bgc].includes(type)) {
         DesignerUtil.visibleBgc();
       }
     },
@@ -344,7 +348,7 @@ export default {
      * @param {string} type 类型 up-上移 down-下移
      * */
     onLayer(image, imageType, type) {
-      if (['image'].includes(imageType)) {
+      if ([canvasDefine.image].includes(imageType)) {
         if (type === 'up') {
           DesignImageUtil.layerMoveUp(image);
         }
@@ -352,7 +356,7 @@ export default {
           DesignImageUtil.layerMoveDown(image);
         }
       }
-      if (['text'].includes(imageType)) {
+      if ([canvasDefine.text].includes(imageType)) {
         image.attrs.layerMoveFn(type);
       }
     },
@@ -360,15 +364,15 @@ export default {
      * 选中图层
      * */
     onSelected(image, type, view) {
-      if (['image'].includes(type)) {
+      if ([canvasDefine.image].includes(type)) {
         DesignImageUtil.selectedImage(image);
       }
 
-      if (['text'].includes(type)) {
+      if ([canvasDefine.text].includes(type)) {
         image.attrs.selectedFn();
       }
 
-      if (['bgc'].includes(type)) {
+      if ([canvasDefine.bgc].includes(type)) {
         image.attrs.selectedFn();
       }
     },

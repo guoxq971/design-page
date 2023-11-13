@@ -9,6 +9,7 @@ import { config3dUtil } from '@/designApplication/interface/Config3d/config3dOfC
 import { OperationUtil } from '@/designApplication/core/utils/operationUtil';
 import { loadImage } from '@/designApplication/core/utils/loadImage';
 import { initTransformer } from '@/designApplication/core/canvas/selectBorder';
+import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 
 /**
  * 创建 konva canvas
@@ -175,8 +176,8 @@ export class KonvaCanvas {
       scaleX: param.scaleX,
       scaleY: param.scaleY,
       rotation: param.rotation,
-      type: 'image',
-      name: 'image',
+      type: canvasDefine.image,
+      name: canvasDefine.image,
       detail: detail,
       konvaCanvas: this,
       transformer: designImage.transformer,
@@ -203,7 +204,7 @@ export class KonvaCanvas {
    * 添加背景色
    * */
   addBgc(color) {
-    let rect = this.clip.children.find((e) => e.name() === 'bgc');
+    let rect = this.clip.children.find((e) => e.name() === canvasDefine.bgc);
 
     if (!rect) {
       // 选中框
@@ -225,7 +226,7 @@ export class KonvaCanvas {
         height: this.stage.height(),
         fill: color,
         draggable: false,
-        name: 'bgc',
+        name: canvasDefine.bgc,
         dragDistance: 100000,
       });
 
@@ -399,10 +400,10 @@ export class KonvaCanvas {
 
     // 监听点击的位置是否有元素
     this.stage.on('mousedown', (e) => {
-      if (e.target.attrs.name === 'image') return;
+      if (e.target.attrs.name === canvasDefine.image) return;
 
       if (e.target.attrs.name === 'back' && e.target.parent && e.target.parent.customName === 'CustomTransformer') {
-        if (e.target.parent._nodes && e.target.parent._nodes[0]?.attrs.name === 'bgc') {
+        if (e.target.parent._nodes && e.target.parent._nodes[0]?.attrs.name === canvasDefine.bgc) {
           //
         } else {
           return;
@@ -415,7 +416,7 @@ export class KonvaCanvas {
     // 监听双击事件
     this.stage.on('dblclick', (e) => {
       // 选中非设计图 && 没有选中元素 && 事件是用户触发的
-      if (e.target.attrs.type !== 'image' && e.evt.isTrusted) {
+      if (e.target.attrs.type !== canvasDefine.image && e.evt.isTrusted) {
         OperationUtil.doubleClickCanvas();
       }
     });

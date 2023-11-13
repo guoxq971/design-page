@@ -179,7 +179,7 @@ export class KonvaCanvas {
 
       const r1 = item === ignore;
       const r2 = item.attrs.transformer === ignore;
-      const r3 = ignore.attrs.name === 'image' && item._id === ignore._id;
+      const r3 = ignore.attrs.name === canvasDefine.image && item._id === ignore._id;
 
       return r1 || r2 || r3;
     };
@@ -221,6 +221,7 @@ export class KonvaCanvas {
   /**
    * 添加设计图
    * @param {import ('@/design').AddParamOfImage} param 参数
+   * @returns {Promise<Konva.Image>} 设计图
    */
   async addImage(param) {
     const that = this;
@@ -280,6 +281,8 @@ export class KonvaCanvas {
     this.clip.add(designImage.image);
     // 更新材质
     this.updateTexture(44, 50);
+
+    return designImage.image;
   }
 
   /**

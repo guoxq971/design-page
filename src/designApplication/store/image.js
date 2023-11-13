@@ -33,6 +33,7 @@ export const image_actions = {
     /**
      * 静态数据
      * @type {import('@/design').StaticViewItem}
+     * @returns {Promise<Konva.Image>}
      */
     const staticView = state.prodStore.getStatic()?.viewList.find((e) => e.id === viewId);
 
@@ -61,6 +62,10 @@ export const image_actions = {
     const scaleX = width / imageDOM.width;
     const scaleY = height / imageDOM.height;
 
+    // console.log('dom size', imageDOM.width, imageDOM.height);
+    // console.log('show size', width, height);
+    // console.log('scale', scaleX, scaleY);
+
     // 图片在画布展示的位置
     const x = canvasWidth / 2 - width / 2 + staticView.offset.x;
     const y = canvasHeight / 2 - height / 2 + staticView.offset.y;
@@ -83,6 +88,8 @@ export const image_actions = {
       inch,
     };
 
-    await view.canvas.addImage(param);
+    const image = await view.canvas.addImage(param);
+
+    return image;
   },
 };

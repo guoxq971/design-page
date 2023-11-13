@@ -19,12 +19,15 @@ export class DesignImageUtil {
       console.error('获取设计图信息失败, image is null');
       return;
     }
+    // 设计图当前的宽高
     const width = image.width() * image.scaleX();
     const height = image.height() * image.scaleY();
 
+    // 设计图当前的坐标
     const x = image.x() - width / 2;
     const y = image.y() - height / 2;
 
+    // 设计图当前的旋转角度
     const rotation = image.rotation() < 0 ? 360 + image.rotation() : image.rotation();
 
     return {

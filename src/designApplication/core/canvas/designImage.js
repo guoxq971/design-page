@@ -3,6 +3,7 @@ import { Konva } from '@/designApplication/core/canvas/konva';
 import { konvaRectConfig } from './konvaConfig';
 import { initTransformer } from './selectBorder';
 import { loadImage } from '@/designApplication/core/utils/loadImage';
+import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 
 /**
  * 获取设计图
@@ -55,7 +56,7 @@ export async function getText(text, layer, hideAllTransformer) {
     fontSize: 20,
     fontFamily: 'Calibri',
     fill: '#555',
-    name: 'text',
+    name: canvasDefine.text,
     draggable: true,
   });
   transformer.nodes([konvaText]);
