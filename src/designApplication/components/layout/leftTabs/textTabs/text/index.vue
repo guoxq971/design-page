@@ -1,4 +1,4 @@
-<!--取色板-->
+<!--文字-->
 <template>
   <div class="qsb-wrap-bd">
     <div class="qsb-wrap">
@@ -6,40 +6,51 @@
       <div class="handle-wrap">
         <div class="handle-wrap-top">
           <el-button @click="onAddText" class="btn" type="primary">新增文字</el-button>
-          <el-select style="width: 100px" v-model="param.fontFamily">
-            <template slot="prefix">字体</template>
-            <el-option v-for="item in fontFamilyList" :key="item.value" :label="item.label" :value="item.value">
-              <span :style="{ fontFamily: item.value }">{{ item.label }}</span>
-            </el-option>
-          </el-select>
-          <el-select style="width: 100px" v-model="param.fontSize">
-            <template slot="prefix">字号</template>
+          <!--字号-->
+          <el-select style="width: 80px" v-model="param.fontSize" @change="onEditText">
             <el-option v-for="item in fontSizeList" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
-          <el-select style="width: 100px" v-model="param.fontWeight">
-            <template slot="prefix">加粗</template>
-            <el-option v-for="item in fontWeightList" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-          <el-select style="width: 100px" v-model="param.fontStyle">
-            <template slot="prefix">斜体</template>
-            <el-option v-for="item in fontStyleList" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-          <el-select style="width: 100px" v-model="param.textDecoration">
-            <template slot="prefix">下划线</template>
-            <el-option v-for="item in textDecorationList" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-          <!--<el-select style="width: 100px" v-model="param.textAlign">-->
-          <!--<template slot="prefix">对齐</template>-->
-          <!--<el-option v-for="item in textAlignList" :key="item.value" :label="item.label" :value="item.value" />-->
-          <!--</el-select>-->
-          <el-select style="width: 100px" v-model="param.lineHeight">
-            <template slot="prefix">行高</template>
-            <el-option v-for="item in lineHeightList" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-          <el-select style="width: 100px" v-model="param.letterSpacing">
-            <template slot="prefix">间距</template>
-            <el-option v-for="item in letterSpacingList" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
+
+          <!--加粗-->
+          <div v-title="'加粗'" class="btn-2" :class="{ active: param.fontWeight === 'bold' }" @click="onFontWeight">
+            <iconpark-icon name="text-bold-6fh2oci5" size="19" />
+          </div>
+
+          <!--斜体-->
+          <div v-title="'斜体'" class="btn-2" :class="{ active: param.fontStyle === 'italic' }" @click="onFontItalic">
+            <iconpark-icon name="text-italic-6fh2p3ep" size="19" />
+          </div>
+
+          <!--下划线-->
+          <div v-title="'下划线'" class="btn-2" :class="{ active: param.textDecoration === 'underline' }" @click="onFontUnderline">
+            <iconpark-icon name="text-underline" size="19" />
+          </div>
+
+          <!--字体-->
+          <el-dropdown placement="bottom">
+            <div v-title="'字体'" class="btn-2" :class="{ active: param.fontFamily !== 'sans-serif' }">
+              <svg style="font-size: 20px" viewBox="64 64 896 896" data-icon="font-size" width="1em" height="1em" fill="currentColor" aria-hidden="true" focusable="false" class="">
+                <path
+                  d="M920 416H616c-4.4 0-8 3.6-8 8v112c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8v-56h60v320h-46c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8h164c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8h-46V480h60v56c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V424c0-4.4-3.6-8-8-8zM656 296V168c0-4.4-3.6-8-8-8H104c-4.4 0-8 3.6-8 8v128c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-64h168v560h-92c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h264c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8h-92V232h168v64c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8z"
+                ></path>
+              </svg>
+            </div>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item
+                v-for="item in fontFamilyList"
+                :style="{
+                  backgroundColor: item.value === param.fontFamily ? '#ecf5ff' : '',
+                  color: item.value === param.fontFamily ? '#66b1ff' : '',
+                }"
+                :key="item.value"
+                @click.native="onFontFontFamily(item)"
+              >
+                <span :style="{ fontFamily: item.value }" style="font-size: 18px">
+                  {{ item.label }}
+                </span>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </div>
         <el-input v-model="param.text" type="textarea" :rows="5" placeholder="请在这里输入文字" />
       </div>
@@ -65,35 +76,14 @@
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import { Sketch } from 'vue-color';
 import { Message } from 'element-ui';
-
-class FontFamily {
-  constructor(label, value, remark) {
-    this.label = label || '';
-    this.value = value || '';
-    this.remark = remark || '';
-  }
-}
-
-export const presetColors = [
-  '#F51E30',
-  '#F76707',
-  '#F2DE33',
-  '#EAC588',
-  '#FFC0CB',
-  '#0099FF',
-  '#1E9658',
-  '#FFFFFF',
-  '#00224C',
-  '#4C2075',
-  '#C0C0C0',
-  '#665544',
-  '#333333',
-  '#750033',
-  '#07462C',
-  '#000000',
-];
+import title from '@/designApplication/core/utils/directives/title/title';
+import { fontFamilyList, presetColors } from '@/designApplication/components/layout/leftTabs/textTabs/text/util';
+import { mapGetters } from 'vuex';
+import { canvasDefine } from '@/designApplication/core/canvas_2/define';
+import { setTextAttrs } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
 
 export default {
+  directives: { title },
   components: {
     'sketch-picker': Sketch,
   },
@@ -105,7 +95,7 @@ export default {
         text: '',
         fontColor: '#000',
         fontSize: 20,
-        fontFamily: '微软雅黑',
+        fontFamily: 'sans-serif', //'微软雅黑',
         fontWeight: 'normal', //normal,bold
         fontStyle: 'normal', //normal,italic
         textDecoration: 'none', //none,underline,overline,line-through
@@ -113,41 +103,7 @@ export default {
         lineHeight: 1, //字体行高
         letterSpacing: 0, //字体间距
       },
-      fontFamilyList: [
-        new FontFamily('默认', 'sans-serif', 'default'),
-        // new FontFamily('test', 'test', 'custom'),
-        // new FontFamily('OZ焦糖体', 'OzCaramel', 'custom'),
-        new FontFamily('851手写杂书体', 'tegakizatsu', 'custom'),
-        new FontFamily('iSlide云犹体', 'iSlide云犹体', 'custom'),
-        new FontFamily('Aa剑豪体', 'Aa剑豪体', 'custom'),
-        // new FontFamily('element-icons', 'element-icons', 'default'),
-        new FontFamily('fantasy', 'fantasy', 'default'),
-        new FontFamily('微软雅黑', 'Microsoft YaHei', 'default'),
-        new FontFamily('宋体', 'SimSun', 'default'),
-        new FontFamily('黑体', 'SimHei', 'default'),
-        new FontFamily('楷体', 'KaiTi', 'default'),
-        new FontFamily('隶书', 'LiSu', 'default'),
-        new FontFamily('幼圆', 'YouYuan', 'default'),
-        new FontFamily('华文行楷', 'STXingkai', 'default'),
-        new FontFamily('华文楷体', 'STKaiti', 'default'),
-        new FontFamily('华文宋体', 'STSong', 'default'),
-        new FontFamily('华文中宋', 'STZhongsong', 'default'),
-        new FontFamily('华文新魏', 'STXinwei', 'default'),
-        new FontFamily('华文细黑', 'STXinghei', 'default'),
-        new FontFamily('华文仿宋', 'STFangsong', 'default'),
-        new FontFamily('华文彩云', 'STCaiyun', 'default'),
-        new FontFamily('华文琥珀', 'STHupo', 'default'),
-        new FontFamily('华文隶书', 'STLiti', 'default'),
-        new FontFamily('方正舒体', 'FZShuTi', 'default'),
-        new FontFamily('方正姚体', 'FZYaoti', 'default'),
-        // new FontFamily('方正粗黑宋简体', 'FZCuHei-B01S', 'default'),
-        // new FontFamily('方正粗倩简体', 'FZCuQian-M03S', 'default'),
-        // new FontFamily('方正粗雅宋简体', 'FZCuYuan-M03S', 'default'),
-        // new FontFamily('方正大标宋简体', 'FZDaBiaoSong-B05S', 'default'),
-        // new FontFamily('方正大黑简体', 'FZDaHei-B02S', 'default'),
-        // new FontFamily('方正大黑_GBK1', 'FZDaHei-G01S', 'default'),
-        // new FontFamily('方正大黑_GBK2', 'FZDaHei-G', 'default'),
-      ],
+      fontFamilyList: fontFamilyList,
       fontSizeList: [
         { label: '12', value: 12 },
         { label: '14', value: 14 },
@@ -197,10 +153,59 @@ export default {
       costomColor: '', //自定义颜色
     };
   },
+  computed: {
+    ...mapGetters({
+      activeImage: 'designApplication/activeImage',
+    }),
+  },
+  watch: {
+    'param.text': {
+      handler(val) {
+        if (this.text) {
+          this.onEditText();
+        }
+      },
+      immediate: true,
+    },
+    activeImage(val) {
+      if (val && val.attrs.name === canvasDefine.text) {
+        this.text = val;
+        Object.keys(this.param).forEach((key) => {
+          this.param[key] = val.attrs[key];
+        });
+      } else {
+        this.text = null;
+      }
+    },
+  },
   methods: {
+    /** * 文字-字体 */
+    onFontFontFamily(item) {
+      this.param.fontFamily = item.value;
+      if (this.text) this.onEditText();
+    },
+    /** * 文字-下划线 */
+    onFontUnderline() {
+      this.param.textDecoration = this.param.textDecoration === 'underline' ? 'normal' : 'underline';
+      if (this.text) this.onEditText();
+    },
+    /** * 文字-斜体 */
+    onFontItalic() {
+      this.param.fontStyle = this.param.fontStyle === 'italic' ? 'normal' : 'italic';
+      if (this.text) this.onEditText();
+    },
+    /** * 文字 加粗 */
+    onFontWeight() {
+      this.param.fontWeight = this.param.fontWeight === 'bold' ? 'normal' : 'bold';
+      if (this.text) this.onEditText();
+    },
     /**
-     * 添加文字
-     * */
+     * 选择文字下触发
+     */
+    onEditText() {
+      this.text && setTextAttrs(this.text, this.param);
+    },
+    /** * 添加文字 * */
     onAddText() {
       if (!this.param.text) {
         this.$message.warning('请输入文字');
@@ -226,6 +231,7 @@ export default {
       color = '#' + color.substring(0, 6);
       if (color === '#') color = '';
       this.param.fontColor = color;
+      this.onEditText();
     },
     //应用自定义颜色到color
     upHex(val) {
@@ -245,13 +251,52 @@ export default {
 </script>
 
 <style lang="less" scoped>
+// 取色器--start
+// 隐藏取色器的透明度拖拽条
+::v-deep .vc-sketch-alpha-wrap {
+  display: none;
+}
+// 隐藏透明度选项
+::v-deep .vc-sketch-presets {
+  //.vc-sketch-presets-color:nth-last-child(1) {
+  //  display: none;
+  //}
+}
+// 隐藏透明度A
+::v-deep .vc-sketch-field {
+  .vc-sketch-field--double:nth-last-child(1) {
+    display: none;
+  }
+}
+.active {
+  color: #409eff !important;
+  border-color: #c6e2ff !important;
+  background-color: #ecf5ff !important;
+}
+// 取色器--end
 // 操作区域
 .handle-wrap {
   margin-bottom: 10px;
   .handle-wrap-top {
     margin-bottom: 10px;
+    display: flex;
+    align-items: center;
     .btn {
       margin-right: 5px;
+    }
+    .btn-2 {
+      transition: all 0.3s;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid #eee;
+      padding: 3px 4px;
+      border-radius: 4px;
+      margin-left: 5px;
+      &:hover {
+        border: 1px solid #4087ff;
+      }
     }
     .sel {
       width: 100px;
@@ -271,7 +316,7 @@ export default {
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: 10px;
+  padding: 8px 10px 10px 10px;
 
   ::v-deep .vc-sketch {
     width: calc(100% - 20px);

@@ -51,6 +51,14 @@ export default {
     ...prod_getters,
     // 历史设计记录
     ...getters_history,
+    /**
+     * 当前激活的设计图
+     */
+    activeImage(state, getters) {
+      const view = getters.activeView;
+      if (!view) return null;
+      return view?.activeImageUuid ? view?.canvas.getImage(view.activeImageUuid) : null;
+    },
   },
   mutations: {
     // 设置初始化

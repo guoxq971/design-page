@@ -4,6 +4,7 @@ import { konvaRectConfig } from '@/designApplication/core/canvas/konvaConfig';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import store from '@/store';
 import { Message } from 'element-ui';
+import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 
 /**
  * 获取设计图
@@ -141,13 +142,16 @@ export function remove(that, image, transformer) {
  * @param {Object} param 参数
  * */
 export function setTextAttrs(text, param) {
+  const style = [param.fontStyle, param.fontWeight];
+  const fontStyle = style.join(' ');
   text.setAttrs({
     text: param.text,
     fill: param.fontColor || '#000',
     fontSize: param.fontSize || 20,
     fontFamily: param.fontFamily || 'Calibri',
-    fontStyle: param.fontStyle || 'normal', // 斜体
-    fontWeight: param.fontWeight || 'normal', // 加粗
+    fontStyle: fontStyle, // 样式
+    // fontStyle: param.fontStyle || 'normal', // 斜体
+    // fontWeight: param.fontWeight || 'normal', // 加粗
     textDecoration: param.textDecoration || 'none', // 下划线
     textAnchor: param.textAlign || 'left', // 文字对齐方式
     letterSpacing: param.letterSpacing || 0, // 字间距
@@ -186,10 +190,10 @@ export function setProxyTransformer(transformer, image) {
     // 是否放大
     const isUp = newBox.width > oldBox.width || newBox.height > oldBox.height;
 
-    if (isUp && isCollision(image)) {
-      return oldBox;
+    if (isUp && image.attrs.type === canvasDefine.image && isCollision(image)) {
+      return oldBox; // 返回旧的
     } else {
-      return newBox;
+      return newBox; // 返回新的(成功放大)
     }
   });
 }

@@ -20,6 +20,12 @@
               </div>
               <div class="title">{{ item.attrs.fill }}</div>
             </template>
+
+            <!--文字-->
+            <div v-if="item.attrs.name === canvasDefine.text" class="design-bd" @click="onSetActiveImage(item)">
+              <div class="design">文</div>
+              <div class="title">{{ item.attrs.text }}</div>
+            </div>
           </div>
 
           <div class="handle">

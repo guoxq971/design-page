@@ -1,16 +1,16 @@
 <template>
   <el-tabs class="tabs" v-model="active">
     <el-tab-pane label="文字" name="text">
-      <colorBackground />
+      <textCard />
     </el-tab-pane>
   </el-tabs>
 </template>
 
 <script>
-import colorBackground from './colorBackground';
+import textCard from './text';
 export default {
   components: {
-    colorBackground,
+    textCard,
   },
   data() {
     return {

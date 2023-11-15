@@ -164,6 +164,15 @@ export class KonvaCanvas {
   }
 
   /**
+   * 根据uuid获取设计图
+   * @param uuid
+   */
+  getImage(uuid) {
+    if (!uuid) return null;
+    return this.getImageList().find((e) => e.attrs.uuid === uuid);
+  }
+
+  /**
    * 隐藏所有的选中器
    * @param {Konva.Layer} [layer] 图层
    * @param {Konva.Transformer|Konva.Image} [ignore] 忽略的选中器
@@ -376,9 +385,14 @@ export class KonvaCanvas {
     // 设置属性
     setTextAttrs(result.text, param);
 
+    // 监听visible
+    setProxyTransformer(result.transformer, result.text);
+
     // 设置属性
     result.text.setAttrs({
+      uuid: uuid(),
       visible: true,
+      konvaCanvas: this,
       transformer: result.transformer,
       visibleFn: () => visibleImage(this, result.text, result.transformer),
       remove: () => remove(this, result.text, result.transformer),
