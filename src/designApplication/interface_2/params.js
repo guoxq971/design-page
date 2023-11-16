@@ -47,6 +47,7 @@ export class ConfigurationItem {
     reverseParam: {},
     matrixObj: {},
   };
+  isCopy = '';
   isText = false;
   textId = '';
   content = {

@@ -17,11 +17,12 @@
           </div>
           <el-dropdown-item @click.native="onClick(ProdType.common)">通用设计</el-dropdown-item>
         </el-tooltip>
+
         <el-tooltip placement="right">
           <div slot="content">
             <!--精细-->
             <div>
-              <template v-if="disabled">
+              <template v-if="disabledRefine">
                 <div>该产品暂不支持精细设计</div>
               </template>
               <template v-else>
@@ -31,7 +32,7 @@
               </template>
             </div>
           </div>
-          <el-dropdown-item @click.native="onClick(ProdType.refine)" :disabled="disabled">精细设计</el-dropdown-item>
+          <el-dropdown-item @click.native="onClick(ProdType.refine)">精细设计</el-dropdown-item>
         </el-tooltip>
       </el-dropdown-menu>
     </el-dropdown>
@@ -53,7 +54,7 @@ export default {
   watch: {},
   computed: {
     // 是否开启3d true-禁用 false-启用
-    disabled() {
+    disabledRefine() {
       return !this.$store.state.designApplication.prodStore.list.find((e) => e.type === ProdType.refine);
     },
     activeTypeName() {

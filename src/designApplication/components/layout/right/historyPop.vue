@@ -223,7 +223,7 @@ export default {
       // console.log('设计图列表', res.configurations);
 
       // 处理设计图类型 (这个只处理 设计图)
-      const designList = res.configurations.filter((e) => e.bmParam.type === canvasDefine.image);
+      const designList = res.configurations.filter((e) => e.bmParam.type === 'img' && !e.isCopy);
       await this.dispose_image(designList);
 
       // 处理文字类型

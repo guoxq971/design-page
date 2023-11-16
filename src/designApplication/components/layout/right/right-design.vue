@@ -17,7 +17,9 @@
       </el-button>
 
       <!--全颜色合成-->
-      <el-button :loading="loadingSave" class="btn btn2 btn5 btn6 save-btn" type="warning" @click="(e) => onSave(e, 1)" v-title="'全颜色合成'">全颜色合成</el-button>
+      <el-button :loading="loadingSave" class="btn btn2 btn5 btn6 save-btn" :disabled="activeProd.detail.isCanSynthesis === false" type="warning" @click="(e) => onSave(e, 1)" v-title="'全颜色合成'">
+        全颜色合成
+      </el-button>
 
       <!--保存产品-->
       <el-button :loading="loadingSave" class="btn btn2 btn5 save-btn" type="primary" @click="(e) => onSave(e, 0)" v-title="'保存产品'">保存产品</el-button>
@@ -64,7 +66,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 import multiAngleFold from '@/designApplication/components/multiAngleFold.vue';
 import title from '@/designApplication/core/utils/directives/title/title';
 import hoverDesignDetail from './hoverComponents/hover-designDetail.vue';
@@ -78,6 +80,7 @@ import multiAngleCard from './multiAngleCard.vue';
 import designHandleCard from './designHandleCard.vue';
 import designListCard from './designListCard.vue';
 import store from '@/store';
+import lodash from 'lodash';
 import historyPop from '@/designApplication/components/layout/right/historyPop.vue';
 
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
@@ -112,6 +115,10 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      activeProd: 'designApplication/activeProd',
+      activeProdStatic: 'designApplication/activeProdStatic',
+    }),
     ...mapState({
       visible_layer: (state) => state.designApplication.visible_layer,
       isInit_image_collect: (state) => state.designApplication.isInit_image_collect,
@@ -169,13 +176,12 @@ export default {
             return;
           }
 
-          // 多面设计判断 (当前产品是对面设计,并且只设计了一个视图)
+          // 多面设计判断 (当前产品是对面设计,并且只设计了一个视图) isNeedCopy=空拷贝
           customObj.isNeedCopy = prodItem.detail.emptyCopy && prodItem.viewList.length > 1 && designViewList.length === 1 ? '1' : '';
           break;
 
         // 外采
         case false:
-          // TODO: configurations的判断
           if (customObj.saveNumBtn == 2) {
             // 原胚设计
             const isSomeImage = prodItem.viewList.some((view) => view.canvas.getImageList().length);
@@ -231,7 +237,6 @@ export default {
             // 背景色
             case canvasDefine.bgc:
               configurationItem.type = image.attrs.name; //类型
-              configurationItem.bmParam.type = image.attrs.name;
               configurationItem.content.svg = image.attrs.fill;
 
               // 背景色 - offset (固定值)
@@ -284,8 +289,7 @@ export default {
               configurationItem.offset.x = result.x;
               configurationItem.offset.y = result.y;
 
-              // TODO: 这个要考虑 翻转图片、平铺图片、文字的 情况
-              // TODO: 要考虑 customObj.isNeedCopy === '1' 的情况
+              // TODO: 这个要考虑 翻转、平铺的 情况
               // 设计图 - content (width,height,scale,id等)
               configurationItem.content.svg.image.designId = image.attrs.detail.id;
               configurationItem.content.svg.image.width = imgWidth;
@@ -294,6 +298,26 @@ export default {
               configurationItem.content.svg.image.transform = `rotate(${angle},${imgWidth / 2},${imgHeight / 2})`;
               break;
           }
+
+          submitParam.configurations.unshift(configurationItem);
+        }
+      }
+
+      // 空拷贝, 进入这个判断只会有一个view设计了图案
+      if (customObj.isNeedCopy && customObj.isSelf) {
+        // 有设计的view
+        const tempView = prodItem.viewList.find((view) => view.canvas.getImageList().length);
+        const tempCgs = submitParam.configurations.find((e) => e.printArea.id === tempView.id);
+        for (let view of prodItem.viewList.toReversed()) {
+          const imageList = view.canvas.getImageList();
+          // 跳过有设计的view
+          if (view.id === tempView.id) continue;
+
+          // 复制一份
+          const configurationItem = lodash.cloneDeep(tempCgs);
+          configurationItem.isCopy = '1';
+          configurationItem.printArea.id = view.id; //当前设计所在的视图id
+
           submitParam.configurations.unshift(configurationItem);
         }
       }
