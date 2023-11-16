@@ -9,9 +9,11 @@
 import pageContainer from './components/page.vue';
 import boxList from '@/designApplication/components/boxListImage.vue';
 import { fetchCollectImageListApi } from '@/designApplication/apis/image';
+import headerContainer from '@/designApplication/components/layout/leftTabs/imageTabs/groupImage/components/header.vue';
 
 export default {
   components: {
+    headerContainer,
     pageContainer,
     boxList,
   },

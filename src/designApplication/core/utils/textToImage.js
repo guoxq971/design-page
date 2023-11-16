@@ -64,7 +64,7 @@ export async function textToImageUpload(konvaText) {
   // 设计图上传确认
   const checkRes = await designImageUploadConfirm(imageRes, file);
 
-  return { checkRes, textParam };
+  return { checkRes, textParam, viewWidth, viewHeight };
 }
 
 /**
@@ -205,6 +205,7 @@ export async function textToImage(param, width, height) {
     text: param.text,
     fontSize: param.fontSize,
     fontStyle: fontStyle,
+    textDecoration: param.textDecoration, // 下划线
     fontFamily: param.fontFamily,
     fill: param.fontColor,
   });

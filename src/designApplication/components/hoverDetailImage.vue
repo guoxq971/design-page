@@ -90,7 +90,7 @@ export default {
 <style scoped lang="less">
 .hover-container {
   position: absolute;
-  z-index: 3;
+  z-index: 7;
   top: -53px;
   right: -277px;
   width: 265px;

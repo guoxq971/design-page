@@ -86,9 +86,7 @@ import { SubmitParamType, ConfigurationItem } from '@/designApplication/interfac
 
 import { buttonBlur } from '@/designApplication/core/utils/buttonBlur';
 import { saveProdApi } from '@/designApplication/apis/prod';
-import { fetchCollectImageListApi, saveTextWordApi } from '@/designApplication/apis/image';
 import { saveTextWord, textToImage, textToImageUpload } from '@/designApplication/core/utils/textToImage';
-import { sleep } from '@/designApplication/core/utils/sleep';
 
 export default {
   name: 'right-design',
@@ -250,7 +248,7 @@ export default {
               configurationItem.type = canvasDefine.image; //类型
 
               // 将文字转成图片上传到服务器, 得到designId
-              const { checkRes, textParam } = await textToImageUpload(image);
+              const { checkRes, textParam, viewWidth, viewHeight } = await textToImageUpload(image);
 
               // 文字 - offset (固定值)
               configurationItem.offset.x = 1;
@@ -267,10 +265,10 @@ export default {
 
               // content 参数
               configurationItem.content.svg.image.designId = checkRes.seqId;
-              configurationItem.content.svg.image.width = imgWidth;
-              configurationItem.content.svg.image.height = imgHeight;
+              configurationItem.content.svg.image.width = viewWidth;
+              configurationItem.content.svg.image.height = viewHeight;
               configurationItem.content.svg.image.isBg = 0;
-              configurationItem.content.svg.image.transform = `rotate(${angle},${imgWidth / 2},${imgHeight / 2})`;
+              configurationItem.content.svg.image.transform = `rotate(0,${viewWidth / 2},${viewHeight / 2})`;
               //文字------------------------------------end
               break;
 

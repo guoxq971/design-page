@@ -344,7 +344,7 @@ export class KonvaCanvas {
       transformer,
       visibleFn: () => visibleImage(this, rect),
       remove: () => {
-        this.clip.children = this.clip.children.filter((item) => item !== rect);
+        this.clipBg.children = this.clipBg.children.filter((item) => item !== rect);
         this.updateTexture();
         this.layer.draw();
       },
@@ -395,7 +395,6 @@ export class KonvaCanvas {
       view: param.view,
       param: param.param,
       uuid: uuid(),
-      visible: true,
       konvaCanvas: this,
       transformer: result.transformer,
       visibleFn: () => visibleImage(this, result.text, result.transformer),

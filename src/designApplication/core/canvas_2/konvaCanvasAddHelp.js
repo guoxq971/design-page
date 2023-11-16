@@ -64,6 +64,7 @@ export async function getText(text, layer, hideAllTransformer) {
     fill: '#555',
     name: 'text',
     draggable: true,
+    visible: true,
   });
   transformer.nodes([konvaText]);
   layer.add(transformer);
@@ -120,7 +121,7 @@ export function visibleImage(that, image, transformer = null) {
   if (transformer && visible === false) {
     transformer.visible(visible);
   }
-  that.layer.draw();
+  // that.layer.draw();
 }
 
 /**

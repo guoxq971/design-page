@@ -27,6 +27,10 @@ export const collect_mutations = {
     state.collectImageList = list;
   },
   setCollectBgImageList(state, list) {
+    for (let item of list) {
+      item.id = item.seqId;
+      item.previewImg = item.designImg;
+    }
     state.collectBgImageList = list;
   },
 };

@@ -35,6 +35,18 @@
           </div>
 
           <div class="handle">
+            <!--设计图-->
+            <template v-if="item.attrs.type === canvasDefine.image">
+              <!--图层-编辑-->
+              <div class="layer-btn" v-title="'图层-编辑'">
+                <iconpark-icon name="write" size="20" />
+              </div>
+              <!--图层-收藏-->
+              <div class="layer-btn" v-title="'图层-收藏'" @click="onImageCollect(item)">
+                <iconpark-icon name="rss" size="20" :style="{ color: DesignImageUtil.hasCollect(item) ? '#4087ff' : '' }" />
+              </div>
+            </template>
+
             <!--设计图,文字-->
             <template v-if="[canvasDefine.image, canvasDefine.text].includes(item.attrs.name)">
               <!--图层-上移-->
@@ -47,17 +59,6 @@
               </div>
             </template>
 
-            <!--设计图-->
-            <template v-if="item.attrs.type === canvasDefine.image">
-              <!--图层-编辑-->
-              <div class="layer-btn" v-title="'图层-编辑'">
-                <iconpark-icon name="write" size="20" />
-              </div>
-              <!--图层-收藏-->
-              <div class="layer-btn" v-title="'图层-收藏'" @click="onImageCollect(item)">
-                <iconpark-icon name="rss" size="20" :style="{ color: DesignImageUtil.hasCollect(item) ? '#4087ff' : '' }" />
-              </div>
-            </template>
             <!--图层-删除-->
             <div class="layer-btn" v-title="'图层-删除'" @click="onLayerDel(item)">
               <img src="../img/删除图层.png" />
@@ -132,7 +133,7 @@ export default {
      * @param {import('@/design').CanvasDesign} image 设计图对象
      */
     onLayerUp(image) {
-      if (image.attrs.name === canvasDefine.image) {
+      if ([canvasDefine.image, canvasDefine.text].includes(image.attrs.name)) {
         DesignImageUtil.layerMoveUp(image);
       }
     },
@@ -141,7 +142,7 @@ export default {
      * @param {import('@/design').CanvasDesign} image 设计图对象
      */
     onLayerDown(image) {
-      if (image.attrs.name === canvasDefine.image) {
+      if ([canvasDefine.image, canvasDefine.text].includes(image.attrs.name)) {
         DesignImageUtil.layerMoveDown(image);
       }
     },
@@ -152,6 +153,10 @@ export default {
     onLayerDel(image) {
       if ([canvasDefine.image, canvasDefine.text].includes(image.attrs.name)) {
         DesignImageUtil.deleteImage(image);
+      }
+
+      if (image.attrs.name === canvasDefine.bgc) {
+        //
       }
     },
     /**
