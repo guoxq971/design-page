@@ -1,4 +1,15 @@
-export { ImageListItem, CollectImageListItem, CollectImageListResponse, GetListImageAdmin } from './designApplication/interface_2/image';
+export {
+  ImageListItem,
+  CollectImageListItem,
+  CollectImageListResponse,
+  GetListImageAdmin,
+  UploadImageResponse,
+  TextParam,
+  UploadImageCheckParams,
+  UploadImageCheckItem,
+  UploadImageCheckResponse,
+  SaveTextParams,
+} from './designApplication/interface_2/image';
 export {
   HistoryDetailResponse,
   HistoryItem,

@@ -109,6 +109,13 @@
           </el-collapse-item>
         </el-collapse>
       </el-collapse-item>
+
+      <!--测试-->
+      <el-collapse-item title="测试">
+        <div>
+          <el-button @click="onTextToImg">文字转图</el-button>
+        </div>
+      </el-collapse-item>
     </el-collapse>
 
     <el-card style="margin-top: 10px" header="当前选中的设计" v-if="activeDesign">
@@ -256,6 +263,12 @@ export default {
     },
   },
   methods: {
+    /**
+     * 文字状图
+     */
+    onTextToImg() {
+      console.log('文字状图');
+    },
     /**
      * 文字
      * */

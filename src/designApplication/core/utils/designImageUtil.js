@@ -3,6 +3,7 @@ import { getPositionCenter, getScaleMax, isCollision, remove, visibleImage } fro
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import { Message } from 'element-ui';
 import { isCollide } from '@/designApplication/core/utils/common';
+import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 
 /**
  * 设计图的工具
@@ -17,6 +18,10 @@ export class DesignImageUtil {
   static getImageInfo(image) {
     if (!image) {
       console.error('获取设计图信息失败, image is null');
+      return;
+    }
+    if (image.attrs.name === canvasDefine.bgc) {
+      console.error('获取设计图信息失败, image is bgc');
       return;
     }
     // 设计图当前的宽高
@@ -46,6 +51,7 @@ export class DesignImageUtil {
    * @param {import('@/design').CanvasImage} image
    */
   static isCollide(image) {
+    if (image.attrs.type !== canvasDefine.image) return;
     if (!image.attrs.view.isCollide) return;
     const path = image.attrs.view.canvas.konvaPath;
 
@@ -246,11 +252,10 @@ export class DesignImageUtil {
    */
   static scaleUp(image) {
     const step = this.STEP_UP;
-    const { scaleX, scaleY } = image.attrs;
 
     // 缩放后的比例
-    const resultScaleX = scaleX * step;
-    const resultScaleY = scaleY * step;
+    const resultScaleX = image.scaleX() * step;
+    const resultScaleY = image.scaleY() * step;
 
     // 碰撞检测
     if (isCollision(image, { scaleX: resultScaleX, scaleY: resultScaleY })) {

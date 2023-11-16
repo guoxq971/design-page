@@ -57,6 +57,7 @@ import title from '@/designApplication/core/utils/directives/title/title';
 import { chunkObj, chunkRadiusObj } from '@/designApplication/components/layout/right/position';
 import { getPositionCenter, isCollision } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
+import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 
 export default {
   directives: { dragPop, title },
@@ -126,9 +127,19 @@ export default {
       const image = await DesignImageUtil.hasActiveImageMessage();
       const position = getPositionCenter(image);
 
+      let x;
+      let y;
+      if (image.attrs.name === canvasDefine.image) {
+        x = +this.param.x + +position.leftTopX;
+        y = +this.param.y + +position.leftTopY;
+      } else if (image.attrs.name === canvasDefine.text) {
+        x = +this.param.x;
+        y = +this.param.y;
+      }
+
       image.setAttrs({
-        x: +this.param.x + +position.leftTopX,
-        y: +this.param.y + +position.leftTopY,
+        x: x,
+        y: y,
       });
     },
     /**

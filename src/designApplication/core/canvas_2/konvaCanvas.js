@@ -265,19 +265,19 @@ export class KonvaCanvas {
     // 设置属性
     designImage.image.setAttrs({
       uuid: uuid(),
-      x: -this.clip.attrs.x / this.clip.attrs.scaleX + param.x + param.width / 2,
-      y: -this.clip.attrs.y / this.clip.attrs.scaleY + param.y + param.height / 2,
       scaleX: param.scaleX,
       scaleY: param.scaleY,
       rotation: param.rotation,
       type: canvasDefine.image,
       name: canvasDefine.image,
-      detail: param.detail,
-      view: param.view,
-      param: param,
-      konvaCanvas: this,
-      transformer: designImage.transformer,
-      isCollide: param.view.isCollide,
+
+      // 特殊属性
+      detail: param.detail, //设计图的接口信息
+      view: param.view, //设计图所在的视图
+      param: param, //设计图的参数
+      konvaCanvas: this, //设计图所在的画布
+      transformer: designImage.transformer, //设计图的选中框
+      isCollide: param.view.isCollide, //是否碰撞检测
     });
 
     // 监听visible
@@ -390,6 +390,10 @@ export class KonvaCanvas {
 
     // 设置属性
     result.text.setAttrs({
+      name: canvasDefine.text,
+      type: canvasDefine.text,
+      view: param.view,
+      param: param.param,
       uuid: uuid(),
       visible: true,
       konvaCanvas: this,
@@ -407,28 +411,17 @@ export class KonvaCanvas {
       },
     });
 
-    // 设置居中
-    const canvasSize = DesignerUtil.getVuexConfig().canvasSize;
-    const canvasWidth = canvasSize.width;
-    const canvasHeight = canvasSize.height;
-    const canvasRatio = canvasSize.ratio;
-
-    // 文字的参数
-    const width = result.text.textWidth;
-    const height = result.text.textHeight;
-
-    // 文字在画布展示的位置
-    const x = canvasWidth / 2 / canvasRatio - width / 2;
-    const y = canvasHeight / 2 / canvasRatio - height / 2;
-
-    // 设置文字的位置
-    result.text.setAttrs({
-      x: -this.clip.attrs.x + x,
-      y: -this.clip.attrs.y + y,
-    });
-
     // 添加
     this.clip.add(result.text);
+
+    // 居中
+    DesignImageUtil.positionHorizontalCenter(result.text);
+    DesignImageUtil.positionVerticalCenter(result.text);
+
+    result.text.setAttr('offset', {
+      x: result.text.width() / 2,
+      y: result.text.height() / 2,
+    });
   }
 
   /**

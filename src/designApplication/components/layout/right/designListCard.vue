@@ -23,13 +23,20 @@
 
             <!--文字-->
             <div v-if="item.attrs.name === canvasDefine.text" class="design-bd" @click="onSetActiveImage(item)">
-              <div class="design">文</div>
+              <div class="design">
+                <svg style="font-size: 20px" viewBox="64 64 896 896" data-icon="font-size" width="1em" height="1em" fill="currentColor" aria-hidden="true" focusable="false" class="">
+                  <path
+                    d="M920 416H616c-4.4 0-8 3.6-8 8v112c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8v-56h60v320h-46c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8h164c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8h-46V480h60v56c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V424c0-4.4-3.6-8-8-8zM656 296V168c0-4.4-3.6-8-8-8H104c-4.4 0-8 3.6-8 8v128c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-64h168v560h-92c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h264c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8h-92V232h168v64c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8z"
+                  ></path>
+                </svg>
+              </div>
               <div class="title">{{ item.attrs.text }}</div>
             </div>
           </div>
 
           <div class="handle">
-            <template v-if="[canvasDefine.image].includes(item.attrs.name)">
+            <!--设计图,文字-->
+            <template v-if="[canvasDefine.image, canvasDefine.text].includes(item.attrs.name)">
               <!--图层-上移-->
               <div class="layer-btn" v-title="'图层-上移'" @click="onLayerUp(item)">
                 <img src="../img/图层上移.png" />
@@ -39,11 +46,13 @@
                 <img src="../img/图层下移.png" />
               </div>
             </template>
-            <!--图层-编辑-->
-            <div class="layer-btn" v-title="'图层-编辑'">
-              <iconpark-icon name="write" size="20" />
-            </div>
+
+            <!--设计图-->
             <template v-if="item.attrs.type === canvasDefine.image">
+              <!--图层-编辑-->
+              <div class="layer-btn" v-title="'图层-编辑'">
+                <iconpark-icon name="write" size="20" />
+              </div>
               <!--图层-收藏-->
               <div class="layer-btn" v-title="'图层-收藏'" @click="onImageCollect(item)">
                 <iconpark-icon name="rss" size="20" :style="{ color: DesignImageUtil.hasCollect(item) ? '#4087ff' : '' }" />
@@ -141,7 +150,7 @@ export default {
      * @param {import('@/design').CanvasDesign} image 设计图对象
      */
     onLayerDel(image) {
-      if (image.attrs.name === canvasDefine.image) {
+      if ([canvasDefine.image, canvasDefine.text].includes(image.attrs.name)) {
         DesignImageUtil.deleteImage(image);
       }
     },
@@ -150,14 +159,8 @@ export default {
      * @param {import('@/design').CanvasDesign} image 设计图对象
      */
     onLayerVisible(image) {
-      switch (image.attrs.name) {
-        case canvasDefine.image:
-          DesignImageUtil.setImageVisible(image);
-          break;
-        case canvasDefine.bgc:
-          break;
-        default:
-          break;
+      if ([canvasDefine.image, canvasDefine.text].includes(image.attrs.name)) {
+        DesignImageUtil.setImageVisible(image);
       }
     },
   },

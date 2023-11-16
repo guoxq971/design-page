@@ -106,6 +106,25 @@ export class DesignerUtil {
   static getView(viewId = null, prodItem = null) {
     return store.state.designApplication.prodStore.getView(viewId, prodItem);
   }
+  /**
+   * 获取staticView
+   * @param {string|null} viewId 视图id
+   * @param {import('@/design').ProdItemData | null} prodItem
+   * @returns {import('@/design').StaticViewItem} 视图
+   * */
+  static getStaticView(viewId = null, prodItem = null) {
+    viewId = viewId || store.state.designApplication.activeViewId;
+    const view = store.state.designApplication.prodStore.getView(viewId);
+
+    /**
+     * 静态数据
+     * @type {import('@/design').StaticViewItem}
+     * @returns {Promise<Konva.Image>}
+     */
+    const staticView = store.state.designApplication.prodStore.getStatic()?.viewList.find((e) => e.id == viewId);
+
+    return staticView;
+  }
 
   /**
    * 获取canvas配置

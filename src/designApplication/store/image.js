@@ -3,6 +3,7 @@ import store from '@/store';
 import { Message } from 'element-ui';
 import { inchToPx, printAreaToImageRatio } from '@/designApplication/store/util';
 import { loadImage } from '@/designApplication/core/utils/loadImage';
+import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
 
 export const image_state = {};
 export const image_getters = {};
@@ -47,10 +48,6 @@ export const image_actions = {
         return;
       }
 
-      // 画布的参数配置
-      const canvasWidth = staticView.print.width;
-      const canvasHeight = staticView.print.height;
-
       // 设计图单位转换(原图）
       const inch = inchToPx(detail.size, getters.activeProd.detail.dpi);
       // 设计图与产品dpi的换算
@@ -67,21 +64,11 @@ export const image_actions = {
       const scaleX = width / imageDOM.width;
       const scaleY = height / imageDOM.height;
 
-      // console.log('dom size', imageDOM.width, imageDOM.height);
-      // console.log('show size', width, height);
-      // console.log('scale', scaleX, scaleY);
-
-      // 图片在画布展示的位置
-      const x = canvasWidth / 2 - width / 2 + staticView.offset.x;
-      const y = canvasHeight / 2 - height / 2 + staticView.offset.y;
-
       /**
        * 图片展示的参数
        *@type {import('@/design').AddParamOfImage}
        */
       const param = {
-        x,
-        y,
         width,
         height,
         scaleX,
@@ -94,6 +81,10 @@ export const image_actions = {
       };
 
       const image = await view.canvas.addImage(param);
+
+      // 设计图居中
+      DesignImageUtil.positionHorizontalCenter(image);
+      DesignImageUtil.positionVerticalCenter(image);
 
       return image;
     } catch (e) {

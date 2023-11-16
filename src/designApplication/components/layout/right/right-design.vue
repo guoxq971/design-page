@@ -86,7 +86,9 @@ import { SubmitParamType, ConfigurationItem } from '@/designApplication/interfac
 
 import { buttonBlur } from '@/designApplication/core/utils/buttonBlur';
 import { saveProdApi } from '@/designApplication/apis/prod';
-import { fetchCollectImageListApi } from '@/designApplication/apis/image';
+import { fetchCollectImageListApi, saveTextWordApi } from '@/designApplication/apis/image';
+import { saveTextWord, textToImage, textToImageUpload } from '@/designApplication/core/utils/textToImage';
+import { sleep } from '@/designApplication/core/utils/sleep';
 
 export default {
   name: 'right-design',
@@ -130,11 +132,11 @@ export default {
      */
     async onSave(e, type) {
       this.onBlur(e);
-      const obj = {
+      const customObj = {
         static_batchid: '', //批量设计id
         asyncFlag: false, //同步-true|异步-false
         isSelf: true, //自产-true|外采-false
-        adminImage: false, //是否有管理图库的设计图参与
+        adminImage: '', //是否有管理图库的设计图参与
         saveNumBtn: type, //保存类型 0:保存产品 1:全颜色合成 2:原胚设计
         isUseMirror: '0', //是否镜像设计(这个没用到) 0:否 1:是
         isNeedCopy: '0', //是否空拷贝(多面设计) 0:否 1:是
@@ -144,22 +146,22 @@ export default {
       const prodItem = DesignerUtil.getActiveProd();
 
       // 批量设计判断
-      obj.static_batchid = localStorage.getItem('static_batchid') || '';
-      obj.asyncFlag = true; //异步-true|同步-false
-      if (obj.static_batchid) {
-        if (obj.saveNumBtn == 1) {
+      customObj.static_batchid = localStorage.getItem('static_batchid') || '';
+      customObj.asyncFlag = true; //异步-true|同步-false
+      if (customObj.static_batchid) {
+        if (customObj.saveNumBtn == 1) {
           this.$message.warning('批量设计时，禁用全颜色合成！');
           return;
         }
-        obj.asyncFlag = false;
+        customObj.asyncFlag = false;
       }
 
       // 判断是 自产|外采
-      if (prodItem.detail.templateType == 1) obj.isSelf = false;
-      if (obj.saveNumBtn == 2) obj.isSelf = false;
+      if (prodItem.detail.templateType == 1) customObj.isSelf = false;
+      if (customObj.saveNumBtn == 2) customObj.isSelf = false;
 
       // 设计图数量检测
-      switch (obj.isSelf) {
+      switch (customObj.isSelf) {
         // 自产
         case true:
           // 设计图数量不能为空
@@ -170,13 +172,13 @@ export default {
           }
 
           // 多面设计判断 (当前产品是对面设计,并且只设计了一个视图)
-          obj.isNeedCopy = prodItem.detail.emptyCopy && prodItem.viewList.length > 1 && designViewList.length === 1 ? '1' : '0';
+          customObj.isNeedCopy = prodItem.detail.emptyCopy && prodItem.viewList.length > 1 && designViewList.length === 1 ? '1' : '';
           break;
 
         // 外采
         case false:
           // TODO: configurations的判断
-          if (obj.saveNumBtn == 2) {
+          if (customObj.saveNumBtn == 2) {
             // 原胚设计
             const isSomeImage = prodItem.viewList.some((view) => view.canvas.getImageList().length);
             if (isSomeImage) {
@@ -195,7 +197,7 @@ export default {
       }
 
       // 是否有管理图库的设计图参与设计
-      obj.adminImage = prodItem.viewList.some((view) => view.canvas.getImageList().some((image) => image.attrs?.detail?.isAdminOrg));
+      customObj.adminImage = prodItem.viewList.some((view) => view.canvas.getImageList().some((image) => image.attrs?.detail?.isAdminOrg));
 
       // 组装 接口提交的参数
       const submitParam = new SubmitParamType();
@@ -203,11 +205,11 @@ export default {
       submitParam.defaultValues.defaultView.id = store.state.designApplication.activeViewId; //视图id
       submitParam.productType.id = prodItem.detail.id; //产品id
       submitParam.templateType = prodItem.detail.templateType; //模板类型 0:自产 1:外采
-      submitParam.isUseMirror = obj.isUseMirror; //镜像设计
-      submitParam.isNeedCopy = obj.isNeedCopy; //空拷贝
-      submitParam.static_batchid = obj.static_batchid; //批量设计id
-      submitParam.saveNumBtn = obj.saveNumBtn; //保存类型 0:保存产品 1:全颜色合成 2:原胚设计
-      submitParam.adminImage = obj.adminImage ? 1 : 0; //是否有管理图库的设计图参与设计
+      submitParam.isUseMirror = customObj.isUseMirror; //镜像设计
+      submitParam.isNeedCopy = customObj.isNeedCopy; //空拷贝
+      submitParam.static_batchid = customObj.static_batchid; //批量设计id
+      submitParam.saveNumBtn = customObj.saveNumBtn; //保存类型 0:保存产品 1:全颜色合成 2:原胚设计
+      submitParam.adminImage = customObj.adminImage ? 1 : ''; //是否有管理图库的设计图参与设计
       submitParam.configurations = [];
 
       // 组装设计图
@@ -215,46 +217,81 @@ export default {
         for (let image of view.canvas.getImageList()) {
           // console.log(image);
 
+          // 组装设计信息
           const configurationItem = new ConfigurationItem();
-          configurationItem.type = image.attrs.name;
-          configurationItem.content.dpi = prodItem.detail.dpi;
-          configurationItem.printArea.id = view.id;
-          console.log('image', image);
+          configurationItem.content.dpi = prodItem.detail.dpi; //产品dpi
+          configurationItem.printArea.id = view.id; //当前设计所在的视图id
+
+          // 获取设计信息 (设计图、文字用到)
+          const result = DesignImageUtil.getImageInfo(image);
+          const imgWidth = result?.width;
+          const imgHeight = result?.height;
+          const angle = result?.rotation;
+
           switch (image.attrs.name) {
             // 背景色
             case canvasDefine.bgc:
+              configurationItem.type = image.attrs.name; //类型
               configurationItem.bmParam.type = image.attrs.name;
               configurationItem.content.svg = image.attrs.fill;
 
+              // 背景色 - offset (固定值)
               configurationItem.offset.x = 1;
               configurationItem.offset.y = 1;
 
+              // 自定义参数 bmParam
+              configurationItem.bmParam.type = canvasDefine.bgc;
+
               break;
 
-            // 设计图
+            // 文字------------------------------------start
+            case canvasDefine.text:
+              configurationItem.type = canvasDefine.image; //类型
+
+              // 将文字转成图片上传到服务器, 得到designId
+              const { checkRes, textParam } = await textToImageUpload(image);
+
+              // 文字 - offset (固定值)
+              configurationItem.offset.x = 1;
+              configurationItem.offset.y = 1;
+
+              // 标识为 文字
+              configurationItem.isText = true;
+              configurationItem.textId = checkRes.seqId;
+
+              // 自定义参数 bmParam
+              configurationItem.bmParam.designId = checkRes.seqId;
+              configurationItem.bmParam.type = canvasDefine.text;
+              configurationItem.bmParam.textParam = textParam;
+
+              // content 参数
+              configurationItem.content.svg.image.designId = checkRes.seqId;
+              configurationItem.content.svg.image.width = imgWidth;
+              configurationItem.content.svg.image.height = imgHeight;
+              configurationItem.content.svg.image.isBg = 0;
+              configurationItem.content.svg.image.transform = `rotate(${angle},${imgWidth / 2},${imgHeight / 2})`;
+              //文字------------------------------------end
+              break;
+
+            // 设计图---------------start
             case canvasDefine.image:
-              // 获取设计图信息
-              const result = DesignImageUtil.getImageInfo(image);
+              configurationItem.type = image.attrs.name; //类型
 
-              // 设计图数据解析
-              const imgWidth = result.width;
-              const imgHeight = result.height;
-              const angle = result.rotation;
-
-              // 存储的item
+              // 自定义参数 bmParam
               configurationItem.bmParam.imageCode = image.attrs.detail.imageCode;
+              configurationItem.bmParam.designId = image.attrs.detail.id;
 
               // 设计图 - offset (x,y 的坐标)
               configurationItem.offset.x = result.x;
               configurationItem.offset.y = result.y;
 
               // TODO: 这个要考虑 翻转图片、平铺图片、文字的 情况
-              // TODO: 要考虑 obj.isNeedCopy === '1' 的情况
+              // TODO: 要考虑 customObj.isNeedCopy === '1' 的情况
               // 设计图 - content (width,height,scale,id等)
               configurationItem.content.svg.image.designId = image.attrs.detail.id;
               configurationItem.content.svg.image.width = imgWidth;
               configurationItem.content.svg.image.height = imgHeight;
-              configurationItem.content.svg.image.isBg = image.attrs.detail.isBg;
+              configurationItem.content.svg.image.isBg = Number(image.attrs.detail.isBg);
               configurationItem.content.svg.image.transform = `rotate(${angle},${imgWidth / 2},${imgHeight / 2})`;
               break;
           }
@@ -262,17 +299,21 @@ export default {
         }
       }
 
-      console.log(submitParam);
-
       // 发送提交接口
       // 往历史设计记录的弹窗插入一条loading的数据
       const historyItem = { loading: true, id: '123', imgUrl: '', name: '' };
       await this.$store.dispatch('designApplication/addHistoryItem', historyItem);
       this.$store.commit('designApplication/setLoadingSave', true);
+
       try {
         const res = await saveProdApi(submitParam);
         this.$message.success('保存成功');
+
+        // 刷新历史设计记录
         this.$store.dispatch('designApplication/getHistoryList');
+
+        // 如果有文字需要保存文字参数信息
+        await saveTextWord(res, submitParam);
       } catch (err) {
         setTimeout(() => {
           this.$store.dispatch('designApplication/clearHistoryItem', historyItem);

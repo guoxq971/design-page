@@ -142,7 +142,7 @@ export function remove(that, image, transformer) {
  * @param {Object} param 参数
  * */
 export function setTextAttrs(text, param) {
-  const style = [param.fontStyle, param.fontWeight];
+  const style = [param.fontItalic, param.fontWeight];
   const fontStyle = style.join(' ');
   text.setAttrs({
     text: param.text,
@@ -150,19 +150,22 @@ export function setTextAttrs(text, param) {
     fontSize: param.fontSize || 20,
     fontFamily: param.fontFamily || 'Calibri',
     fontStyle: fontStyle, // 样式
-    // fontStyle: param.fontStyle || 'normal', // 斜体
-    // fontWeight: param.fontWeight || 'normal', // 加粗
     textDecoration: param.textDecoration || 'none', // 下划线
     textAnchor: param.textAlign || 'left', // 文字对齐方式
     letterSpacing: param.letterSpacing || 0, // 字间距
     lineHeight: param.lineHeight || 1, // 行间距
+
+    // 这三个属性是没有的，设置是为了方便后面的获取
+    fontItalic: param.fontItalic || 'normal', // 斜体
+    fontWeight: param.fontWeight || 'normal', // 加粗
+    fontColor: param.fontColor || '#000', // 颜色
   });
 }
 
 /**
  * 给Transformer添加监听事件
  * @param {Konva.Transformer} transformer 选中框
- * @param {import('@/design').CanvasImage} image 节点
+ * @param {import('@/design').CanvasImage} image 节点 (也可以是文字)
  */
 export function setProxyTransformer(transformer, image) {
   transformer.setAttrs({
@@ -206,6 +209,7 @@ export function setProxyTransformer(transformer, image) {
  */
 let messageInstance = null;
 export function isCollision(image, param = {}) {
+  if (image.attrs.name !== canvasDefine.image) return;
   param = Object.assign({ scaleX: image.scaleX(), scaleY: image.scaleY() }, param);
 
   const inch = image.attrs.param.inch;
@@ -276,8 +280,16 @@ export function getPositionCenter(image) {
   const canvasHeight = staticView.print.height;
 
   // 设计图高宽
-  const imageWidth = param.imageDOM.width * scaleX;
-  const imageHeight = param.imageDOM.height * scaleY;
+  let imageWidth = 0;
+  let imageHeight = 0;
+
+  if (image.attrs.type === canvasDefine.image) {
+    imageWidth = image.width() * image.scaleX();
+    imageHeight = image.height() * image.scaleY();
+  } else if (image.attrs.type === canvasDefine.text) {
+    imageWidth = image.width() * image.scaleX();
+    imageHeight = image.height() * image.scaleY();
+  }
 
   // 居中坐标
   const centerX = (canvasWidth - imageWidth) / 2;
@@ -288,8 +300,14 @@ export function getPositionCenter(image) {
   const offsetY = konvaCanvas.clip.attrs.y / konvaCanvas.clip.attrs.scaleY - staticView.offset.y;
 
   // 居中坐标
-  const x = -offsetX + centerX + imageWidth / 2;
-  const y = -offsetY + centerY + imageHeight / 2;
+  let x = -offsetX + centerX;
+  let y = -offsetY + centerY;
+
+  // 因为设置了offset，所以需要加上偏移量
+  if ([canvasDefine.image, canvasDefine.text].includes(image.attrs.type)) {
+    x += +imageWidth / 2;
+    y += +imageHeight / 2;
+  }
 
   // 左上角坐标
   const leftTopX = x - centerX;

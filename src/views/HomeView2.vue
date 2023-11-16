@@ -1,6 +1,17 @@
 <template>
   <div>
     <input type="file" id="fileInput" />
+
+    <div style="width: 400px; height: 400px; background-color: pink">
+      <box-adaptive width="30%" class="box">
+        <div class="box-content">
+          <div style="height: 100px">我是文字</div>
+          <div style="height: 100px">我是文字</div>
+          <div style="height: 100px">我是文字</div>
+          <div style="height: 100px">我是文字</div>
+        </div>
+      </box-adaptive>
+    </div>
   </div>
 </template>
 
@@ -9,6 +20,7 @@ import Excel from 'exceljs';
 import { read } from 'xlsx';
 const XLSX = require('xlsx');
 export default {
+  components: {},
   data() {
     return {
       workbook: null,
@@ -134,3 +146,20 @@ export default {
   },
 };
 </script>
+
+<style scoped lang="less">
+.box {
+  &:hover .box-content {
+    border: 1px solid red;
+  }
+  &:hover .my-adaptive-bd {
+    padding-bottom: 120%;
+  }
+  .box-content {
+    width: 100%;
+    height: 100%;
+    border: 1px solid;
+    transition: all 0.3s;
+  }
+}
+</style>

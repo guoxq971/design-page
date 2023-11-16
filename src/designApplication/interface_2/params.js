@@ -35,6 +35,7 @@ export class SubmitParamType {
 export class ConfigurationItem {
   bmParam = {
     type: 'img',
+    textParam: {},
     designId: '',
     orgDesignId: '',
     imageCode: '',

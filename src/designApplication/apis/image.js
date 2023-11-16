@@ -1,13 +1,10 @@
-import { fetchImageListMock } from '@/designApplication/mock/image/fetchImageListMock';
 import { fetchImageList } from '@/designApplication/mock/image/fetchImageList';
 import { Message } from 'element-ui';
 import { GetList, GetListByMyImage } from '@/designApplication/interface/getList';
 import { GroupImageListParams, ImageListParams } from '@/designApplication/interface/image/imageListParams';
 import { fetchAccountList } from '@/designApplication/mock/image/fetchAccountList';
 import { fetchImageCategory } from '@/designApplication/mock/image/fetchImageCategory';
-import { fetchImageCategoryMock } from '@/designApplication/mock/image/fetchImageCategoryMock';
 import { fetchImageCategoryByShare, fetchImageCategoryByShareOfTwo } from '@/designApplication/mock/image/fetchImageCategoryByShare';
-import { FetchImageCategoryByShareMock, FetchImageCategoryByShareOfTwoMock } from '@/designApplication/mock/image/fetchImageCategoryByShareMock';
 import { fetchAdminImageList } from '@/designApplication/mock/image/fetchAdminImageList';
 import { fetchAdminImageSelect } from '@/designApplication/mock/image/fetchAdminImageSelect';
 import { fetchCollectImageList } from '@/designApplication/mock/image/fetchCollectImageList';
@@ -15,6 +12,9 @@ import { fetchGroupImageList } from '@/designApplication/mock/image/fetchGroupIm
 import { fetchCollectImage } from '@/designApplication/mock/image/fetchCollectImage';
 import { fetchDelCollectImage } from '@/designApplication/mock/image/fetchDelCollectImage';
 import { fetchCollectImageBg } from '@/designApplication/mock/image/fetchCollectImageBg';
+import { fetchUploadImage } from '@/designApplication/mock/image/fetchUploadImage';
+import { fetchUploadImageCheck } from '@/designApplication/mock/image/fetchUploadImageCheck';
+import { fetchSaveTextWord } from '@/designApplication/mock/image/fetchSaveTextWord';
 
 /**
  * 获取设计图列表
@@ -211,6 +211,52 @@ export async function setImageCollectApi({ imgId, seqId, isBg }, flag = true) {
   if (res.retState !== '0') {
     Message.warning(msg);
     return Promise.reject(msg);
+  }
+
+  return Promise.resolve(res);
+}
+
+/**
+ * 上传设计图
+ * @returns {Promise<import('@/design').UploadImageResponse>}
+ */
+export async function updateImageApi(param) {
+  const res = await fetchUploadImage(param);
+  const msg = res.retMsg || '上传设计图 失败';
+  if (res.retState !== '0') {
+    Message.warning(msg);
+    return Promise.reject(msg);
+  }
+
+  return Promise.resolve(res);
+}
+
+/**
+ * 上传设计图-确认
+ * @param {import('@/design').UploadImageCheckParams} param 参数
+ * @returns {Promise<import('@/design').UploadImageCheckItem>}
+ */
+export async function updateImageCheckApi(param) {
+  const res = await fetchUploadImageCheck(param);
+  const msg = res.code !== 0 ? '上传设计图-确认 失败' : res.msg;
+  if (res.code !== 0) {
+    Message.warning(msg);
+    return Promise.reject(msg);
+  }
+
+  return Promise.resolve(res.data);
+}
+
+/**
+ * 保存文字参数
+ * @param {import('@/design').SaveTextParams} param 参数
+ * @returns {Promise<void>}
+ */
+export async function saveTextWordApi(param) {
+  const res = await fetchSaveTextWord(param);
+  if (res.code !== 0) {
+    Message.warning('保存文字参数失败');
+    return Promise.reject('保存文字参数失败');
   }
 
   return Promise.resolve(res);

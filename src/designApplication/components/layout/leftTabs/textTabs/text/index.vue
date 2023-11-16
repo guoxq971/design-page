@@ -17,7 +17,7 @@
           </div>
 
           <!--斜体-->
-          <div v-title="'斜体'" class="btn-2" :class="{ active: param.fontStyle === 'italic' }" @click="onFontItalic">
+          <div v-title="'斜体'" class="btn-2" :class="{ active: param.fontItalic === 'italic' }" @click="onFontItalic">
             <iconpark-icon name="text-italic-6fh2p3ep" size="19" />
           </div>
 
@@ -97,7 +97,7 @@ export default {
         fontSize: 20,
         fontFamily: 'sans-serif', //'微软雅黑',
         fontWeight: 'normal', //normal,bold
-        fontStyle: 'normal', //normal,italic
+        fontItalic: 'normal', //normal,italic
         textDecoration: 'none', //none,underline,overline,line-through
         textAlign: 'left', //left,center,right
         lineHeight: 1, //字体行高
@@ -120,7 +120,7 @@ export default {
         { label: '正常', value: 'normal' },
         { label: '加粗', value: 'bold' },
       ],
-      fontStyleList: [
+      fontItalicList: [
         { label: '正常', value: 'normal' },
         { label: '斜体', value: 'italic' },
       ],
@@ -128,26 +128,26 @@ export default {
         { label: '无', value: 'none' },
         { label: '下划线', value: 'underline' },
         // { label: '上划线', value: 'overline' },
-        { label: '删除线', value: 'line-through' },
+        // { label: '删除线', value: 'line-through' },
       ],
       textAlignList: [
-        { label: '左对齐', value: 'left' },
-        { label: '居中', value: 'center' },
-        { label: '右对齐', value: 'right' },
+        // { label: '左对齐', value: 'left' },
+        // { label: '居中', value: 'center' },
+        // { label: '右对齐', value: 'right' },
       ],
       lineHeightList: [
-        { label: '1', value: 1 },
-        { label: '1.5', value: 1.5 },
-        { label: '2', value: 2 },
-        { label: '2.5', value: 2.5 },
-        { label: '3', value: 3 },
+        // { label: '1', value: 1 },
+        // { label: '1.5', value: 1.5 },
+        // { label: '2', value: 2 },
+        // { label: '2.5', value: 2.5 },
+        // { label: '3', value: 3 },
       ],
       letterSpacingList: [
-        { label: '0', value: 0 },
-        { label: '1.5', value: 1.5 },
-        { label: '2', value: 2 },
-        { label: '2.5', value: 2.5 },
-        { label: '3', value: 3 },
+        // { label: '0', value: 0 },
+        // { label: '1.5', value: 1.5 },
+        // { label: '2', value: 2 },
+        // { label: '2.5', value: 2.5 },
+        // { label: '3', value: 3 },
       ],
       presetColors,
       costomColor: '', //自定义颜色
@@ -167,11 +167,11 @@ export default {
       },
       immediate: true,
     },
-    activeImage(val) {
-      if (val && val.attrs.name === canvasDefine.text) {
-        this.text = val;
+    activeImage(image) {
+      if (image && image.attrs.name === canvasDefine.text) {
+        this.text = image;
         Object.keys(this.param).forEach((key) => {
-          this.param[key] = val.attrs[key];
+          this.param[key] = image.attrs[key];
         });
       } else {
         this.text = null;
@@ -191,7 +191,7 @@ export default {
     },
     /** * 文字-斜体 */
     onFontItalic() {
-      this.param.fontStyle = this.param.fontStyle === 'italic' ? 'normal' : 'italic';
+      this.param.fontItalic = this.param.fontItalic === 'italic' ? 'normal' : 'italic';
       if (this.text) this.onEditText();
     },
     /** * 文字 加粗 */
@@ -216,7 +216,15 @@ export default {
         this.$message.warning('请先选择视图');
         return;
       }
-      view.canvas.addText(this.param);
+
+      view.canvas.addText({
+        view: view,
+        param: {
+          view: view,
+          staticView: DesignerUtil.getStaticView(view.id),
+        },
+        ...this.param,
+      });
     },
     // 颜色发生变化
     colorInput(val) {

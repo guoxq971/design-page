@@ -1,6 +1,6 @@
 <template>
   <div style="position: relative">
-    <el-switch v-model="type" :inactive-value="typeEnum.dev" :active-value="typeEnum.design" active-text="生产版本" inactive-text="开发版本" style="position: absolute; left: -200px; z-index: 5" />
+    <el-switch v-model="type" :inactive-value="typeEnum.dev" :active-value="typeEnum.design" active-text="生产版本" inactive-text="开发版本" style="position: absolute; left: -200px; z-index: 6" />
     <rightDev v-if="type === typeEnum.dev" />
     <rightDesign v-if="type === typeEnum.design" />
   </div>

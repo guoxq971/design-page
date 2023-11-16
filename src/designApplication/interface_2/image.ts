@@ -1,4 +1,4 @@
-import { ResponseDataOld } from './global';
+import { ResponseData, ResponseDataOld } from './global';
 
 /**
  * 设计图收藏列表的接口返回值的 list 的 item
@@ -119,4 +119,92 @@ export interface ImageListItem {
 export interface GetListImageAdmin {
   total: number;
   list: ImageListItem[];
+}
+
+/**
+ * 上传设计图的接口返回值
+ */
+export interface UploadImageResponse extends ResponseDataOld {
+  isCanUploadImg: boolean;
+  id: string;
+  fileName: string;
+  dpi: number;
+  width: number;
+  height: number;
+  imageName: string;
+  imageDir: string;
+  orgImage: string;
+  thumbImage: string;
+  designImage: string;
+  imageType: string;
+  designId: string;
+}
+
+/**
+ * 上传设计图 - 确认 的接口参数
+ * @param {null | number | string} mainType 上传的类型 1主题图 2背景图 3主题图&背景图 4文字 5镜像图 6平铺图
+ */
+export interface UploadImageCheckParams {
+  fileName: string;
+  sjsTitle: string;
+  label: string;
+  tags: string;
+  main_type: number[];
+  isCopyRightGrade: string;
+  isFuGrade: string;
+  newBasetype: string;
+  newNexttype: string;
+  teamBasetype: string;
+  teamNexttype: string;
+  width: number;
+  height: number;
+  imageName: string;
+  imageDir: string;
+  orgImage: string;
+  dpi: number;
+  thumbImage: string;
+  designImage: string;
+  imageType: string;
+}
+
+/**
+ * 上传设计图 - 确认 的接口返回值
+ */
+export interface UploadImageCheckItem {
+  imageCode: number;
+  seqId: string;
+}
+
+/**
+ * 上传设计图 - 确认 的接口返回值
+ */
+export interface UploadImageCheckResponse extends ResponseData<UploadImageCheckItem> {}
+
+/**
+ * 文字参数
+ */
+export interface TextParam {
+  text: string;
+  fontColor: string;
+  fontSize: number;
+  fontFamily: string;
+  fontWeight: string;
+  fontItalic: string;
+  textDecoration: string;
+  x: number;
+  y: number;
+  rotation: number;
+  scaleX: number;
+  scaleY: number;
+  offsetX: number;
+  offsetY: number;
+}
+
+/**
+ * 保存文字信息的接口参数
+ */
+export interface SaveTextParams {
+  productId: string;
+  productCode: number;
+  wordParam: string;
 }

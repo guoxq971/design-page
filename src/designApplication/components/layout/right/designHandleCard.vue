@@ -92,7 +92,7 @@ export default {
      */
     async onImageCopy() {
       const image = await DesignImageUtil.hasActiveImageMessage();
-      if (image.attrs.type === canvasDefine.image) {
+      if ([canvasDefine.image, canvasDefine.text].includes(image.attrs.type)) {
         const konvaCanvas = image.attrs.konvaCanvas;
         const copyImage = image.clone();
         const copyTransformer = image.attrs.transformer.clone();
