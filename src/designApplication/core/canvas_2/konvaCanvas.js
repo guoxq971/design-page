@@ -422,6 +422,8 @@ export class KonvaCanvas {
       x: result.text.width() / 2,
       y: result.text.height() / 2,
     });
+
+    return result.text;
   }
 
   /**

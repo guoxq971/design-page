@@ -57,7 +57,7 @@ import { getImageListApi } from '@/designApplication/apis/image';
 import { CommonProdParams } from '@/designApplication/interface/commonProdParams';
 import { ImageListParams } from '@/designApplication/interface/image/imageListParams';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
-import { getPositionCenter } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
+import { getPositionCenter, setTextAttrs } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 
@@ -117,6 +117,36 @@ export default {
       DesignerUtil.setBgc(bgcList[0].content.svg);
     },
     /**
+     * 处理文字
+     */
+    async dispose_text(textList) {
+      if (textList.length === 0) return;
+
+      for (let item of textList) {
+        const viewId = item.printArea.id;
+        const view = DesignerUtil.getView(viewId);
+        const param = {
+          view: view,
+          param: {
+            view: view,
+            staticView: DesignerUtil.getStaticView(view.id),
+          },
+          text: item.bmParam.textParam.text,
+        };
+        const text = await view.canvas.addText(param);
+
+        // text.setAttrs(item.bmParam.textParam);
+        text.setAttrs({
+          scaleX: item.bmParam.textParam.scaleX,
+          scaleY: item.bmParam.textParam.scaleY,
+          x: item.bmParam.textParam.x,
+          y: item.bmParam.textParam.y,
+        });
+        setTextAttrs(text, item.bmParam.textParam);
+        DesignImageUtil.rotation(text, item.bmParam.textParam.rotation);
+      }
+    },
+    /**
      * 处理设计图
      */
     async dispose_image(designList) {
@@ -143,7 +173,7 @@ export default {
         this.$message.warning(`未找到${errorImageList.length}张设计图`);
       }
 
-      console.log('成功列表 addImage的详情', successImageList);
+      // console.log('成功列表 addImage的详情', successImageList);
 
       // 渲染设计图
       for (let item of designList) {
@@ -191,14 +221,17 @@ export default {
 
       // 渲染设计图
       // console.log('设计图列表', res.configurations);
-      // 设计图类型 TODO: 还有其他类型, 文字
 
       // 处理设计图类型 (这个只处理 设计图)
-      const designList = res.configurations.filter((e) => e.type === canvasDefine.image);
+      const designList = res.configurations.filter((e) => e.bmParam.type === canvasDefine.image);
       await this.dispose_image(designList);
 
+      // 处理文字类型
+      const textList = res.configurations.filter((e) => e.bmParam.type === canvasDefine.text);
+      await this.dispose_text(textList);
+
       // 处理背景色
-      const bgcList = res.configurations.filter((e) => e.type === canvasDefine.bgc);
+      const bgcList = res.configurations.filter((e) => e.bmParam.type === canvasDefine.bgc);
       await this.dispose_bgc(bgcList);
     },
     /**

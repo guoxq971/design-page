@@ -215,7 +215,8 @@ export default {
       // 组装设计图
       for (let view of prodItem.viewList.toReversed()) {
         for (let image of view.canvas.getImageList()) {
-          // console.log(image);
+          // 跳过不可见的设计
+          if (!image.visible()) continue;
 
           // 组装设计信息
           const configurationItem = new ConfigurationItem();
