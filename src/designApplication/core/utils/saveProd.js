@@ -32,7 +32,7 @@ export async function getSaveProdParam(type = '', prodItem = null) {
   // 判断当前产品的设计类型是否可用
   if (!isTemplateCanUse(prodItem.config3d)) {
     Message.warning('该产品当前设计类型的模板已关闭，请更换其他产品设计！');
-    return;
+    return Promise.reject('该产品当前设计类型的模板已关闭，请更换其他产品设计！');
   }
 
   // 批量设计判断
@@ -41,7 +41,7 @@ export async function getSaveProdParam(type = '', prodItem = null) {
   if (customObj.static_batchid) {
     if (customObj.saveNumBtn == 1) {
       Message.warning('批量设计时，禁用全颜色合成！');
-      return;
+      return Promise.reject('批量设计时，禁用全颜色合成！');
     }
     customObj.asyncFlag = false;
   }
@@ -58,7 +58,7 @@ export async function getSaveProdParam(type = '', prodItem = null) {
       const designViewList = prodItem.viewList.filter((view) => view.canvas.getImageList().length);
       if (designViewList.length === 0) {
         Message.warning('请至少选择一个视图进行设计，再进行保存操作！');
-        return;
+        return Promise.reject('请至少选择一个视图进行设计，再进行保存操作！');
       }
 
       // 多面设计判断 (当前产品是对面设计,并且只设计了一个视图) isNeedCopy=空拷贝
@@ -72,7 +72,7 @@ export async function getSaveProdParam(type = '', prodItem = null) {
         const isSomeImage = prodItem.viewList.some((view) => view.canvas.getImageList().length);
         if (isSomeImage) {
           Message.warning('原胚设计，不可以选择设计图！');
-          return;
+          return Promise.reject('原胚设计，不可以选择设计图！');
         }
       }
       break;
@@ -82,7 +82,7 @@ export async function getSaveProdParam(type = '', prodItem = null) {
   const isCollide = prodItem.viewList.some((view) => view.canvas.getImageList().some((image) => image.attrs.isCollide));
   if (isCollide) {
     Message.warning('你所设计的图案超过了打印的区域');
-    return;
+    return Promise.reject('你所设计的图案超过了打印的区域');
   }
 
   // 是否有管理图库的设计图参与设计

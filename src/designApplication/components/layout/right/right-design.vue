@@ -77,18 +77,13 @@ import collectPop from './collectPop.vue';
 import multiAngleCard from './multiAngleCard.vue';
 import designHandleCard from './designHandleCard.vue';
 import designListCard from './designListCard.vue';
-import store from '@/store';
-import lodash from 'lodash';
 import historyPop from '@/designApplication/components/layout/right/historyPop.vue';
 
-import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
-import { SubmitParamType, ConfigurationItem } from '@/designApplication/interface_2/params';
 
 import { buttonBlur } from '@/designApplication/core/utils/buttonBlur';
 import { saveProdApi } from '@/designApplication/apis/prod';
-import { saveTextWord, textToImage, textToImageUpload } from '@/designApplication/core/utils/textToImage';
-import { isTemplateCanUse } from '@/designApplication/store/util';
+import { saveTextWord } from '@/designApplication/core/utils/textToImage';
 import { getSaveProdParam } from '@/designApplication/core/utils/saveProd';
 
 export default {
