@@ -164,7 +164,7 @@ export function dataURLtoBlob(dataurl) {
 
 /**
  * 文字转png图片
- * @param {import('@/design').TextParam} param
+ * @param {import('@/design').TextToImageParam} param
  * @param {number} width
  * @param {number} height
  * @returns {Promise<string>} base64

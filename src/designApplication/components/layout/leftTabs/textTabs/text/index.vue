@@ -217,14 +217,7 @@ export default {
         return;
       }
 
-      view.canvas.addText({
-        view: view,
-        param: {
-          view: view,
-          staticView: DesignerUtil.getStaticView(view.id),
-        },
-        ...this.param,
-      });
+      this.$store.dispatch('designApplication/setText', { param: this.param });
     },
     // 颜色发生变化
     colorInput(val) {

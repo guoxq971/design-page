@@ -112,6 +112,7 @@ export interface ParseViewItem {
   rect: { x: number; y: number; width: number; height: number };
   activeImageUuid: string;
   isCollide: boolean;
+  imageList: [];
 }
 
 /**

@@ -15,7 +15,7 @@
               <div>②单尺码产品，无误差</div>
             </div>
           </div>
-          <el-dropdown-item @click.native="onClick(ProdType.common)">通用设计</el-dropdown-item>
+          <el-dropdown-item :disabled="disabledCommon" @click.native="onClick(ProdType.common)">通用设计</el-dropdown-item>
         </el-tooltip>
 
         <el-tooltip placement="right">
@@ -32,7 +32,7 @@
               </template>
             </div>
           </div>
-          <el-dropdown-item @click.native="onClick(ProdType.refine)">精细设计</el-dropdown-item>
+          <el-dropdown-item :disabled="disabledRefine" @click.native="onClick(ProdType.refine)">精细设计</el-dropdown-item>
         </el-tooltip>
       </el-dropdown-menu>
     </el-dropdown>
@@ -42,6 +42,7 @@
 <script>
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import { ProdType } from '@/designApplication/interface/prodItem';
+import { isTemplateCanUse } from '@/designApplication/store/util';
 
 export default {
   data() {
@@ -53,9 +54,16 @@ export default {
   },
   watch: {},
   computed: {
-    // 是否开启3d true-禁用 false-启用
+    // true-禁用 false-启用
+    disabledCommon() {
+      const common = this.$store.state.designApplication.prodStore.list.find((e) => e.type === ProdType.common);
+      return !isTemplateCanUse(common.config3d);
+    },
+    // true-禁用 false-启用
     disabledRefine() {
-      return !this.$store.state.designApplication.prodStore.list.find((e) => e.type === ProdType.refine);
+      const refineList = this.$store.state.designApplication.prodStore.list.filter((e) => e.type === ProdType.refine);
+
+      return refineList.every((e) => !isTemplateCanUse(e.config3d));
     },
     activeTypeName() {
       return DesignerUtil.getProdTypeName();

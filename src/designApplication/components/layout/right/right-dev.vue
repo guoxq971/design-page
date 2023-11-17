@@ -326,12 +326,8 @@ export default {
      * 删除图片
      * */
     onRemove(image, type) {
-      if ([canvasDefine.image].includes(type)) {
+      if ([canvasDefine.image, canvasDefine.text].includes(type)) {
         DesignImageUtil.deleteImage(image);
-      }
-
-      if ([canvasDefine.text].includes(type)) {
-        image.attrs.remove();
       }
 
       if ([canvasDefine.bgc].includes(type)) {
@@ -342,12 +338,8 @@ export default {
      * 显示隐藏
      * */
     onVisible(image, type) {
-      if ([canvasDefine.image].includes(type)) {
+      if ([canvasDefine.image, canvasDefine.text].includes(type)) {
         DesignImageUtil.setImageVisible(image);
-      }
-
-      if ([canvasDefine.text].includes(type)) {
-        image.attrs.visibleFn();
       }
 
       if ([canvasDefine.bgc].includes(type)) {
@@ -361,16 +353,13 @@ export default {
      * @param {string} type 类型 up-上移 down-下移
      * */
     onLayer(image, imageType, type) {
-      if ([canvasDefine.image].includes(imageType)) {
+      if ([canvasDefine.image, canvasDefine.text].includes(imageType)) {
         if (type === 'up') {
           DesignImageUtil.layerMoveUp(image);
         }
         if (type === 'down') {
           DesignImageUtil.layerMoveDown(image);
         }
-      }
-      if ([canvasDefine.text].includes(imageType)) {
-        image.attrs.layerMoveFn(type);
       }
     },
     /**
@@ -382,11 +371,11 @@ export default {
       }
 
       if ([canvasDefine.text].includes(type)) {
-        image.attrs.selectedFn();
+        DesignImageUtil.selectedImage(image);
       }
 
       if ([canvasDefine.bgc].includes(type)) {
-        image.attrs.selectedFn();
+        DesignImageUtil.selectedImage(image);
       }
     },
   },

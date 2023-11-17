@@ -26,6 +26,7 @@ export class ProdUtil {
     prod.three = null;
     prod.config3d = config3d;
     prod.isCollide = detail.printoutList.length === 0;
+    prod.imageList = [];
 
     prod.viewList.forEach((view) => (view.isCollide = prod.isCollide));
 
@@ -71,7 +72,7 @@ export class ProdUtil {
  * @property {ParseProdItem} detail 产品详情
  * @property {number} type 产品类型 1-通用产品 2-精细产品
  * @property {string} sizeId 尺码id (精细产品才有)
- * @property {ParseViewItem[]} viewList 视图列表
+ * @property {import('@/design').ParseViewItem[]} viewList 视图列表
  * @property {Array<any>} colorList 颜色列表
  * @property {Array<any>} sizeList 尺码列表
  * @property {MyThree} three three对象
@@ -93,6 +94,7 @@ export class ProdItem {
   priceList = [];
   isSpecial = '';
   isCollide = false;
+  imageList = [];
 }
 
 /**

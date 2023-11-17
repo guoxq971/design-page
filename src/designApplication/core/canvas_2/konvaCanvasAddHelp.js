@@ -5,6 +5,8 @@ import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import store from '@/store';
 import { Message } from 'element-ui';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
+import { UnsignedIntType } from 'three';
+import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
 
 /**
  * 获取设计图
@@ -385,4 +387,129 @@ export function getAngleMultiple(angle, type = 'right') {
     angle % 45 === 0 && num--;
   }
   return num * 45;
+}
+
+/**
+ * 补充设计图列表到 view.imageList
+ * @param {import('@/design').ParseViewItem} view 视图
+ */
+export function supplementImageList(view = null) {
+  view = view || DesignerUtil.getView();
+  const imageList = view.canvas?.getImageList() || [];
+
+  const resultList = [];
+
+  for (let image of imageList.toReversed()) {
+    switch (image.attrs.type) {
+      // 设计图
+      case canvasDefine.image:
+        const imageInfo = DesignImageUtil.getImageInfo(image);
+        resultList.push({
+          image,
+          // 设计属性
+          type: canvasDefine.image,
+          x: imageInfo.x,
+          y: imageInfo.y,
+          scaleX: imageInfo.scaleX,
+          scaleY: imageInfo.scaleY,
+          rotation: imageInfo.rotation,
+          width: imageInfo.width,
+          height: imageInfo.height,
+          visible: image.visible(),
+          detail: image.attrs.detail,
+        });
+        break;
+
+      // 文字
+      case canvasDefine.text:
+        const textInfo = DesignImageUtil.getImageInfo(image);
+
+        resultList.push({
+          image,
+          // 设计属性
+          type: canvasDefine.text,
+          x: textInfo.x,
+          y: textInfo.y,
+          scaleX: textInfo.scaleX,
+          scaleY: textInfo.scaleY,
+          rotation: textInfo.rotation,
+          width: textInfo.width,
+          height: textInfo.height,
+          visible: image.visible(),
+
+          // 文字属性
+          textParam: {
+            text: image.attrs.text,
+            fill: image.attrs.fill,
+            fontColor: image.attrs.fontColor,
+            fontFamily: image.attrs.fontFamily,
+            fontItalic: image.attrs.fontItalic,
+            fontSize: image.attrs.fontSize,
+            fontStyle: image.attrs.fontStyle,
+            fontWeight: image.attrs.fontWeight,
+            letterSpacing: image.attrs.letterSpacing,
+            lineHeight: image.attrs.lineHeight,
+            textAnchor: image.attrs.textAnchor,
+            textDecoration: image.attrs.textDecoration,
+          },
+        });
+        break;
+
+      // 背景色
+      case canvasDefine.bgc:
+        resultList.push({
+          image,
+          type: canvasDefine.bgc,
+          visible: image.visible(),
+          fill: image.attrs.fill,
+        });
+        break;
+    }
+  }
+
+  view.imageList = resultList;
+}
+
+/**
+ * 还原设计图
+ * @param {import('@/design').ParseViewItem} view 视图
+ */
+export async function restoreImageList(view = null) {
+  const canvas = view.canvas;
+  for (let image of view.imageList) {
+    switch (image.type) {
+      //设计图
+      case canvasDefine.image:
+        const imgKonva = await store.dispatch('designApplication/setImage', { detail: image.detail, viewId: view.id });
+        imgKonva.setAttrs({
+          scaleX: image.scaleX,
+          scaleY: image.scaleY,
+        });
+        DesignImageUtil.rotation(imgKonva, image.rotation);
+        imgKonva.setAttrs({
+          x: image.x + image.width / 2,
+          y: image.y + image.height / 2,
+        });
+        break;
+
+      //文字
+      case canvasDefine.text:
+        const textKonva = await store.dispatch('designApplication/setText', { param: image.textParam, viewId: view.id });
+        textKonva.setAttrs({
+          scaleX: image.scaleX,
+          scaleY: image.scaleY,
+        });
+        DesignImageUtil.rotation(textKonva, image.rotation);
+        textKonva.setAttrs({
+          x: image.x + image.width / 2,
+          y: image.y + image.height / 2,
+        });
+        break;
+
+      //背景色
+      case canvasDefine.bgc:
+        DesignerUtil.setBgc(image.fill);
+        break;
+    }
+  }
 }

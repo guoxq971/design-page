@@ -1,5 +1,5 @@
 import { Message } from 'element-ui';
-import { ProdType, ProdUtil } from '@/designApplication/interface/prodItem';
+import { ProdItem, ProdType, ProdUtil } from '@/designApplication/interface/prodItem';
 import { config3dUtil } from '@/designApplication/interface/Config3d/config3dOfCommonResponse';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 
@@ -11,8 +11,14 @@ import { getProdPriceApi } from '@/designApplication/apis/prod';
 import { gerRefineProdConfig3dByTemplateNoWithSizeApi, getProd3dConfigByCommonApi, getProd3dConfigByRefineListApi, getRefineProdDetailByTemplateNoWithSizeApi } from '@/designApplication/apis/common';
 import { Config } from '@/designApplication/core/config';
 import { ProdStore } from '@/designApplication/store/prodStore';
+import { isTemplateCanUse } from '@/designApplication/store/util';
+import { canvasDefine } from '@/designApplication/core/canvas_2/define';
+import { restoreImageList, supplementImageList } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
+import { sleep } from '@/designApplication/core/utils/sleep';
+import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
 
 export const prod_state = {
+  isSupplement: true, //是否补充
   config: new Config(),
   show3d: false, //是否展示3d
   loading_save: false, //保存loading
@@ -116,30 +122,38 @@ export const prod_actions = {
    * 获取精细配置
    * @param {*} vuex context
    * @param {import('@/design').ProdListDataItem} prod 产品详情
-   * @returns {Promise<void>}
+   * @returns {Promise<import('@/design').ProdItem[]>} 精细产品列表
    */
   async getRefineConfig({ state, commit, dispatch, getters }, prod) {
     const templateNo = prod.detail.templateNo;
     const detail = prod.detail;
 
-    getProd3dConfigByRefineListApi(templateNo).then((refineList) => {
-      // 获取3d配置 - 精细 (并添加到仓库)
-      const refineListFilter = config3dUtil.getOpenRefineList(refineList);
-      refineListFilter.forEach((refine) => {
-        const prodItem = ProdUtil.disposeRefine(refine, detail);
-        prodItem.isSpecial = prod.isSpecial;
-        prodItem.priceList = prod.priceList;
-        state.prodStore.add(prodItem);
-      });
-    });
+    const refineList = await getProd3dConfigByRefineListApi(templateNo);
+    // 获取3d配置 - 精细 (并添加到仓库)
+    const refineListFilter = config3dUtil.getOpenRefineList(refineList);
+
+    const resultList = [];
+    for (let refine of refineListFilter) {
+      // 模板是关闭的, 跳过
+      if (!isTemplateCanUse(refine)) continue;
+
+      const prodItem = ProdUtil.disposeRefine(refine, detail);
+      prodItem.isSpecial = prod.isSpecial;
+      prodItem.priceList = prod.priceList;
+      state.prodStore.add(prodItem);
+      resultList.push(prodItem);
+    }
+
+    return Promise.resolve(resultList);
   },
   /**
    * 设置产品价格
    * @param {*} vuex context
+   * @param {import('@/design').ProdListDataItem} prodItem 产品详情
    * @returns {Promise<void>}
    */
-  async setPrice({ state, commit, dispatch, getters }) {
-    let prodItem = getters.activeProd;
+  async setPrice({ state, commit, dispatch, getters }, prodItem) {
+    prodItem = prodItem || getters.activeProd;
 
     // 获取价格列表
     const priceResult = await getProdPriceApi(prodItem.detail.templateNo);
@@ -186,6 +200,8 @@ export const prod_actions = {
     }
 
     let prod;
+    // 通用模板2d是否开启
+    let isCommonOpen2d;
     // 产品详情
     detail = cloneDeep(detail);
 
@@ -204,20 +220,27 @@ export const prod_actions = {
       const config3d = await getProd3dConfigByCommonApi(detail.templateNo);
       // 初始化产品 - 通用 (并添加到仓库)
       prod = ProdUtil.disposeCommon(detail, config3d);
-      state.prodStore.add(prod);
 
+      // 通用模板2d是否开启
+      isCommonOpen2d = isTemplateCanUse(config3d);
+
+      state.prodStore.add(prod);
       // 切换的产品和当前产品不一致时，重置激活的颜色、尺码、视图
       commit('setActiveType', prod.type);
       commit('setActiveColorId', prod.colorList[0].id);
       commit('setActiveSizeId', prod.sizeList[0].id);
       commit('setActiveViewId', prod.viewList[0].id);
 
-      // 加载2d canvas
-      await loadCanvas();
+      if (isCommonOpen2d) {
+        // 加载2d canvas
+        await loadCanvas();
+      }
 
       console.log('仓库列表', state.prodStore.list);
     } finally {
-      state.loading_prod = false;
+      if (isCommonOpen2d) {
+        state.loading_prod = false;
+      }
       console.timeEnd(`加载产品 - 通用${detail.templateNo}`);
 
       if (prod) {
@@ -229,12 +252,25 @@ export const prod_actions = {
         dispatch('setPrice');
 
         // 加载3d three
-        if (config3dUtil.isLoad3d(prod.config3d)) {
+        if (isCommonOpen2d && config3dUtil.isLoad3d(prod.config3d)) {
           loadThree({ prodItem: prod, loading: true });
         }
 
         // 获取3d配置 - 精细
-        dispatch('getRefineConfig', prod);
+        const refineList = await dispatch('getRefineConfig', prod);
+        state.loading_prod = false;
+
+        // 通用的2d是关闭的
+        if (!isCommonOpen2d) {
+          if (refineList.length === 0) {
+            Message.warning('该产品的模板已关闭，请联系技术部！');
+            return;
+          }
+
+          // 切换到精细模板
+          await dispatch('changeProd', { sizeId: refineList[0].sizeId, type: ProdType.refine });
+          Message.warning('该产品的通用模板已关闭，已切换为精细模板');
+        }
       }
     }
   },
@@ -251,11 +287,16 @@ export const prod_actions = {
     if (state.loading_prod) {
       Message.warning('模板加载中，请稍后');
     }
+
     const type = param.type;
 
     // 当前产品
     const curProdItem = param.prodItem || state.prodStore.get();
     let resultProdItem;
+
+    for (let view of curProdItem.viewList) {
+      supplementImageList(view);
+    }
 
     // 当前产品和要切换的产品一致时，不做任何操作
     if (curProdItem.type === type && !param.sizeId) {
@@ -359,6 +400,11 @@ export const prod_actions = {
       // 加载3d three
       if (config3dUtil.isLoad3d(resultProdItem.config3d)) {
         await loadThree({ prodItem: resultProdItem });
+      }
+
+      // 是否有设计图
+      for (let view of resultProdItem.viewList) {
+        await restoreImageList(view);
       }
     }
   },

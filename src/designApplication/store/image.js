@@ -22,6 +22,27 @@ export const image_actions = {
     view.activeImageUuid = uuid;
   },
   /**
+   * 添加文字
+   * @param {*} vuex context
+   * @param {import('@/design').TextParam} param 文字参数
+   * @param {string|number|null} viewId
+   */
+  async setText({ state, commit, dispatch, getters }, { param, viewId }) {
+    viewId = viewId || store.state.designApplication.activeViewId;
+    const view = state.prodStore.getView(viewId);
+
+    const text = await view.canvas.addText({
+      view: view,
+      param: {
+        view: view,
+        staticView: DesignerUtil.getStaticView(view.id),
+      },
+      ...param,
+    });
+
+    return text;
+  },
+  /**
    * 选中设计图
    * @param {*} vuex context
    * @param {ImageListByMyImage} detail 设计图详情
@@ -81,10 +102,6 @@ export const image_actions = {
       };
 
       const image = await view.canvas.addImage(param);
-
-      // 设计图居中
-      DesignImageUtil.positionHorizontalCenter(image);
-      DesignImageUtil.positionVerticalCenter(image);
 
       return image;
     } catch (e) {

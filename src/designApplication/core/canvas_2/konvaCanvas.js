@@ -3,11 +3,12 @@ import { Konva } from '@/designApplication/core/canvas/konva';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 import store from '@/store';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
-import { getDesignImage, getText, layerMove, remove, setProxyTransformer, setTextAttrs, visibleImage } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
+import { getDesignImage, getText, layerMove, remove, setProxyTransformer, setTextAttrs, supplementImageList, visibleImage } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
 import { initTransformer } from '@/designApplication/core/canvas/selectBorder';
 import { uuid } from '@/designApplication/core/utils/uuid';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
 import { isCollide } from '@/designApplication/core/utils/common';
+import { sleep } from '@/designApplication/core/utils/sleep';
 
 /**
  * KonvaCanvas
@@ -277,17 +278,22 @@ export class KonvaCanvas {
       param: param, //设计图的参数
       konvaCanvas: this, //设计图所在的画布
       transformer: designImage.transformer, //设计图的选中框
-      isCollide: param.view.isCollide, //是否碰撞检测
+      isCollide: false, //是否碰撞检测 (param.view.isCollide)
     });
 
     // 监听visible
     setProxyTransformer(designImage.transformer, designImage.image);
 
+    //添加设计图
+    this.clip.add(designImage.image);
+
+    // 设计图居中
+    DesignImageUtil.positionHorizontalCenter(designImage.image);
+    DesignImageUtil.positionVerticalCenter(designImage.image);
+
     // 碰撞检测
     DesignImageUtil.isCollide(designImage.image);
 
-    //添加设计图
-    this.clip.add(designImage.image);
     // 更新材质
     this.updateTexture(44, 50);
 
@@ -336,6 +342,7 @@ export class KonvaCanvas {
       fill: color,
       draggable: false,
       name: canvasDefine.bgc,
+      type: canvasDefine.bgc,
       dragDistance: 100000,
     });
     // 设置属性
@@ -347,10 +354,6 @@ export class KonvaCanvas {
         this.clipBg.children = this.clipBg.children.filter((item) => item !== rect);
         this.updateTexture();
         this.layer.draw();
-      },
-      selectedFn: () => {
-        DesignerUtil.hideAllTransformer();
-        rect.attrs.transformer.visible(true);
       },
     });
 
@@ -365,6 +368,7 @@ export class KonvaCanvas {
     this.clipBg.add(rect);
     // 置底
     rect.moveToBottom();
+
     // 更新材质
     this.updateTexture();
   }
@@ -397,16 +401,9 @@ export class KonvaCanvas {
       uuid: uuid(),
       konvaCanvas: this,
       transformer: result.transformer,
-      visibleFn: () => visibleImage(this, result.text, result.transformer),
-      remove: () => remove(this, result.text, result.transformer),
       draw: (param2) => {
         setTextAttrs(result.text, param2);
         this.layer.draw();
-      },
-      layerMoveFn: (type) => layerMove(result.text, type),
-      selectedFn: () => {
-        DesignerUtil.hideAllTransformer();
-        result.text.attrs.transformer.visible(true);
       },
     });
 

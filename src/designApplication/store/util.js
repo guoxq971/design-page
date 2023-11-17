@@ -50,3 +50,17 @@ export function printAreaToImageRatio(imageSize, printAreaSize) {
     },
   };
 }
+
+/**
+ * 该模板的2d是否能够使用
+ * @param {import('@/design').ProdConfig3dResponseRefineData} config 模板配置
+ * @returns {boolean} 是否能够使用 true-能够使用 false-不能使用
+ */
+export function isTemplateCanUse(config) {
+  // 是否已经上传2d配置
+  const yetUpload2d = config.hasUpload2d === 1;
+  // 是否开启了2d配置
+  const yetOpen2d = config.openflag2d === 0;
+
+  return yetUpload2d && yetOpen2d;
+}

@@ -1,5 +1,5 @@
 import store from '@/store';
-import { getPositionCenter, getScaleMax, isCollision, remove, visibleImage } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
+import { getPositionCenter, getScaleMax, isCollision, remove, supplementImageList, visibleImage } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import { Message } from 'element-ui';
 import { isCollide } from '@/designApplication/core/utils/common';
@@ -165,6 +165,9 @@ export class DesignImageUtil {
     if (activeImageUuid === image.attrs.uuid) {
       DesignImageUtil.setActiveImageNull(view);
     }
+
+    // 后置函数
+    afterFn(image);
   }
 
   /**
@@ -184,6 +187,9 @@ export class DesignImageUtil {
     if (activeImageUuid === image.attrs.uuid) {
       DesignImageUtil.setActiveImageNull(view);
     }
+
+    // 后置函数
+    afterFn(image);
   }
 
   /**
@@ -191,6 +197,9 @@ export class DesignImageUtil {
    */
   static layerMoveUp(image) {
     image.moveUp();
+
+    // 后置函数
+    afterFn(image);
   }
 
   /**
@@ -198,6 +207,9 @@ export class DesignImageUtil {
    */
   static layerMoveDown(image) {
     image.moveDown();
+
+    // 后置函数
+    afterFn(image);
   }
 
   /**
@@ -206,6 +218,9 @@ export class DesignImageUtil {
    */
   static layerMoveTop(image) {
     image.moveToTop();
+
+    // 后置函数
+    afterFn(image);
   }
 
   /**
@@ -214,17 +229,26 @@ export class DesignImageUtil {
    */
   static layerMoveBottom(image) {
     image.moveToBottom();
+
+    // 后置函数
+    afterFn(image);
   }
 
   /**
    * 翻转 - 水平方向
    */
-  static filterHorizontal() {}
+  static filterHorizontal(image) {
+    // 后置函数
+    afterFn(image);
+  }
 
   /**
    * 翻转 - 垂直方向
    */
-  static filterVertical() {}
+  static filterVertical(image) {
+    // 后置函数
+    afterFn(image);
+  }
 
   /**
    * 定位 - 水平居中
@@ -234,6 +258,9 @@ export class DesignImageUtil {
     const { x } = getPositionCenter(image);
 
     image.setAttr('x', x);
+
+    // 后置函数
+    afterFn(image);
   }
 
   /**
@@ -244,6 +271,9 @@ export class DesignImageUtil {
     const { y } = getPositionCenter(image);
 
     image.setAttr('y', y);
+
+    // 后置函数
+    afterFn(image);
   }
 
   /**
@@ -266,6 +296,9 @@ export class DesignImageUtil {
       scaleX: resultScaleX,
       scaleY: resultScaleY,
     });
+
+    // 后置函数
+    afterFn(image);
   }
 
   /**
@@ -283,6 +316,9 @@ export class DesignImageUtil {
       scaleX: resultScaleX,
       scaleY: resultScaleY,
     });
+
+    // 后置函数
+    afterFn(image);
   }
 
   /**
@@ -299,6 +335,9 @@ export class DesignImageUtil {
       scaleX: scaleX,
       scaleY: scaleY,
     });
+
+    // 后置函数
+    afterFn(image);
   }
 
   /**
@@ -315,6 +354,9 @@ export class DesignImageUtil {
       scaleX: scaleX,
       scaleY: scaleY,
     });
+
+    // 后置函数
+    afterFn(image);
   }
 
   /**
@@ -331,6 +373,9 @@ export class DesignImageUtil {
       scaleX: scaleX,
       scaleY: scaleY,
     });
+
+    // 后置函数
+    afterFn(image);
   }
 
   /**
@@ -346,5 +391,18 @@ export class DesignImageUtil {
 
     transformer.rotation(resultRotation);
     image.rotation(resultRotation);
+
+    // 后置函数
+    afterFn(image);
+  }
+}
+
+/**
+ * 所有操作的后置函数
+ */
+function afterFn(image) {
+  if (store.state.designApplication.isSupplement) {
+    // 补充设计图
+    // supplementImageList(image.attrs.view);
   }
 }

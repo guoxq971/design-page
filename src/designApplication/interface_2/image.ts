@@ -187,10 +187,19 @@ export interface TextParam {
   text: string;
   fontColor: string;
   fontSize: number;
-  fontFamily: string;
-  fontWeight: string;
-  fontItalic: string;
-  textDecoration: string;
+  fontFamily: string; //'微软雅黑',
+  fontWeight: string; //normal,bold
+  fontItalic: string; //normal,italic
+  textDecoration: string; //none,underline,overline,line-through
+  textAlign: string; //left,center,right
+  lineHeight: number; //字体行高
+  letterSpacing: number; //字体间距
+}
+
+/**
+ * 文字参数
+ */
+export interface TextToImageParam {
   x: number;
   y: number;
   rotation: number;

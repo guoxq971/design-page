@@ -56,7 +56,7 @@ export default {
      */
     activeImage(state, getters) {
       const view = getters.activeView;
-      if (!view) return null;
+      if (!view || !view?.canvas) return null;
       return view?.activeImageUuid ? view?.canvas.getImage(view.activeImageUuid) : null;
     },
   },

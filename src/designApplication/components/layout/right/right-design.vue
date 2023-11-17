@@ -17,9 +17,7 @@
       </el-button>
 
       <!--全颜色合成-->
-      <el-button :loading="loadingSave" class="btn btn2 btn5 btn6 save-btn" :disabled="activeProd.detail.isCanSynthesis === false" type="warning" @click="(e) => onSave(e, 1)" v-title="'全颜色合成'">
-        全颜色合成
-      </el-button>
+      <el-button :loading="loadingSave" class="btn btn2 btn5 btn6 save-btn" :disabled="saveAllBtnDisabled" type="warning" @click="(e) => onSave(e, 1)" v-title="'全颜色合成'">全颜色合成</el-button>
 
       <!--保存产品-->
       <el-button :loading="loadingSave" class="btn btn2 btn5 save-btn" type="primary" @click="(e) => onSave(e, 0)" v-title="'保存产品'">保存产品</el-button>
@@ -90,6 +88,7 @@ import { SubmitParamType, ConfigurationItem } from '@/designApplication/interfac
 import { buttonBlur } from '@/designApplication/core/utils/buttonBlur';
 import { saveProdApi } from '@/designApplication/apis/prod';
 import { saveTextWord, textToImage, textToImageUpload } from '@/designApplication/core/utils/textToImage';
+import { isTemplateCanUse } from '@/designApplication/store/util';
 
 export default {
   name: 'right-design',
@@ -128,6 +127,10 @@ export default {
       activeViewId: (state) => state.designApplication.activeViewId,
       activeColorId: (state) => state.designApplication.activeColorId,
     }),
+    // 全颜色合成
+    saveAllBtnDisabled() {
+      return !this.activeProd || this.activeProd.detail.isCanSynthesis === false;
+    },
   },
   methods: {
     /**
@@ -137,6 +140,7 @@ export default {
      */
     async onSave(e, type) {
       this.onBlur(e);
+
       const customObj = {
         static_batchid: '', //批量设计id
         asyncFlag: false, //同步-true|异步-false
@@ -149,6 +153,12 @@ export default {
 
       // 当前的产品数据
       const prodItem = DesignerUtil.getActiveProd();
+
+      // 判断当前产品的设计类型是否可用
+      if (!isTemplateCanUse(prodItem.config3d)) {
+        this.$message.warning('该产品当前设计类型的模板已关闭，请更换其他产品设计！');
+        return;
+      }
 
       // 批量设计判断
       customObj.static_batchid = localStorage.getItem('static_batchid') || '';
@@ -277,7 +287,7 @@ export default {
               //文字------------------------------------end
               break;
 
-            // 设计图---------------start
+            //设计图------------------------------------start
             case canvasDefine.image:
               configurationItem.type = image.attrs.name; //类型
 
@@ -296,6 +306,7 @@ export default {
               configurationItem.content.svg.image.height = imgHeight;
               configurationItem.content.svg.image.isBg = Number(image.attrs.detail.isBg);
               configurationItem.content.svg.image.transform = `rotate(${angle},${imgWidth / 2},${imgHeight / 2})`;
+              //设计图------------------------------------end
               break;
           }
 

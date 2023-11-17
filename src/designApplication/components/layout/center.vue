@@ -39,7 +39,7 @@
         <div class="model-info-color">
           <div class="model-info-color-size" v-for="item in activeSizeList" :key="item.id" @click="onSize(item)" :class="{ action: item.id === activeSizeId }">
             <span>{{ item.name }}</span>
-            <!--<span v-if="isShowFlag(item)" class="flag-wrap">设计</span>-->
+            <span v-if="isShowDesignFlag(item)" class="flag-wrap">设计</span>
           </div>
         </div>
 
@@ -65,6 +65,9 @@
           <!--预览图-->
           <centerPreview ref="previewRef" />
 
+          <!--标识-->
+          <div class="flag-icon">{{ show3d ? '3D' : '2D' }}</div>
+
           <!--切换 模板类型-->
           <centerSwitchProdType :style="{ left: -previewSize.positionLeft + 'px', top: '-34.2px' }" style="position: absolute" />
         </div>
@@ -80,6 +83,7 @@ import centerProdInfo from './center/centerProdInfo.vue';
 import centerSwitchProdType from './center/centerSwitchProdType.vue';
 import centerPriceIcon from './center/centerPriceIcon.vue';
 import recommendParam from './center/recommendParam.vue';
+import { ProdType } from '@/designApplication/interface/prodItem';
 
 export default {
   components: {
@@ -93,12 +97,20 @@ export default {
     return {};
   },
   computed: {
+    // 精细设计的 设计标识
+    isShowDesignFlag() {
+      return (item) => {
+        const prod = this.prodStore.get(ProdType.refine, item.id);
+        return prod?.viewList.some((view) => view.canvas?.getImageList().length) || prod?.viewList.some((view) => view.imageList.length);
+      };
+    },
     ...mapGetters({
       activeSizeList: 'designApplication/activeSizeList',
       activeProd: 'designApplication/activeProd',
       activeProdStatic: 'designApplication/activeProdStatic',
     }),
     ...mapState({
+      prodStore: (state) => state.designApplication.prodStore,
       previewSize: (state) => state.designApplication.config.previewSize,
       show3d: (state) => state.designApplication.show3d,
       config: (state) => state.designApplication.config,
@@ -308,5 +320,30 @@ export default {
       //border: 1px solid;
     }
   }
+}
+
+.flag-icon {
+  position: absolute;
+  z-index: 1;
+  top: 4px;
+  right: 5px;
+  width: 35px;
+  height: 35px;
+  background-color: #4087ff;
+  border-radius: 7px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.flag-wrap {
+  color: #4087ff;
+  margin-left: 13px;
+  font-size: 12px;
 }
 </style>

@@ -9,6 +9,7 @@ export {
   UploadImageCheckItem,
   UploadImageCheckResponse,
   SaveTextParams,
+  TextToImageParam,
 } from './designApplication/interface_2/image';
 export {
   HistoryDetailResponse,
