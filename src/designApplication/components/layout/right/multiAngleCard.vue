@@ -2,12 +2,12 @@
   <el-card class="one-handle" shadow="never">
     <div style="width: 100%; position: relative">
       <!--渲染按钮-->
-      <el-button style="position: absolute; top: 0; left: 0; z-index: 3" type="primary" @click="onRender">渲染</el-button>
+      <el-button style="position: absolute; top: 0; left: 0; z-index: 3" type="primary" @click="onRender" :loading="loading">渲染</el-button>
       <!--空-->
       <el-empty description="暂无多角度" v-if="!multiAngleList.length" />
       <!--多角度-->
       <el-carousel style="width: 100%" :interval="50000" :autoplay="false" :loop="false" arrow="always" ref="carousel" indicator-position="outside" v-else>
-        <el-carousel-item v-for="item in multiAngleList" :key="item.id">
+        <el-carousel-item v-for="item in multiAngleList" :key="item.id" @click.native="onClick(item)">
           <!--简单多角度-->
           <multiAngleFold cursorZoomIn typeName="简单" v-if="!item.composeId" :image="item.bgImg" :mask="item.designImg" :texture="item.prodImg" />
           <!--复杂多角度-->
@@ -17,16 +17,27 @@
         </el-carousel-item>
       </el-carousel>
     </div>
+
+    <multiAnglePreviewDialog ref="multiAnglePreviewDialog" />
   </el-card>
 </template>
 
 <script>
+import multiAnglePreviewDialog from './multiAnglePreviewDialog.vue';
 import multiAngleFold from '@/designApplication/components/multiAngleFold.vue';
 import { mapGetters, mapState } from 'vuex';
+import { getSaveProdParam } from '@/designApplication/core/utils/saveProd';
+import { fetchRenderMultiApi } from '@/designApplication/apis/prod';
 
 export default {
   name: 'multiAngleCard',
-  components: { multiAngleFold },
+  components: { multiAngleFold, multiAnglePreviewDialog },
+  data() {
+    return {
+      renderMultiList: [],
+      loading: false,
+    };
+  },
   computed: {
     ...mapState({
       activeColorId: (state) => state.designApplication.activeColorId,
@@ -52,9 +63,7 @@ export default {
           composeId, //复杂
           multiId, //简单
         } = item;
-        // let { multiAngleList } = this.prod; // 请求回来的 多角度列表
-        const multiAngleList = [];
-        let designImg = this.findMultiDesignImg(multiAngleList, composeId, multiId);
+        let designImg = this.findMultiDesignImg(this.renderMultiList, composeId, multiId);
         // 顺序 = image - mask - texture
         // image = background_white_positive
         // mask = mask_white_positive
@@ -84,10 +93,23 @@ export default {
     },
   },
   methods: {
+    onClick(data) {
+      this.$refs.multiAnglePreviewDialog.init({
+        data: { data, list: this.multiAngleList, type: '2D' },
+      });
+    },
     /**
      * 渲染多角度
      */
-    onRender() {},
+    async onRender() {
+      const param = await getSaveProdParam();
+      try {
+        this.loading = true;
+        this.renderMultiList = await fetchRenderMultiApi(param);
+      } finally {
+        this.loading = false;
+      }
+    },
     /**
      * 复杂多角度处理
      * @param {array} list 图片列表

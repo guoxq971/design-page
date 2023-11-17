@@ -12,6 +12,7 @@ import { SubmitParamType } from '@/designApplication/interface_2/params';
 import { fetchHistoryList } from '@/designApplication/mock/prod/fetchHistoryList';
 import { fetchDelHistoryItem } from '@/designApplication/mock/prod/fetchDelHistoryItem';
 import { fetchHistoryDetail } from '@/designApplication/mock/prod/fetchHistoryDetail';
+import { fetchRenderMulti } from '@/designApplication/mock/prod/fetchRenderMulti';
 
 /**
  * 获取产品列表 - FBA专用产品
@@ -165,4 +166,20 @@ export async function delHistoryApi(seqIds) {
 export async function getHistoryDetailApi(seqId) {
   const res = await fetchHistoryDetail(seqId);
   return res;
+}
+
+/**
+ * 渲染多角度
+ * @param {SubmitParamType} param 参数
+ * @returns {Promise<import('@/design').RenderMultiItem[]>}
+ */
+export async function fetchRenderMultiApi(param) {
+  const res = await fetchRenderMulti(param);
+
+  if (res.retState !== '0') {
+    Message.error(res.retMsg);
+    return;
+  }
+
+  return res.cutList;
 }

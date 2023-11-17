@@ -644,3 +644,20 @@ export interface HistoryDetailResponse {
   wordFlag: boolean;
   wordList: any[];
 }
+
+/**
+ * 多角度的列表的item
+ */
+export interface RenderMultiItem {
+  img: string;
+  composeId: string;
+  appearanceId: string;
+  viewId: string;
+}
+
+/**
+ * 渲染多交的的接口返回值
+ */
+export interface RenderMultiResponse extends ResponseDataOld {
+  cutList: RenderMultiItem[];
+}

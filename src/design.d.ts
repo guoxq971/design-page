@@ -38,6 +38,8 @@ export {
   ProdListParams,
   ProdListData,
   ProdListResponseData,
+  RenderMultiItem,
+  RenderMultiResponse,
 } from './designApplication/interface_2/prod';
 export { ListData, ResponseDataOld, ResponseData } from './designApplication/interface_2/global';
 export { KonvaCanvas } from './designApplication/core/canvas_2/konvaCanvas.js';
