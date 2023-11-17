@@ -490,6 +490,9 @@ export async function restoreImageList(view = null) {
           x: image.x + image.width / 2,
           y: image.y + image.height / 2,
         });
+        if (!image.visible) {
+          DesignImageUtil.setImageVisible(imgKonva);
+        }
         break;
 
       //文字
@@ -504,11 +507,17 @@ export async function restoreImageList(view = null) {
           x: image.x + image.width / 2,
           y: image.y + image.height / 2,
         });
+        if (!image.visible) {
+          DesignImageUtil.setImageVisible(textKonva);
+        }
         break;
 
       //背景色
       case canvasDefine.bgc:
-        DesignerUtil.setBgc(image.fill);
+        const bgc = canvas.addBgc({ color: image.fill });
+        if (!image.visible) {
+          bgc.attrs.visibleFn();
+        }
         break;
     }
   }

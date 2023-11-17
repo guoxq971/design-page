@@ -106,6 +106,7 @@ export class DesignerUtil {
   static getView(viewId = null, prodItem = null) {
     return store.state.designApplication.prodStore.getView(viewId, prodItem);
   }
+
   /**
    * 获取staticView
    * @param {string|null} viewId 视图id

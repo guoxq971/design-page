@@ -46,6 +46,7 @@ export class DesignImageUtil {
       scaleY: image.scaleY(),
     };
   }
+
   /**
    * 对设计图进行碰撞检测
    * @param {import('@/design').CanvasImage} image

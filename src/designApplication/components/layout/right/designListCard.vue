@@ -156,7 +156,7 @@ export default {
       }
 
       if (image.attrs.name === canvasDefine.bgc) {
-        //
+        DesignerUtil.removeBgc();
       }
     },
     /**
@@ -166,6 +166,10 @@ export default {
     onLayerVisible(image) {
       if ([canvasDefine.image, canvasDefine.text].includes(image.attrs.name)) {
         DesignImageUtil.setImageVisible(image);
+      }
+
+      if ([canvasDefine.bgc].includes(image.attrs.name)) {
+        DesignerUtil.visibleBgc();
       }
     },
   },

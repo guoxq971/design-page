@@ -303,6 +303,7 @@ export class KonvaCanvas {
   /**
    * 添加背景色
    * @param {import ('@/design').AddParamOfBgc} param 参数
+   * @returns {Konva.Rect} 背景色
    */
   addBgc(param) {
     const color = param.color;
@@ -371,6 +372,8 @@ export class KonvaCanvas {
 
     // 更新材质
     this.updateTexture();
+
+    return rect;
   }
 
   /**

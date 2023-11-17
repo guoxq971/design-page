@@ -2,7 +2,7 @@
   <el-card class="one-handle" shadow="never">
     <div style="width: 100%; position: relative">
       <!--渲染按钮-->
-      <el-button style="position: absolute; top: 0; left: 0; z-index: 3" type="primary">渲染</el-button>
+      <el-button style="position: absolute; top: 0; left: 0; z-index: 3" type="primary" @click="onRender">渲染</el-button>
       <!--空-->
       <el-empty description="暂无多角度" v-if="!multiAngleList.length" />
       <!--多角度-->
@@ -84,6 +84,10 @@ export default {
     },
   },
   methods: {
+    /**
+     * 渲染多角度
+     */
+    onRender() {},
     /**
      * 复杂多角度处理
      * @param {array} list 图片列表
