@@ -1,6 +1,7 @@
 import { Core } from './core.js';
 import store from '@/store';
 import { Konva, useKonvaCustomMouse } from '@/designApplication/core/canvas/konva';
+import { sleep } from '@/designApplication/core/utils/sleep';
 
 /**
  * 3d模型
@@ -40,15 +41,6 @@ export class MyThree extends Core {
   }
 
   /**
-   * 根据材质名称获取view
-   * @param {string} materialName 材质名称
-   * @returns {ParseViewItem|undefined} view
-   * */
-  getViewByMaterialName(materialName) {
-    return this.getMeshItemByMaterialName(materialName)?.view;
-  }
-
-  /**
    * 开启canvas的自定义鼠标事件
    * */
   openCustomMouse() {
@@ -63,26 +55,12 @@ export class MyThree extends Core {
   }
 
   /**
-   * 所有设计图是否有一个是选中的
-   * */
-  isAnyDesignSelected() {
-    return this.meshPlusList.some((e) => e.view?.canvas.hasSelected());
-  }
-
-  /**
-   * 退出所有设计图的选中状态
-   * */
-  exitAllDesignSelected() {
-    this.meshPlusList.forEach((e) => e.view?.canvas.hideAllTransformer());
-  }
-
-  /**
    * 模型与canvas的鼠标位置映射
    * @param {string} materialName 材质名称
    * @param {uv} uv uv坐标
    * @param {MouseEvent} event 事件对象
    * */
-  setPos(materialName, uv, event) {
+  async setPos(materialName, uv, event) {
     const typeArr = ['mousedown', 'mouseup', 'mousemove'];
     if (!typeArr.includes(event?.type)) {
       return;
@@ -120,6 +98,8 @@ export class MyThree extends Core {
         });
         canvas.dispatchEvent(event);
         canvas.dispatchEvent(event2);
+
+        await sleep(0);
       }
 
       canvas.dispatchEvent(event);

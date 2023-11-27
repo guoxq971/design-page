@@ -399,6 +399,18 @@ export class DesignImageUtil {
     // 后置函数
     afterFn(image, 'rotation');
   }
+
+  /**
+   * 更新材质
+   * @param image
+   * @param type
+   */
+  static updateTexture(image, type = '') {
+    // 更新材质
+    if (image && image.attrs.konvaCanvas) {
+      image.attrs.konvaCanvas.updateTexture(type, 50);
+    }
+  }
 }
 
 /**
@@ -412,6 +424,6 @@ function afterFn(image, type) {
 
   // 更新材质
   if (image && image.attrs.konvaCanvas) {
-    image.attrs.konvaCanvas.updateTexture('type', 50);
+    DesignImageUtil.updateTexture(image, type);
   }
 }

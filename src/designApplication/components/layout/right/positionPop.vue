@@ -141,6 +141,8 @@ export default {
         x: x,
         y: y,
       });
+
+      DesignImageUtil.updateTexture(image);
     },
     /**
      * 对齐函数
@@ -199,6 +201,8 @@ export default {
         x: move.x,
         y: move.y,
       });
+
+      DesignImageUtil.updateTexture(image);
     },
     /**
      * 关闭弹窗

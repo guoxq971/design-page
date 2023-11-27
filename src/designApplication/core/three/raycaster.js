@@ -59,19 +59,7 @@ export class Raycaster {
       beforeMouseMove: () => this.isDown,
       afterMouseMove: () => {},
       beforeMouseUp: () => true,
-      afterMouseUp: (object, evt) => {
-        // 如果点击的是空白地方，并且是同一个地方按下和抬起, 就退出3d模式
-        this.isSameClick = downMousePos.x === evt.clientX && downMousePos.y === evt.clientY;
-        if (this.isSameClick && !object) {
-          // DesignerUtil.showThree();
-          // // 所有设计图存在一个选中的，就先退出所有设计图的选中状态
-          // if (three.isAnyDesignSelected()) {
-          //   three.exitAllDesignSelected();
-          // } else {
-          //   DesignerUtil.showThree();
-          // }
-        }
-      },
+      afterMouseUp: (object, evt) => {},
       setPos: (materialName, uv, event) => three.setPos(materialName, uv, event),
       getMaterialList: () => three.getMaterialList() || [],
       setStatusDown: () => three.openCustomMouse(),
