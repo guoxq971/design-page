@@ -3,7 +3,7 @@ import { Konva } from '@/designApplication/core/canvas/konva';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 import store from '@/store';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
-import { getDesignImage, getText, layerMove, remove, setProxyTransformer, setTextAttrs, supplementImageList, visibleImage } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
+import { getDesignImage, getText, layerMove, remove, setModelBgc, setProxyTransformer, setTextAttrs, supplementImageList, visibleImage } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
 import { initTransformer } from '@/designApplication/core/canvas/selectBorder';
 import { uuid } from '@/designApplication/core/utils/uuid';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
@@ -313,65 +313,71 @@ export class KonvaCanvas {
      */
     let rect = this.clipBg.children.find((e) => e.name() === canvasDefine.bgc);
 
-    // 背景色已存在
-    if (rect) {
-      rect.setAttr('fill', color);
-      this.updateTexture();
-      return;
+    switch (!!rect) {
+      // 背景色已存在
+      case true:
+        rect.setAttr('fill', color);
+        break;
+
+      // 背景色不存在
+      case false:
+        // 选中框
+        const transformer = initTransformer();
+        transformer.setAttrs({
+          name: 'bgc-transformer',
+          draggable: false,
+          borderStrokeWidth: 0,
+          enabledAnchors: [],
+          anchorSize: 0,
+          dragDistance: 100000,
+        });
+        transformer.visible(false);
+
+        // 背景色
+        rect = new Konva.Rect({
+          uuid: uuid(),
+          x: 0,
+          y: 0,
+          width: this.stage.width(),
+          height: this.stage.height(),
+          fill: color,
+          draggable: false,
+          name: canvasDefine.bgc,
+          type: canvasDefine.bgc,
+          dragDistance: 100000,
+        });
+        // 设置属性
+        rect.setAttrs({
+          visible: true,
+          transformer,
+          visibleFn: () => visibleImage(this, rect),
+          remove: () => {
+            this.clipBg.children = this.clipBg.children.filter((item) => item !== rect);
+            this.updateTexture();
+            this.layer.draw();
+          },
+        });
+
+        // 监听 - 背景色
+        rect.on('mousedown', (e) => {
+          DesignerUtil.hideAllTransformer(null, rect);
+        });
+
+        // 添加
+        transformer.nodes([rect]);
+        this.layer.add(transformer);
+        this.clipBg.add(rect);
+        // 置底
+        rect.moveToBottom();
+        break;
     }
 
-    /* 背景色不存在 */
-    // 选中框
-    const transformer = initTransformer();
-    transformer.setAttrs({
-      name: 'bgc-transformer',
-      draggable: false,
-      borderStrokeWidth: 0,
-      enabledAnchors: [],
-      anchorSize: 0,
-      dragDistance: 100000,
-    });
-    transformer.visible(false);
-
-    // 背景色
-    rect = new Konva.Rect({
-      uuid: uuid(),
-      x: 0,
-      y: 0,
-      width: this.stage.width(),
-      height: this.stage.height(),
-      fill: color,
-      draggable: false,
-      name: canvasDefine.bgc,
-      type: canvasDefine.bgc,
-      dragDistance: 100000,
-    });
-    // 设置属性
-    rect.setAttrs({
-      visible: true,
-      transformer,
-      visibleFn: () => visibleImage(this, rect),
-      remove: () => {
-        this.clipBg.children = this.clipBg.children.filter((item) => item !== rect);
-        this.updateTexture();
-        this.layer.draw();
-      },
-    });
-
-    // 监听 - 背景色
-    rect.on('mousedown', (e) => {
-      DesignerUtil.hideAllTransformer(null, rect);
-    });
-
-    // 添加
-    transformer.nodes([rect]);
-    this.layer.add(transformer);
-    this.clipBg.add(rect);
-    // 置底
-    rect.moveToBottom();
-
-    // 更新材质
-    this.updateTexture();
+    if (store.state.designApplication.show3d) {
+      setModelBgc();
+    } else {
+      // 更新材质
+      setTimeout(() => this.updateTexture(), 50);
+    }
 
     return rect;
   }
@@ -432,7 +438,7 @@ export class KonvaCanvas {
   setCanvasFill(color = -1) {
     if (color === -1) return;
     this.konvaPath.setAttr('fill', color);
-    this.updateTexture();
     this.layer.draw();
+    setTimeout(() => this.updateTexture(), 50);
   }
 }

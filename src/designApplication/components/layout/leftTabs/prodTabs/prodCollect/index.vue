@@ -1,4 +1,4 @@
-<!--FBA专用产品-->
+<!--收藏产品-->
 <template>
   <div>
     <headerContainer :params="params" :loading="loading" :getList="getList" />
@@ -52,7 +52,7 @@ export default {
     },
   },
   mounted() {
-    // this.getList();
+    this.getList();
   },
 };
 </script>

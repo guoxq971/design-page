@@ -90,7 +90,7 @@ export default {
   },
   watch: {
     activeImage: {
-      handler(val) {
+      handler: lodash.throttle(function (val) {
         if (!val) {
           this.param.width = '';
           this.param.height = '';
@@ -102,7 +102,7 @@ export default {
           this.param.x = val.x.toFixed(2);
           this.param.y = val.y.toFixed(2);
         }
-      },
+      }, 80),
     },
   },
   methods: {
@@ -222,6 +222,7 @@ export default {
   /deep/ .el-card__header {
     padding: 0;
   }
+
   .header {
     padding: 7px 8px;
     display: flex;
@@ -235,6 +236,7 @@ export default {
       cursor: pointer;
       font-size: 18px;
       font-weight: bold;
+
       &:hover {
         color: #409eff;
       }
@@ -256,6 +258,7 @@ export default {
       width: 120px;
       margin-right: 10px;
       margin-bottom: 10px;
+
       /deep/ .el-input__suffix {
         user-select: none;
         font-size: 14px;

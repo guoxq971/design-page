@@ -72,19 +72,23 @@ import hoverSetting from './hoverComponents/hover-setting.vue';
 import hoverClear from './hoverComponents/hover-clear.vue';
 import hoverScale from './hoverComponents/hover-scale.vue';
 import hoverTile from './hoverComponents/hover-tile.vue';
-import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 import collectPop from './collectPop.vue';
 import multiAngleCard from './multiAngleCard.vue';
 import designHandleCard from './designHandleCard.vue';
 import designListCard from './designListCard.vue';
 import historyPop from '@/designApplication/components/layout/right/historyPop.vue';
 
+import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
-
+import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
+import { ProdType } from '@/designApplication/interface/prodItem';
 import { buttonBlur } from '@/designApplication/core/utils/buttonBlur';
-import { saveProdApi } from '@/designApplication/apis/prod';
+import { sleep } from '@/designApplication/core/utils/sleep';
+
+import { saveProdApi, saveProdWithSizeApi } from '@/designApplication/apis/prod';
 import { saveTextWord } from '@/designApplication/core/utils/textToImage';
 import { getSaveProdParam } from '@/designApplication/core/utils/saveProd';
+import { supplementImageList } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
 
 export default {
   name: 'right-design',
@@ -137,8 +141,57 @@ export default {
     async onSave(e, type) {
       this.onBlur(e);
 
-      // 获取提交参数
-      const submitParam = await getSaveProdParam(type);
+      // 当前的产品数据
+      const prodItem = DesignerUtil.getActiveProd();
+      let submitParam;
+
+      // 通用保存
+      switch (prodItem.type) {
+        case ProdType.common:
+          submitParam = await getSaveProdParam(type, prodItem);
+          break;
+
+        // 精细保存
+        case ProdType.refine:
+          this.$store.commit('designApplication/setLoadingSave', true);
+          try {
+            // 补充imageList
+            for (let view of prodItem.viewList) {
+              supplementImageList(view);
+            }
+
+            // 过滤出精细设计中有图片的的尺码视图
+            const resultProdList = this.$store.state.designApplication.prodStore.list.filter((e) => e.type === ProdType.refine && e.viewList.some((e) => e.imageList.length));
+
+            if (resultProdList.length === 0) {
+              resultProdList.push(prodItem);
+            }
+
+            // 组装提交数据
+            const submitList = [];
+            for (let prod of resultProdList) {
+              // 切换对对应尺码
+              await this.$store.dispatch('designApplication/setActiveSizeId', prod.sizeId);
+              await sleep(0);
+              // 获取对应尺码的提交数据
+              const param = await getSaveProdParam(type, prod);
+              submitList.push(param);
+            }
+
+            submitParam = submitList;
+
+            // 最后切回到当前尺码
+            await this.$store.dispatch('designApplication/setActiveSizeId', prodItem.sizeId);
+          } catch (e) {
+            console.log('err', e);
+            this.$store.commit('designApplication/setLoadingSave', false);
+            return;
+          }
+          break;
+        default:
+          this.$message.warning('未知的产品类型');
+          break;
+      }
 
       // 发送提交接口
       // 往历史设计记录的弹窗插入一条loading的数据
@@ -147,14 +200,25 @@ export default {
       this.$store.commit('designApplication/setLoadingSave', true);
 
       try {
-        const res = await saveProdApi(submitParam);
-        this.$message.success('保存成功');
+        let res;
+        switch (prodItem.type) {
+          case ProdType.common:
+            submitParam = await getSaveProdParam(type, prodItem);
+            break;
+          case ProdType.refine:
+            res = await saveProdWithSizeApi(submitParam);
+            break;
+        }
 
-        // 刷新历史设计记录
-        this.$store.dispatch('designApplication/getHistoryList');
+        if (res) {
+          this.$message.success('保存成功');
 
-        // 如果有文字需要保存文字参数信息
-        await saveTextWord(res, submitParam);
+          // 刷新历史设计记录
+          this.$store.dispatch('designApplication/getHistoryList');
+
+          // 如果有文字需要保存文字参数信息
+          await saveTextWord(res, submitParam);
+        }
       } catch (err) {
         setTimeout(() => {
           this.$store.dispatch('designApplication/clearHistoryItem', historyItem);
@@ -206,6 +270,7 @@ export default {
       buttonBlur(evt);
     },
   },
+  mounted() {},
 };
 </script>
 

@@ -393,7 +393,7 @@ export function getAngleMultiple(angle, type = 'right') {
  * 补充设计图列表到 view.imageList
  * @param {import('@/design').ParseViewItem} view 视图
  */
-export function supplementImageList(view = null) {
+export async function supplementImageList(view = null) {
   view = view || DesignerUtil.getView();
   const imageList = view.canvas?.getImageList() || [];
 
@@ -520,5 +520,40 @@ export async function restoreImageList(view = null) {
         }
         break;
     }
+  }
+}
+
+/**
+ * 设置模型背景色 - 将2d canvas的底色设置为配置的颜色
+ */
+export function setModelBgc(flag = true) {
+  // 获取当前激活的产品
+  const prodItem = DesignerUtil.getActiveProd();
+  switch (flag) {
+    //将2d canvas的底色设置为配置的颜色
+    case true:
+      for (let view of prodItem.viewList) {
+        const config = DesignerUtil.getConfig();
+        const color3dItem = config.get3dColorItemByViewId(view.id);
+        const isGlass = DesignerUtil.hasGlass(color3dItem?.colorCode);
+        const bgc = view.canvas.clipBg.children[0];
+
+        if (view.canvas && !isGlass) {
+          const color = bgc?.attrs.fill || color3dItem.colorCode;
+          view.canvas.setCanvasFill(color);
+          view.canvas.updateTexture('', 50, true);
+        }
+      }
+      break;
+
+    // 将2d canvas的底色设置为 原来的颜色
+    case false:
+      for (let view of prodItem.viewList) {
+        const color = null;
+        if (view.canvas) {
+          view.canvas.setCanvasFill(color);
+        }
+      }
+      break;
   }
 }

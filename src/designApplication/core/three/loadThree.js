@@ -5,6 +5,7 @@ import store from '@/store';
 import * as THREE from 'three';
 import { ProdItem } from '@/designApplication/interface/prodItem';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
+import lodash from 'lodash';
 
 /**
  * 加载three参数
@@ -29,6 +30,7 @@ class LoadThreeParam {
 export async function loadThree(param = new LoadThreeParam()) {
   param = Object.assign(new LoadThreeParam(), param);
   if (param.prodItem) {
+    // TODO: 要改成 this.basePathImg
     param.path = 'http://file.testcustomwe.com/' + param.prodItem.config3d.glbPath;
   }
 
@@ -92,6 +94,7 @@ function getViewByMaterialName(materialName, prodItem) {
  * @param {MeshItem[]} meshPlusList 模型的材质列表
  * */
 function loadCanvasTexture(meshPlusList) {
+  console.log('加载底色', meshPlusList);
   const config = DesignerUtil.getConfig();
   if (!config) {
     console.error('加载 canvas 到对应的 mesh 上 失败，config 为空');
@@ -123,8 +126,11 @@ function loadCanvasTexture(meshPlusList) {
       console.error('加载 canvas 到对应的 mesh 上 失败，canvas 为空');
       return;
     }
-    const targetCanvas = canvas[0];
+
+    // 将canvas绑到 material.map 上
+    const targetCanvas = canvas[1];
     item.canvas = targetCanvas;
+    // console.log('view', mesh.name, view, [targetCanvas], [canvas[1]]);
 
     const texture = new THREE.CanvasTexture(targetCanvas);
     texture.encoding = THREE.sRGBEncoding; // 设置编码格式
@@ -133,10 +139,13 @@ function loadCanvasTexture(meshPlusList) {
     mesh.material.map = texture;
     mesh.material.needsUpdate = true;
 
+    console.log(mesh.name, mesh);
+
     view.texture = texture;
-    view.updateTexture = (num) => {
-      // console.log('执行了更新', num);
+    // 使用节流
+    view.updateTexture = lodash.throttle((num) => {
+      // console.log('执行了更新');
       texture.needsUpdate = true;
-    };
+    }, 16);
   });
 }

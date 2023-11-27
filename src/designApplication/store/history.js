@@ -53,7 +53,6 @@ export const actions_history = {
     if (index !== -1) {
       state.historyList.splice(index, 1);
     }
-    console.log('clearHistoryItem', item, index, state.historyList);
   },
   /**
    * 获取历史设计记录

@@ -1,5 +1,5 @@
 <template>
-  <div class="center-work-container" :id="config.workerContainerId" v-loading="loading_prod">
+  <div class="center-work-container" :id="config.workerContainerId" v-loading="loading_prod || loading_save">
     <!--3d容器-->
     <div v-loading="loading_3d" class="three-container" :id="config.threeContainerId" :style="{ left: show3d ? '0' : '-10000px' }"></div>
 
@@ -118,6 +118,7 @@ export default {
       activeSizeId: (state) => state.designApplication.activeSizeId,
       activeViewId: (state) => state.designApplication.activeViewId,
       loading_prod: (state) => state.designApplication.loading_prod,
+      loading_save: (state) => state.designApplication.loading_save,
       loading_price: (state) => state.designApplication.loading_price,
       loading_3d: (state) => state.designApplication.loading_3d,
     }),

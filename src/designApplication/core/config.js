@@ -1,6 +1,7 @@
 const CANVAS_WIDTH = 500;
 const CANVAS_HEIGHT = 500;
 const CANVAS_RATIO = 1.3;
+// const CANVAS_RATIO = 1024 / 500;
 
 /**
  * 配置

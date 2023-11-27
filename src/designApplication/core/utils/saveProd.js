@@ -1,13 +1,14 @@
-import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
+import store from '@/store';
+import lodash from 'lodash';
+import { Message } from 'element-ui';
+
+import { textToImageUpload } from '@/designApplication/core/utils/textToImage';
 import { isTemplateCanUse } from '@/designApplication/store/util';
 import { ConfigurationItem, SubmitParamType } from '@/designApplication/interface_2/params';
-import store from '@/store';
-import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
-import { canvasDefine } from '@/designApplication/core/canvas_2/define';
-import { textToImageUpload } from '@/designApplication/core/utils/textToImage';
-import lodash from 'lodash';
 import { ProdType } from '@/designApplication/interface/prodItem';
-import { Message } from 'element-ui';
+import { canvasDefine } from '@/designApplication/core/canvas_2/define';
+import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
+import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
 
 /**
  * 组装保存产品的提交参数

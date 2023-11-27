@@ -1,6 +1,8 @@
 import { config3dUtil } from '@/designApplication/interface/Config3d/config3dOfCommonResponse';
 import store from '@/store';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
+import { setModelBgc } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
+import { sleep } from '@/designApplication/core/utils/sleep';
 
 /**
  * 人为操作工具类
@@ -11,38 +13,25 @@ export class OperationUtil {
   /**
    * 双击2d (canvas 画布)
    * */
-  static doubleClickCanvas() {
+  static async doubleClickCanvas() {
     if (config3dUtil.isLoad3d(store.getters['designApplication/activeProd'].config3d)) {
       // 是否显示3d true-显示 false-隐藏
       let isShow = !store.state.designApplication.show3d;
 
-      // 获取当前激活的产品
-      const prodItem = DesignerUtil.getActiveProd();
-
       switch (isShow) {
         case true:
           // 显示3d，将2d canvas的底色设置为配置的颜色
-          for (let view of prodItem.viewList) {
-            const config = DesignerUtil.getConfig();
-            const color3dItem = config.get3dColorItemByViewId(view.id);
-            const isGlass = DesignerUtil.hasGlass(color3dItem?.colorCode);
-
-            if (view.canvas && !isGlass) {
-              view.canvas.setCanvasFill(color3dItem.colorCode);
-              view.canvas.updateTexture('', 50, true);
-            }
-          }
+          setModelBgc();
           break;
 
         case false:
-          // 隐藏3d，将2d canvas的底色设置为 null
-          for (let view of prodItem.viewList) {
-            const color = null;
-            if (view.canvas) {
-              view.canvas.setCanvasFill(color);
-            }
-          }
+          // 隐藏3d，将2d canvas的底色设置为 原来的颜色
+          setModelBgc(false);
           break;
+      }
+
+      if (isShow) {
+        await sleep(100);
       }
 
       // 设置是否显示3d

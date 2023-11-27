@@ -176,6 +176,7 @@ import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 export default {
   data() {
     return {
+      testObj: null,
       sizeId: '',
       DesignerUtil,
       ProdType,
@@ -197,6 +198,7 @@ export default {
     ...mapGetters({
       activeProd: 'designApplication/activeProd',
       activeProdStatic: 'designApplication/activeProdStatic',
+      activeImage: 'designApplication/activeImage',
     }),
     /**
      * 展示产品图

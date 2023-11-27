@@ -13,6 +13,7 @@ import { fetchHistoryList } from '@/designApplication/mock/prod/fetchHistoryList
 import { fetchDelHistoryItem } from '@/designApplication/mock/prod/fetchDelHistoryItem';
 import { fetchHistoryDetail } from '@/designApplication/mock/prod/fetchHistoryDetail';
 import { fetchRenderMulti } from '@/designApplication/mock/prod/fetchRenderMulti';
+import { fetchSaveProdWithSize } from '@/designApplication/mock/prod/fetchSaveProdWithSize';
 
 /**
  * 获取产品列表 - FBA专用产品
@@ -45,7 +46,7 @@ export async function fetchCollectSelectListApi() {
   // const res = fetchCollectSelectListMock;
   const res = await fetchCollectSelectList();
   if (res.retState !== '0') {
-    Message.warning('收藏产品的下拉列表失败');
+    Message.error(res.msg);
     return Promise.reject('收藏产品的下拉列表失败');
   }
 
@@ -65,8 +66,10 @@ export async function getProdPriceApi(templateNo) {
   try {
     store.commit('designApplication/setLoadingPrice', true);
     const res = await fetchProdPrice(templateNo);
-    if (res.code !== 0) return Promise.reject('根据模板号获取价格列表 接口报错');
-    console.error('根据模板号获取价格列表 接口返回数据为空');
+    if (res.code !== 0) {
+      Message.error(res.message);
+      return Promise.reject('根据模板号获取价格列表 接口报错');
+    }
     if (Object.keys(res.data).length === 0) return Promise.resolve(result);
     // console.log('根据模板号获取价格列表', res.data.data);
     result.isSpecial = res.data.templateType;
@@ -89,7 +92,7 @@ export async function getProdPriceApi(templateNo) {
 export async function setCollectProdApi(templateId) {
   const res = await fetchCollectProd(templateId);
   if (res.code !== 0) {
-    Message.warning('收藏产品失败');
+    Message.error(res.message);
     return Promise.reject('收藏产品失败');
   }
 
@@ -103,7 +106,7 @@ export async function setCollectProdApi(templateId) {
 export async function setDelCollectProdApi(collectId) {
   const res = await fetchDelCollectProd(collectId);
   if (res.code !== 0) {
-    Message.warning('取消收藏产品失败');
+    Message.error(res.message);
     return Promise.reject('取消收藏产品失败');
   }
 
@@ -118,9 +121,23 @@ export async function setDelCollectProdApi(collectId) {
 export async function saveProdApi(param) {
   const res = await fetchSaveProd(param);
   if (!res.status) {
-    Message.error(res.msg);
-    // Message.warning('保存产品失败');
-    return Promise.reject({ msg: res.msg });
+    Message.warning('保存产品失败，请联系技术部！');
+    return Promise.reject({ msg: '保存产品失败' });
+  }
+
+  return res;
+}
+/**
+ * 保存产品 - 精细
+ * @param {SubmitParamType[]} param
+ * @returns {Promise<import('@/design').SaveProdResponse>}
+ */
+export async function saveProdWithSizeApi(param) {
+  console.log('param', param);
+  const res = await fetchSaveProdWithSize(param);
+  if (!res.status) {
+    Message.warning('保存产品失败，请联系技术部！');
+    return Promise.reject({ msg: '保存产品失败' });
   }
 
   return res;
@@ -133,7 +150,7 @@ export async function saveProdApi(param) {
 export async function getHistoryListApi() {
   const res = await fetchHistoryList();
   if (res.retState !== '0') {
-    Message.warning('历史设计记录');
+    Message.error(res.retMsg);
     return Promise.reject({ msg: '历史设计记录' });
   }
   for (let item of res.products) {
@@ -151,7 +168,7 @@ export async function getHistoryListApi() {
 export async function delHistoryApi(seqIds) {
   const res = await fetchDelHistoryItem(seqIds);
   if (res.code !== 0) {
-    Message.warning('删除历史记录');
+    Message.error(res.message);
     return Promise.reject({ msg: '删除历史记录' });
   }
 

@@ -70,10 +70,10 @@ export default {
             }
             break;
           case 'collect':
-            if (!this.isInit_prod_collect) {
-              this.$refs.prodCollect.getList();
-              this.$store.commit('designApplication/setInit', { type: 'prod_collect' });
-            }
+            // if (!this.isInit_prod_collect) {
+            //   this.$refs.prodCollect.getList();
+            //   this.$store.commit('designApplication/setInit', { type: 'prod_collect' });
+            // }
             break;
         }
       },
