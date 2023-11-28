@@ -53,6 +53,8 @@ export function initTransformer(layer) {
   // transformer.on('transformstart', (transform) => {});
   transformer.on('transformend', (transform) => {
     text.text('');
+    // 更新模型纹理
+    transformer.attrs.image.attrs.konvaCanvas.updateTexture('transformend', 50);
   });
 
   // 正上方添加旋转角度的text

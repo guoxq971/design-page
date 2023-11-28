@@ -255,7 +255,7 @@ export class KonvaCanvas {
       this.updateTexture(11, 50);
     });
     designImage.transformer.on('transform', function (e) {
-      that.updateTexture(4);
+      that.updateTexture(4, 0);
 
       // 设计图的碰撞检测
       DesignImageUtil.isCollide(this.attrs.image);
