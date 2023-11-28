@@ -2,6 +2,8 @@ import store from '@/store';
 import { config3dUtil } from '@/designApplication/interface/Config3d/config3dOfCommonResponse';
 import * as TWEEN from '@tweenjs/tween.js';
 import lodash from 'lodash';
+import * as THREE from 'three';
+
 /**
  * three.js 工具类
  */
@@ -22,44 +24,38 @@ export class ThreeUtil {
       return;
     }
 
-    // 高亮
+    // 高亮 1=白 0=深, 值越小越深色
     // t1
-    // const p0 = { n: 0 };
-    // const p1 = { n: 0.8 };
-    // //t2
-    // const p2 = { n: 0.8 };
-    // const p3 = { n: 0 };
-    // t1
-    const p0 = { n: 0 };
-    const p1 = { n: 0.8 };
+    const p0 = { n: 0.9 };
+    const p1 = { n: 0.28 };
     //t2
-    const p2 = { n: 0.8 };
-    const p3 = { n: 0 };
+    const p2 = { n: 0.28 };
+    const p3 = { n: 1 };
 
     const getColor = (n) => {
-      // let str = '39, 53, 255';
-      const str = '64, 135, 255';
-      // let str =  '64, 87, 255'
-      let fillStyle = 'rgba(' + str + ',' + n + ')';
-      // if (['#32409A', '#0165FC'].includes(materialMapItem.color.colorCode)) {
-      //     fillStyle = 'rgba(255, 255, 255,' + n + ')';
-      // }
+      let str = '#4087ff';
+      // 将 str颜色 根据 n值 进行渐变，由深蓝色变为浅蓝色, n取值范围为 0~0.8, 0.8~0, 不要纯黑色，只要蓝色
+      const color = new THREE.Color(str);
+      color.lerp(new THREE.Color('#ffffff'), n);
+      str = color.getStyle();
 
-      return fillStyle;
+      return str;
     };
 
     const _color = view.canvas.konvaPath.attrs.fill;
 
+    const start = () => {
+      view.canvas.konvaPath.setAttr('fill', '#4087ff');
+      view.canvas.updateTexture();
+    };
+
     const update = (n) => {
-      // view.canvas.konvaPath.setAttr('fill', getColor(1));
-      view.canvas.konvaPath.setAttr('opacity', n);
-      // view.canvas.konvaPath.setAttr('fill', getColor(n));
+      view.canvas.konvaPath.setAttr('fill', getColor(n));
       view.canvas.updateTexture();
     };
 
     const complete = () => {
-      // view.canvas.konvaPath.setAttr('fill', _color);
-      view.canvas.konvaPath.setAttr('opacity', 1);
+      view.canvas.konvaPath.setAttr('fill', _color);
       view.canvas.updateTexture();
     };
 
@@ -70,7 +66,9 @@ export class ThreeUtil {
       .onUpdate(({ n }) => {
         update(n);
       })
-      .onStart(() => {})
+      .onStart(() => {
+        start();
+      })
       .easing(TWEEN.Easing.Quadratic.InOut);
     const t2 = new TWEEN.Tween(p2)
       .to(p3, 700)
