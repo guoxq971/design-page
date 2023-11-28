@@ -60,6 +60,8 @@ export async function loadThree(param = new LoadThreeParam()) {
 
     // 加载canvas材质 and 模型底色
     loadCanvasTexture(t.meshPlusList);
+
+    // 给每个视图添加高亮
   } finally {
     param.loading && loading3dClose();
   }
@@ -94,7 +96,7 @@ function getViewByMaterialName(materialName, prodItem) {
  * @param {MeshItem[]} meshPlusList 模型的材质列表
  * */
 function loadCanvasTexture(meshPlusList) {
-  console.log('加载底色', meshPlusList);
+  // console.log('加载底色', meshPlusList);
   const config = DesignerUtil.getConfig();
   if (!config) {
     console.error('加载 canvas 到对应的 mesh 上 失败，config 为空');
@@ -116,7 +118,7 @@ function loadCanvasTexture(meshPlusList) {
     }
     // 这是没有canvas的mesh, 要设置底色
     if (!view) {
-      console.log('没有canvas的mesh', mesh.name);
+      // console.log('没有canvas的mesh', mesh.name);
       mesh.material.color.set(color3dItem.colorCode);
       return;
     }
@@ -139,7 +141,7 @@ function loadCanvasTexture(meshPlusList) {
     mesh.material.map = texture;
     mesh.material.needsUpdate = true;
 
-    console.log(mesh.name, mesh);
+    // console.log(mesh.name, mesh);
 
     view.texture = texture;
     // 使用节流

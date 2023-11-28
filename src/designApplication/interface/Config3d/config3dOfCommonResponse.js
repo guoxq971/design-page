@@ -6,7 +6,7 @@
 export class config3dUtil {
   /**
    * 是否能加载3d
-   * @param {Config3d} config3d 3d配置
+   * @param {import('@/design').ProdConfig3dResponseData} config3d 3d配置
    * @returns {boolean} 是否能加载3d true-能加载 false-不能加载
    * */
   static isLoad3d(config3d = {}) {

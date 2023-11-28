@@ -204,7 +204,6 @@ export const prod_actions = {
 
     try {
       state.loading_prod = true;
-      console.time(`加载产品 - 通用${detail.templateNo}`);
 
       // 隐藏3d
       commit('setShow3d', false);
@@ -238,7 +237,6 @@ export const prod_actions = {
       if (isCommonOpen2d) {
         state.loading_prod = false;
       }
-      console.timeEnd(`加载产品 - 通用${detail.templateNo}`);
 
       if (prod) {
         // 推荐参数
@@ -255,7 +253,6 @@ export const prod_actions = {
 
         // 获取3d配置 - 精细
         const refineList = await dispatch('getRefineConfig', prod);
-        state.loading_prod = false;
 
         // 通用的2d是关闭的
         if (!isCommonOpen2d) {
@@ -265,8 +262,13 @@ export const prod_actions = {
           }
 
           // 切换到精细模板
-          await dispatch('changeProd', { sizeId: refineList[0].sizeId, type: ProdType.refine });
+          await dispatch('changeProd', { sizeId: refineList[0].sizeId, type: ProdType.refine, force: true });
           Message.warning('该产品的通用模板已关闭，已切换为精细模板');
+        }
+
+        // 中间没有切换时，才需要关闭loading
+        if (getters.activeProd?.detail.templateNo === prod.detail.templateNo) {
+          state.loading_prod = false;
         }
       }
     }
@@ -279,9 +281,10 @@ export const prod_actions = {
    * @param {ProdType} param.type 模板类型(要切换的类型)
    * @param {number} param.sizeId 尺码id
    * @param {number} param.colorId 颜色id
+   * @param {boolean} param.force 强制执行
    * */
   async changeProd({ state, commit, dispatch, getters }, param) {
-    if (state.loading_prod) {
+    if (state.loading_prod && !param.force) {
       Message.warning('模板加载中，请稍后');
     }
 

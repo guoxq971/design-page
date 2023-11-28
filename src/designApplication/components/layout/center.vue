@@ -151,7 +151,7 @@ export default {
   },
   methods: {
     onShow3d() {
-      this.$store.commit('designApplication/setShow3d', !this.show3d);
+      // this.$store.commit('designApplication/setShow3d', !this.show3d);
     },
     // 选择颜色
     onColor(item) {

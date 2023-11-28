@@ -14,6 +14,7 @@
 <script>
 import { mapState, mapGetters } from 'vuex';
 import boxContainer from '@/designApplication/components/boxContainer.vue';
+import { onSelectViewWithThree } from '@/designApplication/core/three/threeUtil';
 
 export default {
   components: { boxContainer },
@@ -40,6 +41,8 @@ export default {
     // 选择视图
     onPreview(item) {
       this.$store.commit('designApplication/setActiveViewId', item.id);
+
+      onSelectViewWithThree(item.id);
     },
   },
 };

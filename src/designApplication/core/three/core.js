@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { Raycaster } from './raycaster.js';
 import store from '@/store';
 import { OperationUtil } from '@/designApplication/core/utils/operationUtil';
+import * as TWEEN from '@tweenjs/tween.js';
 
 export class Core {
   container; // 容器
@@ -37,6 +38,7 @@ export class Core {
     // this.scene.add(axesHelper);
 
     const animate = () => {
+      TWEEN.update();
       this.controls.update();
       this.renderer.render(this.scene, this.camera);
       this.rafId = requestAnimationFrame(animate);

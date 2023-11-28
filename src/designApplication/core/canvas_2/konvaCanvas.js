@@ -3,12 +3,10 @@ import { Konva } from '@/designApplication/core/canvas/konva';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 import store from '@/store';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
-import { getDesignImage, getText, layerMove, remove, setModelBgc, setProxyTransformer, setTextAttrs, supplementImageList, visibleImage } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
+import { getDesignImage, getText, setModelBgc, setProxyTransformer, setTextAttrs, visibleImage } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
 import { initTransformer } from '@/designApplication/core/canvas/selectBorder';
 import { uuid } from '@/designApplication/core/utils/uuid';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
-import { isCollide } from '@/designApplication/core/utils/common';
-import { sleep } from '@/designApplication/core/utils/sleep';
 
 /**
  * KonvaCanvas
