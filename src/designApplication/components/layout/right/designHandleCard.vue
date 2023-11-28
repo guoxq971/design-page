@@ -18,9 +18,9 @@
     <!--垂直居中-->
     <img src="../img/垂直居中.png" class="right-design-img" v-title="'垂直居中'" @click="onImagePositionVertical" />
     <!--水平翻转-->
-    <img src="../img/水平翻转.png" class="right-design-img" v-title="'水平翻转'" />
+    <img src="../img/水平翻转.png" class="right-design-img" v-title="'水平翻转'" @click="onFlipX()" />
     <!--垂直翻转-->
-    <img src="../img/垂直翻转.png" class="right-design-img" v-title="'垂直翻转'" />
+    <img src="../img/垂直翻转.png" class="right-design-img" v-title="'垂直翻转'" @click="onFlipY()" />
     <!--放大-->
     <img src="../img/放大.png" class="right-design-img" v-title="'放大'" @click="onImageScaleUp" />
     <!--缩小-->
@@ -141,7 +141,21 @@ export default {
       DesignImageUtil.isCollide(image);
     },
     /**
-     * 设计图操作 - 放大
+     * 设计图操作 - x轴翻转
+     */
+    async onFlipX() {
+      const image = await DesignImageUtil.hasActiveImageMessage();
+      DesignImageUtil.flipX(image);
+    },
+    /**
+     * 设计图操作 - y轴翻转
+     */
+    async onFlipY() {
+      const image = await DesignImageUtil.hasActiveImageMessage();
+      DesignImageUtil.flipY(image);
+    },
+    /**
+     * 设计图操作 - 缩放 放大
      */
     async onImageScaleUp() {
       const image = await DesignImageUtil.hasActiveImageMessage();
@@ -152,7 +166,7 @@ export default {
       DesignImageUtil.isCollide(image);
     },
     /**
-     * 设计图操作 - 缩小
+     * 设计图操作 - 缩放 缩小
      */
     async onImageScaleDown() {
       const image = await DesignImageUtil.hasActiveImageMessage();

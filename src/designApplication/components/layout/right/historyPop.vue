@@ -182,9 +182,9 @@ export default {
         const viewId = item.printArea.id;
         // 将设计图插入到画布
         const image = await this.$store.dispatch('designApplication/setImage', { detail: imageDetail, viewId: viewId });
-        // TODO: 已经成功添加到 view 中了, 还需设置 平铺、翻转
+        // TODO: 已经成功添加到 view 中了, 还需设置 平铺
 
-        // 解析坐标和角度
+        // 解析坐标和角度和缩放
         const transform = item.content.svg.image.transform.replace('rotate(', '').replace(')', '').split(',');
         if (transform.length > 0) {
           // 设置旋转
@@ -205,6 +205,14 @@ export default {
             x: leftTopX + item.offset.x,
             y: leftTopY + item.offset.y,
           });
+        }
+
+        // 设置翻转
+        if (item.bmParam.isFlipX) {
+          DesignImageUtil.flipX(image);
+        }
+        if (item.bmParam.isFlipY) {
+          DesignImageUtil.flipY(image);
         }
       }
     },

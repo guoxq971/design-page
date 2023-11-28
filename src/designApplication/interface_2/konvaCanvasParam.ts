@@ -19,6 +19,10 @@ export interface CanvasImage extends Konva.Image {
     width: number;
     height: number;
     type: string;
+
+    // 自定义属性
+    isFlipX: boolean;
+    isFlipY: boolean;
     name: string;
     detail: ImageListItem; //设计图的接口详情
     param: AddParamOfImage;

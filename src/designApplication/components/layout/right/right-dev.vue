@@ -131,6 +131,10 @@
             <el-image :src="activeDesign.attrs.fillPatternImage.src" class="image" />
           </div>
           <div class="img-name-2">{{ activeDesign.attrs.detail.name }}</div>
+          <div>
+            <div>scaleX: {{ activeDesign.attrs.scaleX.toFixed(2) }}</div>
+            <div>scaleY: {{ activeDesign.attrs.scaleY.toFixed(2) }}</div>
+          </div>
         </div>
         <div v-if="activeDesign.attrs.name === canvasDefine.text" class="text-wrap-2">
           <el-input type="textarea" :rows="4" :value="activeDesign.attrs.text" @input="(val) => onInput(activeDesign, val)" />
@@ -250,6 +254,7 @@ export default {
         const r = view.canvas?.getSelected();
         if (r) {
           result = r.design;
+          console.log('result', result);
         }
         return r;
       });

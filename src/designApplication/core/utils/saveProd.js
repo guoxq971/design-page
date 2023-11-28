@@ -158,6 +158,8 @@ export async function getSaveProdParam(type = '', prodItem = null) {
           configurationItem.bmParam.designId = checkRes.seqId;
           configurationItem.bmParam.type = canvasDefine.text;
           configurationItem.bmParam.textParam = textParam;
+          configurationItem.bmParam.isFlipX = image.attrs.isFlipX;
+          configurationItem.bmParam.isFlipY = image.attrs.isFlipY;
 
           // content 参数
           configurationItem.content.svg.image.designId = checkRes.seqId;
@@ -175,12 +177,15 @@ export async function getSaveProdParam(type = '', prodItem = null) {
           // 自定义参数 bmParam
           configurationItem.bmParam.imageCode = image.attrs.detail.imageCode;
           configurationItem.bmParam.designId = image.attrs.detail.id;
+          configurationItem.bmParam.isFlipX = image.attrs.isFlipX;
+          configurationItem.bmParam.isFlipY = image.attrs.isFlipY;
+          console.log('image', image);
 
           // 设计图 - offset (x,y 的坐标)
           configurationItem.offset.x = result.x;
           configurationItem.offset.y = result.y;
 
-          // TODO: 这个要考虑 翻转、平铺的 情况
+          // TODO: 这个要考虑 平铺 的情况
           // 设计图 - content (width,height,scale,id等)
           configurationItem.content.svg.image.designId = image.attrs.detail.id;
           configurationItem.content.svg.image.width = imgWidth;

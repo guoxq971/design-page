@@ -25,6 +25,7 @@ export function drawRotation(transformer, oldBox, newBox) {
   if (text && transformer.nodes()) {
     const node = transformer.nodes()[0];
 
+    // 如果当前是旋转操作
     if (oldBox.rotation !== newBox.rotation) {
       // 旋转的角度和坐标
       let t = node.rotation().toFixed();
@@ -69,10 +70,12 @@ export function initTransformer(layer) {
   text.setAttr('name', 'rotationText');
   transformer.add(text);
 
-  transformer.boundBoxFunc(function (oldBox, newBox) {
-    drawRotation(transformer, oldBox, newBox);
-    return newBox;
-  });
+  // transformer.boundBoxFunc(function (oldBox, newBox) {
+  //   // 旋转操作时, 画出度数
+  //   drawRotation(transformer, oldBox, newBox);
+  //
+  //   return newBox;
+  // });
 
   return transformer;
 }

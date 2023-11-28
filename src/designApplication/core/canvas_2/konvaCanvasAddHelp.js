@@ -188,18 +188,32 @@ export function setProxyTransformer(transformer, image) {
     },
   });
 
-  // 监听 缩放尺寸
+  // 监听 缩放尺寸 和 旋转角度
   transformer.setAttr('boundBoxFunc', (oldBox, newBox) => {
-    // 绘制旋转角度
-    drawRotation(transformer, oldBox, newBox);
-
     // 是否放大
     const isUp = newBox.width > oldBox.width || newBox.height > oldBox.height;
+    // 是否缩小
+    const isDown = newBox.width < oldBox.width || newBox.height < oldBox.height;
 
-    if (isUp && image.attrs.type === canvasDefine.image && isCollision(image)) {
-      return oldBox; // 返回旧的
+    if (isUp || isDown) {
+      // console.log('缩放');
+
+      // 最小检测
+      if ((isDown && newBox.width < 10) || newBox.height < 10) {
+        return oldBox; // 返回旧的
+      }
+
+      // 最大检测
+      if (isUp && image.attrs.type === canvasDefine.image && isCollision(image)) {
+        return oldBox; // 返回旧的
+      } else {
+        return newBox; // 返回新的(成功放大)
+      }
     } else {
-      return newBox; // 返回新的(成功放大)
+      // console.log('旋转');
+
+      // 绘制旋转角度
+      drawRotation(transformer, oldBox, newBox);
     }
   });
 }
@@ -217,8 +231,8 @@ export function isCollision(image, param = {}) {
 
   const inch = image.attrs.param.inch;
   const imgSize = image.attrs.param.imageDOM;
-  const w = imgSize.width * param.scaleX;
-  const h = imgSize.height * param.scaleY;
+  const w = imgSize.width * Math.abs(param.scaleX);
+  const h = imgSize.height * Math.abs(param.scaleY);
 
   if (w >= inch.width || h >= inch.height) {
     if (!messageInstance) {
@@ -230,8 +244,8 @@ export function isCollision(image, param = {}) {
 
     // 缩放到最大
     image.setAttrs({
-      scaleX: inch.width / imgSize.width,
-      scaleY: inch.height / imgSize.height,
+      scaleX: (inch.width / imgSize.width) * (image.scaleX() >= 0 ? 1 : -1),
+      scaleY: (inch.height / imgSize.height) * (image.scaleY() >= 0 ? 1 : -1),
     });
 
     return true;
@@ -400,6 +414,7 @@ export async function supplementImageList(view = null) {
   const resultList = [];
 
   for (let image of imageList.toReversed()) {
+    console.log('image', image);
     switch (image.attrs.type) {
       // 设计图
       case canvasDefine.image:
@@ -417,6 +432,8 @@ export async function supplementImageList(view = null) {
           height: imageInfo.height,
           visible: image.visible(),
           detail: image.attrs.detail,
+          isFlipX: image.attrs.isFlipX, //沿着x轴翻转
+          isFlipY: image.attrs.isFlipY, //沿着y轴翻转
         });
         break;
 
@@ -436,6 +453,8 @@ export async function supplementImageList(view = null) {
           width: textInfo.width,
           height: textInfo.height,
           visible: image.visible(),
+          isFlipX: image.attrs.isFlipX, //沿着x轴翻转
+          isFlipY: image.attrs.isFlipY, //沿着y轴翻转
 
           // 文字属性
           textParam: {
@@ -482,6 +501,8 @@ export async function restoreImageList(view = null) {
       case canvasDefine.image:
         const imgKonva = await store.dispatch('designApplication/setImage', { detail: image.detail, viewId: view.id });
         imgKonva.setAttrs({
+          isFlipX: image.isFlipX,
+          isFlipY: image.isFlipY,
           scaleX: image.scaleX,
           scaleY: image.scaleY,
         });
@@ -499,6 +520,8 @@ export async function restoreImageList(view = null) {
       case canvasDefine.text:
         const textKonva = await store.dispatch('designApplication/setText', { param: image.textParam, viewId: view.id });
         textKonva.setAttrs({
+          isFlipX: image.isFlipX,
+          isFlipY: image.isFlipY,
           scaleX: image.scaleX,
           scaleY: image.scaleY,
         });

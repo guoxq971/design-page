@@ -25,8 +25,8 @@ export class DesignImageUtil {
       return;
     }
     // 设计图当前的宽高
-    const width = image.width() * image.scaleX();
-    const height = image.height() * image.scaleY();
+    const width = image.width() * image.scaleX() * (image.scaleX() >= 0 ? 1 : -1);
+    const height = image.height() * image.scaleY() * (image.scaleY() >= 0 ? 1 : -1);
 
     // 设计图当前的坐标
     const x = image.x() - width / 2;
@@ -241,17 +241,26 @@ export class DesignImageUtil {
   /**
    * 翻转 - 水平方向
    */
-  static filterHorizontal(image) {
+  static flipX(image) {
+    image.setAttrs({
+      scaleX: -image.scaleX(),
+      isFlipX: !image.attrs.isFlipX,
+    });
+
     // 后置函数
-    afterFn(image, 'filterHorizontal');
+    afterFn(image, 'flipX');
   }
 
   /**
    * 翻转 - 垂直方向
    */
-  static filterVertical(image) {
+  static flipY(image) {
+    image.setAttrs({
+      scaleY: -image.scaleY(),
+      isFlipY: !image.attrs.isFlipY,
+    });
     // 后置函数
-    afterFn(image, 'filterVertical');
+    afterFn(image, 'flipY');
   }
 
   /**

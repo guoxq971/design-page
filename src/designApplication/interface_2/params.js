@@ -41,6 +41,12 @@ export class ConfigurationItem {
     imageCode: '',
     imageOrgUrl: '',
     size: {},
+
+    // new
+    isFlipX: false, // 沿着x轴翻转
+    isFlipY: false, // 沿着y轴翻转
+
+    // old
     isTiled: 0,
     tiledParam: {},
     isReverse: false,

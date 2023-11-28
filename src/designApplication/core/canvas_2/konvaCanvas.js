@@ -254,6 +254,7 @@ export class KonvaCanvas {
     designImage.transformer.on('visibleChange', (event) => {
       this.updateTexture(11, 50);
     });
+    designImage.transformer.on('transformstart', function (e) {});
     designImage.transformer.on('transform', function (e) {
       that.updateTexture(4, 0);
 
@@ -271,6 +272,8 @@ export class KonvaCanvas {
       name: canvasDefine.image,
 
       // 特殊属性
+      isFlipX: false, //沿着x轴翻转
+      isFlipY: false, //沿着y轴翻转
       detail: param.detail, //设计图的接口信息
       view: param.view, //设计图所在的视图
       param: param, //设计图的参数
