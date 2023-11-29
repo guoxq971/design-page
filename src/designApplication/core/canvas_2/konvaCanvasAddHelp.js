@@ -407,14 +407,13 @@ export function getAngleMultiple(angle, type = 'right') {
  * 补充设计图列表到 view.imageList
  * @param {import('@/design').ParseViewItem} view 视图
  */
-export async function supplementImageList(view = null) {
+export function supplementImageList(view = null) {
   view = view || DesignerUtil.getView();
   const imageList = view.canvas?.getImageList() || [];
 
   const resultList = [];
 
   for (let image of imageList.toReversed()) {
-    console.log('image', image);
     switch (image.attrs.type) {
       // 设计图
       case canvasDefine.image:

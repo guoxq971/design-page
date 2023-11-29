@@ -10,9 +10,9 @@
         <recommendParam />
       </div>
 
-      <div class="body-wrap layer-top">
+      <div class="body-wrap layer-top" style="pointer-events: none">
         <!--价格-->
-        <div class="price-wrap">
+        <div class="price-wrap" style="pointer-events: all">
           <centerPriceIcon class="price-icon" />
           <div class="text" v-if="!loading_price && !loading_prod">
             {{ price }}
@@ -29,14 +29,14 @@
         </div>
 
         <!--颜色-->
-        <div class="model-info-color">
+        <div class="model-info-color" style="pointer-events: all">
           <div class="model-info-color-item" v-for="item in activeProd.colorList" :key="item.id" @click="onColor(item)" :class="{ action: item.id === activeColorId }">
             <div :style="{ backgroundColor: item.colorCode }"></div>
           </div>
         </div>
 
         <!--尺码-->
-        <div class="model-info-color">
+        <div class="model-info-color" style="pointer-events: all">
           <div class="model-info-color-size" v-for="item in activeSizeList" :key="item.id" @click="onSize(item)" :class="{ action: item.id === activeSizeId }">
             <span>{{ item.name }}</span>
             <span v-if="isShowDesignFlag(item)" class="flag-wrap">设计</span>
@@ -44,7 +44,7 @@
         </div>
 
         <!--画布区域-->
-        <div class="canvas-work-container" :style="{ width: config.canvasSize.width + 'px' }">
+        <div class="canvas-work-container" :style="{ width: config.canvasSize.width + 'px' }" style="pointer-events: all">
           <template v-for="view in activeProdStatic.viewList">
             <div
               class="canvas-wrap"

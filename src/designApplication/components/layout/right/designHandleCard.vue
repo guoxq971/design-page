@@ -114,6 +114,10 @@ export default {
         konvaCanvas.layer.add(copyTransformer);
 
         await this.$nextTick();
+        // 这个是处理复制的选中框(选中框会变形)
+        DesignImageUtil.rotation(copyImage, copyImage.rotation() + 1);
+        DesignImageUtil.rotation(copyImage, copyImage.rotation() - 1);
+
         // 碰撞检测
         DesignImageUtil.isCollide(copyImage);
       }

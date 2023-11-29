@@ -297,7 +297,7 @@ export const prod_actions = {
       let resultProdItem;
 
       for (let view of curProdItem.viewList) {
-        await supplementImageList(view);
+        supplementImageList(view);
       }
 
       // 当前产品和要切换的产品一致时，不做任何操作

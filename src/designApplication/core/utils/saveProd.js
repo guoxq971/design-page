@@ -3,13 +3,15 @@ import lodash from 'lodash';
 import { Message } from 'element-ui';
 
 import { designToImageUpload } from '@/designApplication/core/utils/toImage/designToImage';
-import { textToImageUpload } from '@/designApplication/core/utils/toImage/textToImage';
+import { saveTextWord, textToImageUpload } from '@/designApplication/core/utils/toImage/textToImage';
 import { isTemplateCanUse } from '@/designApplication/store/util';
 import { ConfigurationItem, SubmitParamType } from '@/designApplication/interface_2/params';
 import { ProdType } from '@/designApplication/interface/prodItem';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
+import { supplementImageList } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
+import { sleep } from '@/designApplication/core/utils/sleep';
 
 /**
  * 组装保存产品的提交参数
@@ -31,13 +33,13 @@ export async function getSaveProdParam(type = '', prodItem = null) {
   // 当前的产品数据
   prodItem = prodItem || DesignerUtil.getActiveProd();
 
-  // 判断当前产品的设计类型是否可用
+  // 【校验】 判断当前产品的设计类型是否可用
   if (!isTemplateCanUse(prodItem.config3d)) {
     Message.warning('该产品当前设计类型的模板已关闭，请更换其他产品设计！');
     return Promise.reject('该产品当前设计类型的模板已关闭，请更换其他产品设计！');
   }
 
-  // 批量设计判断
+  // 【校验】批量设计判断
   customObj.static_batchid = localStorage.getItem('static_batchid') || '';
   customObj.asyncFlag = true; //异步-true|同步-false
   if (customObj.static_batchid) {
@@ -48,11 +50,11 @@ export async function getSaveProdParam(type = '', prodItem = null) {
     customObj.asyncFlag = false;
   }
 
-  // 判断是 自产|外采
+  // 【校验】判断是 自产|外采
   if (prodItem.detail.templateType == 1) customObj.isSelf = false;
   if (customObj.saveNumBtn == 2) customObj.isSelf = false;
 
-  // 设计图数量检测
+  // 【校验】设计图数量检测
   switch (customObj.isSelf) {
     // 自产
     case true:
@@ -80,7 +82,7 @@ export async function getSaveProdParam(type = '', prodItem = null) {
       break;
   }
 
-  // 设计图碰撞检测
+  // 【校验】设计图碰撞检测
   const isCollide = prodItem.viewList.some((view) => view.canvas.getImageList().some((image) => image.attrs.isCollide));
   if (isCollide) {
     Message.warning('你所设计的图案超过了打印的区域');
@@ -174,19 +176,24 @@ export async function getSaveProdParam(type = '', prodItem = null) {
         //设计图------------------------------------start
         case canvasDefine.image:
           configurationItem.type = image.attrs.name; //类型
+
           let designId = image.attrs.detail.id;
-          let imageCode = image.attrs.detail.imageCode;
+          let flipImageDesignId = '';
+          let flipImageCode = '';
 
           // 如果是翻转 or 平铺需要上传到服务器, 得到designId
           if (image.attrs.isFlipX || image.attrs.isFlipY) {
             const imageResult = await designToImageUpload(image);
-            designId = imageResult.checkRes.seqId;
-            imageCode = imageResult.checkRes.imageCode;
+            flipImageDesignId = imageResult.checkRes.seqId;
+            flipImageCode = imageResult.checkRes.imageCode;
+            designId = flipImageDesignId;
           }
 
           // 自定义参数 bmParam
-          configurationItem.bmParam.imageCode = imageCode;
-          configurationItem.bmParam.designId = designId;
+          configurationItem.bmParam.designId = image.attrs.detail.id;
+          configurationItem.bmParam.imageCode = image.attrs.detail.imageCode;
+          configurationItem.bmParam.flipImageDesignId = flipImageDesignId;
+          configurationItem.bmParam.flipImageCode = flipImageCode;
           configurationItem.bmParam.isFlipX = image.attrs.isFlipX;
           configurationItem.bmParam.isFlipY = image.attrs.isFlipY;
 
@@ -229,4 +236,90 @@ export async function getSaveProdParam(type = '', prodItem = null) {
   }
 
   return submitParam;
+}
+
+/**
+ * 保存产品
+ * @param {
+ * {
+ *  verify:()=>Promise<any>,
+ *  send:(any)=>Promise<import('@/design').SaveProdResponse>
+ *}
+ * } param
+ * @returns {Promise<void>}
+ */
+export async function saveProd(param) {
+  const historyItem = { loading: true, id: '123', imgUrl: '', name: '' };
+  try {
+    // 打开loading
+    store.commit('designApplication/setLoadingSave', true);
+
+    // 添加 历史设计记录 loading
+    await store.dispatch('designApplication/addHistoryItem', historyItem);
+
+    // 校验，并组装参数
+    const submitParam = await param.verify();
+
+    // 发送接口
+    const res = await param.send(submitParam);
+
+    if (res) {
+      Message.success('保存成功');
+
+      // 刷新历史设计记录
+      store.dispatch('designApplication/getHistoryList');
+
+      // 如果有文字需要保存文字参数信息
+      await saveTextWord(res, submitParam);
+    }
+  } catch (e) {
+    console.log('保存产品 saveProd e', e);
+    // 移除 历史设计记录 loading
+    setTimeout(() => {
+      store.dispatch('designApplication/clearHistoryItem', historyItem);
+    }, 1000);
+  } finally {
+    store.commit('designApplication/setLoadingSave', false);
+  }
+}
+
+/**
+ * 精细产品校验,并返回提交参数
+ * @param type 保存类型
+ * @param prodItem 产品信息
+ * @returns {Promise<SubmitParamType[]>}
+ */
+export async function refineVerify(type, prodItem) {
+  store.commit('designApplication/setLoadingSave', true);
+  // 补充imageList
+  for (let view of prodItem.viewList) {
+    supplementImageList(view);
+  }
+
+  // 过滤出精细设计中有图片的的尺码视图, 如果没有图片的尺码视图，就用当前的尺码视图
+  const resultProdList = store.state.designApplication.prodStore.list.filter((e) => e.type === ProdType.refine && e.viewList.some((e) => e.imageList.length));
+
+  // 如果没有图片的尺码视图，就用当前的尺码视图
+  if (resultProdList.length === 0) {
+    resultProdList.push(prodItem);
+  }
+
+  // 组装提交数据
+  const submitList = [];
+  for (let prod of resultProdList) {
+    // 切换对对应尺码
+    await store.dispatch('designApplication/setActiveSizeId', prod.sizeId);
+
+    // 等待切换尺码
+    await sleep(0);
+
+    // 获取对应尺码的提交数据
+    const param = await getSaveProdParam(type, prod);
+    submitList.push(param);
+  }
+
+  // 最后切回到当前尺码
+  await store.dispatch('designApplication/setActiveSizeId', prodItem.sizeId);
+
+  return submitList;
 }

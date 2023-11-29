@@ -37,16 +37,18 @@ export class ConfigurationItem {
     type: 'img',
     textParam: {},
     designId: '',
-    orgDesignId: '',
     imageCode: '',
-    imageOrgUrl: '',
-    size: {},
 
     // new
     isFlipX: false, // 沿着x轴翻转
     isFlipY: false, // 沿着y轴翻转
+    flipImageCode: '', // 翻转后的图片code
+    flipImageDesignId: '', // 翻转后的图片designId
 
     // old
+    size: {},
+    imageOrgUrl: '',
+    orgDesignId: '',
     isTiled: 0,
     tiledParam: {},
     isReverse: false,

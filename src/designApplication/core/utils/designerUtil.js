@@ -254,7 +254,7 @@ export class DesignerUtil {
      * @returns {object} 颜色
      * */
     function get3dColorItemByMaterialName(materialName) {
-      return colorConfig3d.list.find((e) => e.materialName == materialName);
+      return colorConfig3d?.list.find((e) => e.materialName == materialName);
     }
 
     return {

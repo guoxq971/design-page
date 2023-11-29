@@ -87,7 +87,7 @@ import { sleep } from '@/designApplication/core/utils/sleep';
 
 import { saveProdApi, saveProdWithSizeApi } from '@/designApplication/apis/prod';
 import { saveTextWord } from '@/designApplication/core/utils/toImage/textToImage';
-import { getSaveProdParam } from '@/designApplication/core/utils/saveProd';
+import { getSaveProdParam, refineVerify, saveProd } from '@/designApplication/core/utils/saveProd';
 import { supplementImageList } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
 
 export default {
@@ -143,92 +143,26 @@ export default {
 
       // 当前的产品数据
       const prodItem = DesignerUtil.getActiveProd();
-      let submitParam;
 
-      // 通用保存
       switch (prodItem.type) {
+        // 通用保存
         case ProdType.common:
-          submitParam = await getSaveProdParam(type, prodItem);
+          await saveProd({
+            verify: async () => getSaveProdParam(type, prodItem),
+            send: async (param) => saveProdApi(param),
+          });
           break;
 
         // 精细保存
         case ProdType.refine:
-          this.$store.commit('designApplication/setLoadingSave', true);
-          try {
-            // 补充imageList
-            for (let view of prodItem.viewList) {
-              supplementImageList(view);
-            }
-
-            // 过滤出精细设计中有图片的的尺码视图
-            const resultProdList = this.$store.state.designApplication.prodStore.list.filter((e) => e.type === ProdType.refine && e.viewList.some((e) => e.imageList.length));
-
-            if (resultProdList.length === 0) {
-              resultProdList.push(prodItem);
-            }
-
-            // 组装提交数据
-            const submitList = [];
-            for (let prod of resultProdList) {
-              // 切换对对应尺码
-              await this.$store.dispatch('designApplication/setActiveSizeId', prod.sizeId);
-              await sleep(0);
-              // 获取对应尺码的提交数据
-              const param = await getSaveProdParam(type, prod);
-              submitList.push(param);
-            }
-
-            submitParam = submitList;
-
-            // 最后切回到当前尺码
-            await this.$store.dispatch('designApplication/setActiveSizeId', prodItem.sizeId);
-          } catch (e) {
-            console.log('err', e);
-            this.$store.commit('designApplication/setLoadingSave', false);
-            return;
-          }
+          await saveProd({
+            verify: async () => refineVerify(type, prodItem),
+            send: async (param) => saveProdWithSizeApi(param),
+          });
           break;
         default:
           this.$message.warning('未知的产品类型');
           break;
-      }
-
-      // 测试的时候用
-      // let btn = true;
-      // if (btn) return;
-
-      // 发送提交接口
-      // 往历史设计记录的弹窗插入一条loading的数据
-      const historyItem = { loading: true, id: '123', imgUrl: '', name: '' };
-      await this.$store.dispatch('designApplication/addHistoryItem', historyItem);
-      this.$store.commit('designApplication/setLoadingSave', true);
-
-      try {
-        let res;
-        switch (prodItem.type) {
-          case ProdType.common:
-            submitParam = await getSaveProdParam(type, prodItem);
-            break;
-          case ProdType.refine:
-            res = await saveProdWithSizeApi(submitParam);
-            break;
-        }
-
-        if (res) {
-          this.$message.success('保存成功');
-
-          // 刷新历史设计记录
-          this.$store.dispatch('designApplication/getHistoryList');
-
-          // 如果有文字需要保存文字参数信息
-          await saveTextWord(res, submitParam);
-        }
-      } catch (err) {
-        setTimeout(() => {
-          this.$store.dispatch('designApplication/clearHistoryItem', historyItem);
-        }, 1000);
-      } finally {
-        this.$store.commit('designApplication/setLoadingSave', false);
       }
     },
     /**

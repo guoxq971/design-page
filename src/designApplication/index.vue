@@ -28,6 +28,7 @@ export default {
   display: flex;
   overflow: hidden;
   min-width: 1600px;
+  min-height: 880px;
   background-color: rgb(242, 242, 242);
   border-top: 1px solid rgb(204, 204, 204);
   padding: 10px 10px @paddingBottom 10px;
