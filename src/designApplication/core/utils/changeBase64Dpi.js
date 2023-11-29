@@ -74,6 +74,12 @@ function changeDpiBlob(blob, dpi) {
   });
 }
 
+/**
+ * 修改图片dpi
+ * @param base64Image
+ * @param dpi
+ * @returns {string}
+ */
 function changeDpiDataUrl(base64Image, dpi) {
   var dataSplitted = base64Image.split(',');
   var format = dataSplitted[0];

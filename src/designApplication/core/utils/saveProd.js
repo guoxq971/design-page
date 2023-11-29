@@ -2,7 +2,8 @@ import store from '@/store';
 import lodash from 'lodash';
 import { Message } from 'element-ui';
 
-import { textToImageUpload } from '@/designApplication/core/utils/textToImage';
+import { designToImageUpload } from '@/designApplication/core/utils/toImage/designToImage';
+import { textToImageUpload } from '@/designApplication/core/utils/toImage/textToImage';
 import { isTemplateCanUse } from '@/designApplication/store/util';
 import { ConfigurationItem, SubmitParamType } from '@/designApplication/interface_2/params';
 import { ProdType } from '@/designApplication/interface/prodItem';
@@ -144,7 +145,7 @@ export async function getSaveProdParam(type = '', prodItem = null) {
           configurationItem.type = canvasDefine.image; //类型
 
           // 将文字转成图片上传到服务器, 得到designId
-          const { checkRes, textParam, viewWidth, viewHeight } = await textToImageUpload(image);
+          const textResult = await textToImageUpload(image);
 
           // 文字 - offset (固定值)
           configurationItem.offset.x = 1;
@@ -152,34 +153,42 @@ export async function getSaveProdParam(type = '', prodItem = null) {
 
           // 标识为 文字
           configurationItem.isText = true;
-          configurationItem.textId = checkRes.seqId;
+          configurationItem.textId = textResult.checkRes.seqId;
 
           // 自定义参数 bmParam
-          configurationItem.bmParam.designId = checkRes.seqId;
+          configurationItem.bmParam.designId = textResult.checkRes.seqId;
           configurationItem.bmParam.type = canvasDefine.text;
-          configurationItem.bmParam.textParam = textParam;
+          configurationItem.bmParam.textParam = textResult.textParam;
           configurationItem.bmParam.isFlipX = image.attrs.isFlipX;
           configurationItem.bmParam.isFlipY = image.attrs.isFlipY;
 
           // content 参数
-          configurationItem.content.svg.image.designId = checkRes.seqId;
-          configurationItem.content.svg.image.width = viewWidth;
-          configurationItem.content.svg.image.height = viewHeight;
+          configurationItem.content.svg.image.designId = textResult.checkRes.seqId;
+          configurationItem.content.svg.image.width = textResult.imgWidth;
+          configurationItem.content.svg.image.height = textResult.imgHeight;
           configurationItem.content.svg.image.isBg = 0;
-          configurationItem.content.svg.image.transform = `rotate(0,${viewWidth / 2},${viewHeight / 2})`;
+          configurationItem.content.svg.image.transform = `rotate(0,${imgWidth / 2},${imgHeight / 2})`;
           //文字------------------------------------end
           break;
 
         //设计图------------------------------------start
         case canvasDefine.image:
           configurationItem.type = image.attrs.name; //类型
+          let designId = image.attrs.detail.id;
+          let imageCode = image.attrs.detail.imageCode;
+
+          // 如果是翻转 or 平铺需要上传到服务器, 得到designId
+          if (image.attrs.isFlipX || image.attrs.isFlipY) {
+            const imageResult = await designToImageUpload(image);
+            designId = imageResult.checkRes.seqId;
+            imageCode = imageResult.checkRes.imageCode;
+          }
 
           // 自定义参数 bmParam
-          configurationItem.bmParam.imageCode = image.attrs.detail.imageCode;
-          configurationItem.bmParam.designId = image.attrs.detail.id;
+          configurationItem.bmParam.imageCode = imageCode;
+          configurationItem.bmParam.designId = designId;
           configurationItem.bmParam.isFlipX = image.attrs.isFlipX;
           configurationItem.bmParam.isFlipY = image.attrs.isFlipY;
-          console.log('image', image);
 
           // 设计图 - offset (x,y 的坐标)
           configurationItem.offset.x = result.x;
@@ -187,7 +196,7 @@ export async function getSaveProdParam(type = '', prodItem = null) {
 
           // TODO: 这个要考虑 平铺 的情况
           // 设计图 - content (width,height,scale,id等)
-          configurationItem.content.svg.image.designId = image.attrs.detail.id;
+          configurationItem.content.svg.image.designId = designId;
           configurationItem.content.svg.image.width = imgWidth;
           configurationItem.content.svg.image.height = imgHeight;
           configurationItem.content.svg.image.isBg = Number(image.attrs.detail.isBg);

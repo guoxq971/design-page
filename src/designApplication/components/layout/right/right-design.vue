@@ -51,7 +51,7 @@
     <!--设计图列表-->
     <designListCard />
 
-    <!--多角度-->
+    <!--多角度 渲染-->
     <multiAngleCard />
 
     <!--历史设计记录-->
@@ -86,7 +86,7 @@ import { buttonBlur } from '@/designApplication/core/utils/buttonBlur';
 import { sleep } from '@/designApplication/core/utils/sleep';
 
 import { saveProdApi, saveProdWithSizeApi } from '@/designApplication/apis/prod';
-import { saveTextWord } from '@/designApplication/core/utils/textToImage';
+import { saveTextWord } from '@/designApplication/core/utils/toImage/textToImage';
 import { getSaveProdParam } from '@/designApplication/core/utils/saveProd';
 import { supplementImageList } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
 
@@ -192,6 +192,10 @@ export default {
           this.$message.warning('未知的产品类型');
           break;
       }
+
+      // 测试的时候用
+      // let btn = true;
+      // if (btn) return;
 
       // 发送提交接口
       // 往历史设计记录的弹窗插入一条loading的数据

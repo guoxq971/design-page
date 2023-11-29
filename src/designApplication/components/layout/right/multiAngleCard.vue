@@ -102,9 +102,9 @@ export default {
      * 渲染多角度
      */
     async onRender() {
-      const param = await getSaveProdParam();
       try {
         this.loading = true;
+        const param = await getSaveProdParam();
         this.renderMultiList = await fetchRenderMultiApi(param);
       } finally {
         this.loading = false;
