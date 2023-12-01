@@ -130,7 +130,7 @@ function loadCanvasTexture(meshPlusList) {
     }
 
     // 将canvas绑到 material.map 上
-    const targetCanvas = canvas[1];
+    const targetCanvas = view.canvas.layer.canvas._canvas;
     item.canvas = targetCanvas;
     // console.log('view', mesh.name, view, [targetCanvas], [canvas[1]]);
 

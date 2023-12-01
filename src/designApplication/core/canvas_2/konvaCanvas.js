@@ -37,6 +37,12 @@ export class KonvaCanvas {
   layerBg;
 
   /**
+   * 平铺图层
+   * @type {Konva.Layer}
+   */
+  layerTile;
+
+  /**
    * 裁剪区域
    * @type {Konva.Group}
    */
@@ -82,7 +88,9 @@ export class KonvaCanvas {
     this.param = param;
     this.stage = initStage(param);
     this.layer = initLayer(param);
+    this.layer.setAttrs({ name: 'imageList' });
     this.layerBg = initLayer(param);
+    this.layerTile = initLayer(param);
     const dashArea = initDashArea(param);
     this.v = initV(param);
     const resultClip = initClip(param);
@@ -92,6 +100,7 @@ export class KonvaCanvas {
     this.clipBg = resultClip.clip.clone();
 
     this.layerBg.add(this.clipBg);
+    this.stage.add(this.layerTile);
     this.stage.add(this.layerBg);
     this.stage.add(this.layer);
     this.layer.add(dashArea);
@@ -159,7 +168,8 @@ export class KonvaCanvas {
    * @returns {import ('@/design').CanvasImage[]} 当前所有的设计图 CanvasDesign[]
    */
   getImageList() {
-    return [...this.clip.children.toReversed(), ...this.clipBg.children];
+    const imageList = this.clip.children.filter((e) => e.attrs.name !== 'tile');
+    return [...imageList.toReversed(), ...this.clipBg.children];
   }
 
   /**

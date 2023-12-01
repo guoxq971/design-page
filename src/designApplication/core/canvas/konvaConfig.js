@@ -38,16 +38,16 @@ export const konvaRectConfig = (param) => {
 
     id: 'rect', // id (唯一标识)
     name: 'rect', // 名称 (可重复)
-    cornerRadius: 0, // 圆角
+    // cornerRadius: 0, // 圆角
     offset: { x: width / 2, y: height / 2 }, // 偏移量 (作用于x,y)
     // offsetX: 0, // 偏移量
     // offsetY: 0, // 偏移量
     opacity: 1, // 透明度
     visible: true, // 是否可见
-    listening: true, // 是否监听事件
-    fillEnabled: true, // 是否填充 (启用或禁用填充的标志)
-    perfectDrawEnabled: true, // 是否启用完美优化绘制 (true: 启用, false: 禁用)
-    fillPriority: 'pattern', // 填充优先级 (color: 颜色优先, pattern: 图片优先)
+    // listening: true, // 是否监听事件
+    // fillEnabled: true, // 是否填充 (启用或禁用填充的标志)
+    // perfectDrawEnabled: true, // 是否启用完美优化绘制 (true: 启用, false: 禁用)
+    // fillPriority: 'pattern', // 填充优先级 (color: 颜色优先, pattern: 图片优先)
 
     // 没测出有什么作用 --start
     // lineJoin: 'round', // 线条连接 (round: 圆角, bevel: 斜角, miter: 尖角)
