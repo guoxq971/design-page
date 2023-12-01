@@ -34,6 +34,15 @@
         <span style="white-space: nowrap">交错偏移量</span>
         <el-input v-model.number="params.offset"></el-input>
       </div>
+      <div style="display: flex">
+        <span style="white-space: nowrap">镜像</span>
+        <el-select v-model="params.mirrorType">
+          <el-option label="无" :value="0"></el-option>
+          <el-option label="水平" :value="1"></el-option>
+          <el-option label="垂直" :value="2"></el-option>
+          <el-option label="旋转" :value="3"></el-option>
+        </el-select>
+      </div>
       <el-button @click="onEdit">修改</el-button>
     </div>
 
@@ -49,21 +58,8 @@
 <script>
 import title from '@/designApplication/core/utils/directives/title/title';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
-import { Konva } from '@/designApplication/core/canvas/konva';
-import { uuid } from '@/designApplication/core/utils/uuid';
-
-class TileImage {
-  x;
-  y;
-  groupIndex;
-  index;
-  constructor(x, y, groupIndex, index) {
-    this.x = x;
-    this.y = y;
-    this.groupIndex = groupIndex;
-    this.index = index;
-  }
-}
+import { createGroup, createImageGroup, getTileInfo } from '@/designApplication/components/layout/right/hoverComponents/tileUtil';
+import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 
 export default {
   name: 'hover-setting',
@@ -71,10 +67,11 @@ export default {
   data() {
     return {
       params: {
-        gapX: 0,
-        gapY: 0,
-        offsetType: 'x',
-        offset: 0,
+        gapX: 0, //水平间距
+        gapY: 0, //垂直间距
+        offsetType: 'x', //交错类型
+        offset: 0, //交错偏移量
+        mirrorType: 0, // 镜像 0:无 1:水平 2:垂直 3:水平垂直
       },
     };
   },
@@ -82,252 +79,77 @@ export default {
     // 修改
     async onEdit() {
       const image = await DesignImageUtil.hasActiveImageMessage();
+
+      if (image.attrs.type !== canvasDefine.image) {
+        this.$message.warning('请使用设计图进行平铺');
+        return;
+      }
+
       const group = image.attrs.konvaCanvas.clip.findOne('.tile');
       group?.destroy();
       setTimeout(() => {
         this.onTile();
       });
     },
-    /**
-     * 平铺
-     */
     async onTile() {
       const image = await DesignImageUtil.hasActiveImageMessage();
+      const info = getTileInfo(image);
 
-      // 创建组
-      const group = this.createGroup(image);
+      // img的宽高 (一个小组2x2)
+      const imgWidth = info.imageWidth + this.params.gapX; //水平间距
+      const imgHeight = info.imageHeight + this.params.gapY; //垂直间距
+      const imgGroupWidth = imgWidth * 2;
+      const imgGroupHeight = imgHeight * 2;
 
-      // 收集坐标
-      const tileList = this.collectCoordinate(image);
+      // console.log(info.a / imgWidth, info.a / imgHeight);
+
+      // const n = 1;
+      const n = Math.ceil(Math.max(info.a / imgGroupWidth, info.a / imgGroupHeight));
+      const num = 2 * n - 1;
+
+      // const list = [
+      //   [{ index: 0 }, { index: 0 }, { index: 0 }],
+      //   [{ index: 0 }, { index: 0 }, { index: 0 }],
+      //   [{ index: 0 }, { index: 0 }, { index: 0 }],
+      // ];
+
+      // 生成二维数组
+      const list = [];
+      for (let i = 0; i < num; i++) {
+        let arr = [];
+        for (let j = 0; j < num; j++) {
+          arr.push({ rowIndex: i, colIndex: j });
+        }
+        list.push(arr);
+      }
+
+      // 最外层的组
+      const group = createGroup(image);
+
+      // 设置大组的偏移量
+      const baseOffsetX = info.imageWidth / 2;
+      const baseOffsetY = info.imageHeight / 2;
+      group.setAttrs({
+        offsetX: baseOffsetX + imgGroupWidth * (n - 1),
+        offsetY: baseOffsetY + imgGroupHeight * (n - 1),
+      });
+
+      // console.log('list', list);
 
       // 创建图片
-      tileList.forEach((item, i) => {
-        // 交错处理
-        let x = item.x;
-        let y = item.y;
-        if (this.params.offsetType === 'x' && [3, 4].includes(item.groupIndex)) {
-          x = x + this.params.offset;
-          console.log('offsetx');
-        }
-
-        if (this.params.offsetType === 'y' && [2, 4].includes(item.groupIndex)) {
-          y = y + this.params.offset;
-          console.log('offsety');
-        }
-
-        // 间距处理 TODO:处理间距!
-        let width = image.attrs.width;
-        let height = image.attrs.height;
-        if (this.params.gapX) {
-          width = width - this.params.gapX;
-        }
-        if (this.params.gapY) {
-          height = height - this.params.gapY;
-        }
-
-        const img = this.createImage(image, x, y, width, height, item);
-        group.add(img);
-      });
-    },
-    /**
-     * 获取图片信息
-     */
-    getImageInfo(image) {
-      const param = image.attrs.param;
-
-      // 舞台的宽高
-      const a = Math.max(param.staticView.print.width, param.staticView.print.height);
-      const stageWidth = a;
-      const stageHeight = a;
-
-      // 图片当前的坐标
-      const currentX = image.x();
-      const currentY = image.y();
-
-      // 图片的宽高
-      const imageWidth = image.width() * image.scaleX();
-      const imageHeight = image.height() * image.scaleY();
-
-      return {
-        stageWidth,
-        stageHeight,
-        a,
-        currentX,
-        currentY,
-        imageWidth,
-        imageHeight,
-      };
-    },
-    /**
-     * 创建组
-     * @param {*} image
-     */
-    createGroup(image) {
-      const { a, currentX, currentY, imageWidth, imageHeight } = this.getImageInfo(image);
-
-      let ratioX = Math.ceil(a / imageWidth / 2);
-      let ratioY = Math.ceil(a / imageHeight / 2);
-      // 要2的倍数
-      if (ratioX % 2 !== 0) ratioX++;
-      if (ratioY % 2 !== 0) ratioY++;
-      // console.log('ratio', ratioX, ratioY);
-
-      const group = new Konva.Group({
-        name: 'tile',
-        uuid: uuid(),
-        x: currentX,
-        y: currentY,
-        draggable: false,
-        rotation: image.attrs.rotation,
-        offset: {
-          x: -ratioX * imageWidth,
-          y: -ratioY * imageHeight,
-        },
+      list.forEach((rowList, rowIndex) => {
+        rowList.forEach((item, colIndex) => {
+          const img = createImageGroup(info, imgWidth, imgHeight, rowIndex, colIndex, this.params);
+          group.add(img);
+        });
       });
 
-      image.attrs.konvaCanvas.clip.add(group);
+      // 添加到clip
+      info.clip.add(group);
       // 置底
       group.moveToBottom();
 
-      return group;
-    },
-    /**
-     * 创建图片
-     * @param {*} image
-     * @param {*} x
-     * @param {*} y
-     * @param width
-     * @param height
-     * @param width
-     * @param height
-     * @returns {Konva.Image}
-     */
-    createImage(image, x, y, width = null, height = null, item) {
-      width = width || image.attrs.width;
-      height = height || image.attrs.height;
-
-      const newImage = new Konva.Image({
-        width: image.attrs.width,
-        height: image.attrs.height,
-        // x: x,
-        // y: y,
-        // scaleX: image.attrs.scaleX,
-        // scaleY: image.attrs.scaleY,
-        // offsetX: image.attrs.width / 2,
-        // offsetY: image.attrs.height / 2,
-        fillPatternImage: image.attrs.fillPatternImage,
-        draggable: false,
-      });
-
-      const group = new Konva.Group({
-        x: x,
-        y: y,
-        width: width,
-        height: height,
-        draggable: false,
-        scaleX: image.attrs.scaleX,
-        scaleY: image.attrs.scaleY,
-        offsetX: image.attrs.width / 2,
-        offsetY: image.attrs.height / 2,
-      });
-
-      const rect = new Konva.Rect({
-        width: width,
-        height: height,
-        fillPatternImage: image.attrs.fillPatternImage,
-        fillPatternRepeat: 'no-repeat',
-        // fillPatternOffset: {
-        //   x: -x,
-        //   y: -y,
-        // },
-        fillPatternScale: {
-          x: 1,
-          y: 1,
-        },
-        draggable: false,
-      });
-
-      // group.add(newImage);
-      group.add(rect);
-
-      return group;
-
-      // return new Konva.Text({
-      //   x: x,
-      //   y: y,
-      //   text: item.groupIndex,
-      //   fontSize: 10,
-      //   fontFamily: 'Calibri',
-      //   fill: 'green',
-      //   draggable: false,
-      // });
-    },
-    /**
-     * 收集坐标
-     * @param {*} image
-     * @returns {Array}
-     */
-    collectCoordinate(image) {
-      const { stageWidth, stageHeight, currentX, currentY, imageWidth, imageHeight } = this.getImageInfo(image);
-
-      const tileList = [];
-      const yetX = [];
-
-      // 向右
-      let i = 1; //i=1|2
-      let x = 0;
-      while (x + currentX < stageWidth + imageWidth) {
-        yetX.push({ x, i });
-        tileList.push(new TileImage(x, 0, i));
-        x += imageWidth;
-        i = i % 2 === 0 ? 1 : 2;
-      }
-
-      // 向左
-      let i2 = 2;
-      let x2 = -imageWidth;
-      while (x2 + currentX > 0 - imageWidth - stageWidth) {
-        yetX.push({ x: x2, i: i2 });
-        tileList.push(new TileImage(x2, 0, i2));
-        x2 -= imageWidth;
-        i2 = i2 % 2 === 0 ? 1 : 2;
-      }
-
-      // 向下一排
-      let y = imageHeight;
-      let downI = 1;
-      while (y + currentY < stageHeight + imageHeight) {
-        yetX.forEach(({ x, i }) => {
-          let groupIndex;
-          if (downI % 2 === 0) {
-            groupIndex = i === 1 ? 1 : 2;
-          } else {
-            groupIndex = i === 1 ? 3 : 4;
-          }
-          tileList.push(new TileImage(x, y, groupIndex));
-        });
-        y += imageHeight;
-        downI++;
-      }
-
-      // 向上一排
-      let y2 = -imageHeight;
-      let upI = 2;
-      while (y2 + currentY > 0 - stageHeight) {
-        yetX.forEach(({ x, i }) => {
-          let groupIndex;
-          if (upI % 2 === 0) {
-            groupIndex = i === 1 ? 3 : 4;
-          } else {
-            groupIndex = i === 1 ? 1 : 2;
-          }
-          tileList.push(new TileImage(x, y2, groupIndex));
-        });
-        y2 -= imageHeight;
-        upI++;
-      }
-
-      return tileList;
+      image.attrs.konvaCanvas.updateTexture('tile', 10);
     },
   },
 };
