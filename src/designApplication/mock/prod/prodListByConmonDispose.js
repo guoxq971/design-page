@@ -75,7 +75,6 @@ export function parseProdItemDetail(row) {
 
   // 视图列表 viewList
   parseProdItem.viewList = parseViewList(prodItemDetail.views);
-  //TODO: 还有各种List没有解析处理，写到了在处理
 
   return parseProdItem;
 }

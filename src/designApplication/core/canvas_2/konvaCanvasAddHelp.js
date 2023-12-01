@@ -7,6 +7,7 @@ import { Message } from 'element-ui';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 import { UnsignedIntType } from 'three';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
+import { onTile, updateTile } from '@/designApplication/components/layout/right/hoverComponents/tileUtil';
 
 /**
  * 获取设计图
@@ -197,6 +198,8 @@ export function setProxyTransformer(transformer, image) {
 
     if (isUp || isDown) {
       // console.log('缩放');
+      // 更新平铺图
+      updateTile(image);
 
       // 最小检测
       if ((isDown && newBox.width < 10) || newBox.height < 10) {
@@ -211,6 +214,7 @@ export function setProxyTransformer(transformer, image) {
       }
     } else {
       // console.log('旋转');
+      updateTile(image, true);
 
       // 绘制旋转角度
       drawRotation(transformer, oldBox, newBox);

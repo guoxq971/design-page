@@ -3,9 +3,16 @@ import store from '@/store';
 import { Message } from 'element-ui';
 import { inchToPx, printAreaToImageRatio } from '@/designApplication/store/util';
 import { loadImage } from '@/designApplication/core/utils/loadImage';
-import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
 
-export const image_state = {};
+export const image_state = {
+  tile: {
+    gapX: 0, //水平间距
+    gapY: 0, //垂直间距
+    offsetType: 'x', //交错类型
+    offset: 0, //交错偏移量
+    mirrorType: 0, // 镜像 0:无 1:水平 2:垂直 3:水平垂直
+  },
+};
 export const image_getters = {};
 export const image_mutations = {};
 

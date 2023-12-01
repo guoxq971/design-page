@@ -4,6 +4,7 @@ import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import { Message } from 'element-ui';
 import { isCollide } from '@/designApplication/core/utils/common';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
+import { updateTile } from '@/designApplication/components/layout/right/hoverComponents/tileUtil';
 
 /**
  * 设计图的工具
@@ -164,6 +165,12 @@ export class DesignImageUtil {
 
     // 移除设计图
     remove(konvaCanvas, image, image.attrs.transformer);
+
+    // 如果存在平铺图
+    const tile = image.attrs.konvaCanvas.clip.children.find((e) => e.attrs.name === 'tile');
+    if (tile) {
+      tile?.destroy();
+    }
 
     // 当前视图的激活id如果是当前移除的id,则设置激活id为空
     if (activeImageUuid === image.attrs.uuid) {
@@ -431,8 +438,16 @@ function afterFn(image, type) {
     // supplementImageList(image.attrs.view);
   }
 
-  // 更新材质
-  if (image && image.attrs.konvaCanvas) {
-    DesignImageUtil.updateTexture(image, type);
+  // 更新平铺图
+  let tile;
+  if (!['deleteImage'].includes(type)) {
+    tile = updateTile(image);
+  }
+
+  if (!tile) {
+    // 更新材质
+    if (image && image.attrs.konvaCanvas) {
+      DesignImageUtil.updateTexture(image, type);
+    }
   }
 }

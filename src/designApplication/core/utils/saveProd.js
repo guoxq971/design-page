@@ -181,6 +181,7 @@ export async function getSaveProdParam(type = '', prodItem = null) {
           let flipImageDesignId = '';
           let flipImageCode = '';
 
+          // TODO: 这个要考虑 平铺 的情况
           // 如果是翻转 or 平铺需要上传到服务器, 得到designId
           if (image.attrs.isFlipX || image.attrs.isFlipY) {
             const imageResult = await designToImageUpload(image);

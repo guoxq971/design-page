@@ -7,6 +7,7 @@ import { getDesignImage, getText, setModelBgc, setProxyTransformer, setTextAttrs
 import { initTransformer } from '@/designApplication/core/canvas/selectBorder';
 import { uuid } from '@/designApplication/core/utils/uuid';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
+import { onTile, updateTile } from '@/designApplication/components/layout/right/hoverComponents/tileUtil';
 
 /**
  * KonvaCanvas
@@ -250,6 +251,15 @@ export class KonvaCanvas {
     designImage.image.on('dragmove', function (e) {
       that.updateTexture(3);
 
+      // 如果存在平铺图
+      const tile = that.clip.children.find((e) => e.attrs.name === 'tile');
+      if (tile) {
+        tile.setAttrs({
+          x: this.x(),
+          y: this.y(),
+        });
+      }
+
       // 设计图的碰撞检测
       DesignImageUtil.isCollide(this);
     });
@@ -264,9 +274,8 @@ export class KonvaCanvas {
     designImage.transformer.on('visibleChange', (event) => {
       this.updateTexture(11, 50);
     });
-    designImage.transformer.on('transformstart', function (e) {});
     designImage.transformer.on('transform', function (e) {
-      that.updateTexture(4, 0);
+      that.updateTexture(4);
 
       // 设计图的碰撞检测
       DesignImageUtil.isCollide(this.attrs.image);

@@ -50,13 +50,20 @@ export function initTransformer(layer) {
   // const transformer = new Konva.Transformer(konvaTransformerConfig());
   const transformer = new CustomTransformer(konvaTransformerConfig());
 
-  // transformer.on('transform', (transform) => {});
-  // transformer.on('transformstart', (transform) => {});
-  transformer.on('transformend', (transform) => {
+  function updateTransformer() {
     text.text('');
+
     // 更新模型纹理
     transformer.attrs.image.attrs.konvaCanvas.updateTexture('transformend', 50);
+  }
+
+  transformer.setAttrs({
+    updateTransformer,
   });
+
+  // transformer.on('transform', (transform) => {});
+  // transformer.on('transformstart', (transform) => {});
+  transformer.on('transformend', updateTransformer);
 
   // 正上方添加旋转角度的text
   const text = new Konva.Text({

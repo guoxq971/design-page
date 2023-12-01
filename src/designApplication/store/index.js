@@ -1,7 +1,7 @@
 import { actions_history, getters_history, mutations_history, state_history } from '@/designApplication/store/history';
 import { collect_mutations, collect_state } from '@/designApplication/store/collect';
 import { prod_actions, prod_getters, prod_mutations, prod_state } from '@/designApplication/store/prod';
-import { image_actions } from '@/designApplication/store/image';
+import { image_actions, image_state } from '@/designApplication/store/image';
 
 /**
  * designApplication store
@@ -38,6 +38,7 @@ const state = {
 export default {
   namespaced: true,
   state: {
+    ...image_state,
     // 历史设计记录
     ...state_history,
     // 收藏产品

@@ -58,22 +58,28 @@
 <script>
 import title from '@/designApplication/core/utils/directives/title/title';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
-import { createGroup, createImageGroup, getTileInfo } from '@/designApplication/components/layout/right/hoverComponents/tileUtil';
+import { onTile } from '@/designApplication/components/layout/right/hoverComponents/tileUtil';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
+import { mapState } from 'vuex';
 
 export default {
   name: 'hover-setting',
   directives: { title },
   data() {
     return {
-      params: {
-        gapX: 0, //水平间距
-        gapY: 0, //垂直间距
-        offsetType: 'x', //交错类型
-        offset: 0, //交错偏移量
-        mirrorType: 0, // 镜像 0:无 1:水平 2:垂直 3:水平垂直
-      },
+      // params: {
+      //   gapX: 0, //水平间距
+      //   gapY: 0, //垂直间距
+      //   offsetType: 'x', //交错类型
+      //   offset: 0, //交错偏移量
+      //   mirrorType: 0, // 镜像 0:无 1:水平 2:垂直 3:水平垂直
+      // },
     };
+  },
+  computed: {
+    ...mapState({
+      params: (state) => state.designApplication.tile,
+    }),
   },
   methods: {
     // 修改
@@ -87,69 +93,11 @@ export default {
 
       const group = image.attrs.konvaCanvas.clip.findOne('.tile');
       group?.destroy();
-      setTimeout(() => {
-        this.onTile();
-      });
+      setTimeout(() => this.onTile());
     },
     async onTile() {
       const image = await DesignImageUtil.hasActiveImageMessage();
-      const info = getTileInfo(image);
-
-      // img的宽高 (一个小组2x2)
-      const imgWidth = info.imageWidth + this.params.gapX; //水平间距
-      const imgHeight = info.imageHeight + this.params.gapY; //垂直间距
-      const imgGroupWidth = imgWidth * 2;
-      const imgGroupHeight = imgHeight * 2;
-
-      // console.log(info.a / imgWidth, info.a / imgHeight);
-
-      // const n = 1;
-      const n = Math.ceil(Math.max(info.a / imgGroupWidth, info.a / imgGroupHeight));
-      const num = 2 * n - 1;
-
-      // const list = [
-      //   [{ index: 0 }, { index: 0 }, { index: 0 }],
-      //   [{ index: 0 }, { index: 0 }, { index: 0 }],
-      //   [{ index: 0 }, { index: 0 }, { index: 0 }],
-      // ];
-
-      // 生成二维数组
-      const list = [];
-      for (let i = 0; i < num; i++) {
-        let arr = [];
-        for (let j = 0; j < num; j++) {
-          arr.push({ rowIndex: i, colIndex: j });
-        }
-        list.push(arr);
-      }
-
-      // 最外层的组
-      const group = createGroup(image);
-
-      // 设置大组的偏移量
-      const baseOffsetX = info.imageWidth / 2;
-      const baseOffsetY = info.imageHeight / 2;
-      group.setAttrs({
-        offsetX: baseOffsetX + imgGroupWidth * (n - 1),
-        offsetY: baseOffsetY + imgGroupHeight * (n - 1),
-      });
-
-      // console.log('list', list);
-
-      // 创建图片
-      list.forEach((rowList, rowIndex) => {
-        rowList.forEach((item, colIndex) => {
-          const img = createImageGroup(info, imgWidth, imgHeight, rowIndex, colIndex, this.params);
-          group.add(img);
-        });
-      });
-
-      // 添加到clip
-      info.clip.add(group);
-      // 置底
-      group.moveToBottom();
-
-      image.attrs.konvaCanvas.updateTexture('tile', 10);
+      await onTile(image);
     },
   },
 };
