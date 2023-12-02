@@ -11,10 +11,11 @@ export class TileUtil {
    * 获取平铺图
    * @returns {*}
    */
-  static find() {
+  static find(image) {
     const view = DesignerUtil.getView();
     const clip = view.canvas.clip;
-    return clip.children.find((e) => e.attrs.name === 'tile');
+
+    return clip.children.find((e) => e.attrs.name === 'tile' && e.attrs.image.attrs.uuid === image.attrs.uuid);
   }
 
   /**
@@ -22,6 +23,11 @@ export class TileUtil {
    * @param image
    */
   static add(image) {
+    const tile = TileUtil.find(image);
+    if (tile) {
+      tile.destroy();
+    }
+
     onTile(image);
     const tileParam = store.state.designApplication.tile;
     image.setAttrs({
@@ -57,7 +63,7 @@ export class TileUtil {
 export function removeTile(image) {
   let clip = image.attrs.konvaCanvas.clip;
   // 如果存在平铺图
-  const tile = clip.children.find((e) => e.attrs.name === 'tile');
+  const tile = TileUtil.find(image);
   if (tile) {
     tile?.destroy();
   }
@@ -118,10 +124,15 @@ function onTile(image) {
     });
   });
 
+  // console.log('image', image);
+
   // 添加到clip
   info.clip.add(group);
+
+  group.zIndex(image.zIndex());
+
   // 置底
-  group.moveToBottom();
+  // group.moveToBottom();
 
   image.attrs.konvaCanvas.updateTexture('tile', 10);
 }
@@ -132,7 +143,7 @@ function onTile(image) {
 function updateTile(image, type = '') {
   const clip = image.attrs.konvaCanvas.clip;
   // 如果存在平铺图
-  const tile = clip.children.find((e) => e.attrs.name === 'tile');
+  const tile = TileUtil.find(image);
   if (tile) {
     if (type === '') {
       tile?.destroy();

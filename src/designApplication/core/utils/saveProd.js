@@ -126,7 +126,7 @@ export async function getSaveProdParam(type = '', prodItem = null) {
       const imgInfo = DesignImageUtil.getImageInfo(image);
       let imgWidth = imgInfo?.width;
       let imgHeight = imgInfo?.height;
-      const angle = imgInfo?.rotation;
+      let angle = imgInfo?.rotation;
 
       switch (image.attrs.name) {
         // 背景色
@@ -184,6 +184,21 @@ export async function getSaveProdParam(type = '', prodItem = null) {
           let tileImageDesignId = ''; // 平铺的designId
           let tileImageCode = ''; // 平铺的imageCode
 
+          // 自定义参数 bmParam 1
+          configurationItem.bmParam.designId = image.attrs.detail.id;
+          configurationItem.bmParam.imageCode = image.attrs.detail.imageCode;
+          configurationItem.bmParam.isFlipX = image.attrs.isFlipX;
+          configurationItem.bmParam.isFlipY = image.attrs.isFlipY;
+          configurationItem.bmParam.isTile = image.attrs.isTile;
+          configurationItem.bmParam.tileParam = image.attrs.tileParam || {};
+          configurationItem.bmParam.imgParam.x = imgInfo.x;
+          configurationItem.bmParam.imgParam.y = imgInfo.y;
+          configurationItem.bmParam.imgParam.width = imgInfo.imgWidth;
+          configurationItem.bmParam.imgParam.height = imgInfo.imgHeight;
+          configurationItem.bmParam.imgParam.angle = angle;
+          configurationItem.bmParam.imgParam.scaleX = imgInfo.scaleX;
+          configurationItem.bmParam.imgParam.scaleY = imgInfo.scaleY;
+
           // 如果是平铺
           if (image.attrs.isTile) {
             const imageResult = await TileToImage(image);
@@ -191,6 +206,8 @@ export async function getSaveProdParam(type = '', prodItem = null) {
             tileImageCode = imageResult.checkRes.imageCode;
             designId = tileImageDesignId;
 
+            // 以下属性需要特殊处理
+            angle = 0;
             imgInfo.x = 1;
             imgInfo.y = 1;
             imgWidth = imageResult.width;
@@ -204,15 +221,11 @@ export async function getSaveProdParam(type = '', prodItem = null) {
             designId = flipImageDesignId;
           }
 
-          // 自定义参数 bmParam
-          configurationItem.bmParam.designId = image.attrs.detail.id;
-          configurationItem.bmParam.imageCode = image.attrs.detail.imageCode;
+          // 自定义参数 bmParam 2
           configurationItem.bmParam.flipImageDesignId = flipImageDesignId;
           configurationItem.bmParam.flipImageCode = flipImageCode;
           configurationItem.bmParam.tileImageDesignId = tileImageDesignId;
           configurationItem.bmParam.tileImageCode = tileImageCode;
-          configurationItem.bmParam.isFlipX = image.attrs.isFlipX;
-          configurationItem.bmParam.isFlipY = image.attrs.isFlipY;
 
           // 设计图 - offset (x,y 的坐标)
           configurationItem.offset.x = imgInfo.x;

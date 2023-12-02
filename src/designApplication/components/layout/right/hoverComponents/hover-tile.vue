@@ -61,21 +61,12 @@ import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil'
 import { TileUtil } from '@/designApplication/components/layout/right/hoverComponents/tileUtil';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 import { mapState } from 'vuex';
-import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 
 export default {
   name: 'hover-setting',
   directives: { title },
   data() {
-    return {
-      // params: {
-      //   gapX: 0, //水平间距
-      //   gapY: 0, //垂直间距
-      //   offsetType: 'x', //交错类型
-      //   offset: 0, //交错偏移量
-      //   mirrorType: 0, // 镜像 0:无 1:水平 2:垂直 3:水平垂直
-      // },
-    };
+    return {};
   },
   computed: {
     ...mapState({
@@ -102,7 +93,7 @@ export default {
         return;
       }
 
-      const group = image.attrs.konvaCanvas.clip.findOne('.tile');
+      const group = TileUtil.find(image);
       group?.destroy();
       setTimeout(() => this.onTile());
     },

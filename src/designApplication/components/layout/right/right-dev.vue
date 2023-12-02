@@ -277,10 +277,12 @@ export default {
      * 平铺转图
      */
     onTileToImg() {
-      const tile = TileUtil.find();
-      if (tile) {
-        TileToImage(tile.attrs.image);
+      const image = DesignImageUtil.getImage();
+      if (!image.attrs.isTile) {
+        Message.warning('请先设置平铺');
+        return;
       }
+      TileToImage(image);
     },
     /**
      * 文字转图

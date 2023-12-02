@@ -60,6 +60,8 @@ import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil'
 import { getPositionCenter, setTextAttrs } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
+import store from '@/store';
+import { TileUtil } from '@/designApplication/components/layout/right/hoverComponents/tileUtil';
 
 export default {
   directives: { dragPop },
@@ -182,38 +184,62 @@ export default {
         const viewId = item.printArea.id;
         // 将设计图插入到画布
         const image = await this.$store.dispatch('designApplication/setImage', { detail: imageDetail, viewId: viewId });
-        // TODO: 历史设计记录 平铺
 
-        // 解析坐标和角度和缩放
-        const transform = item.content.svg.image.transform.replace('rotate(', '').replace(')', '').split(',');
-        if (transform.length > 0) {
-          // 设置旋转
-          const rotate = transform[0];
-          DesignImageUtil.rotation(image, rotate);
+        let rotate;
+        let scaleX;
+        let scaleY;
+        let x;
+        let y;
 
-          // 设置缩放
-          const scaleX = item.content.svg.image.width / image.attrs.param.width;
-          const scaleY = item.content.svg.image.height / image.attrs.param.height;
-          image.setAttrs({
-            scaleX: scaleX * image.scaleX(),
-            scaleY: scaleY * image.scaleY(),
-          });
+        // 平铺
+        if (item.bmParam.isTile) {
+          rotate = item.bmParam.imgParam.angle;
+          scaleX = item.bmParam.imgParam.scaleX;
+          scaleY = item.bmParam.imgParam.scaleY;
+          x = item.bmParam.imgParam.x;
+          y = item.bmParam.imgParam.y;
 
-          // 设置坐标
-          const { leftTopX, leftTopY } = getPositionCenter(image);
-          image.setAttrs({
-            x: leftTopX + item.offset.x,
-            y: leftTopY + item.offset.y,
-          });
+          Object.assign(store.state.designApplication.tile, item.bmParam.tileParam);
+          TileUtil.add(image);
+        } else {
+          // 解析坐标和角度和缩放
+          const transform = item.content.svg.image.transform.replace('rotate(', '').replace(')', '').split(',');
+          if (transform.length > 0) {
+            rotate = transform[0];
+          } else {
+            rotate = 0;
+          }
+
+          scaleX = (item.content.svg.image.width / image.attrs.param.width) * image.scaleX();
+          scaleY = (item.content.svg.image.height / image.attrs.param.height) * image.scaleY();
+
+          x = item.offset.x;
+          y = item.offset.y;
         }
 
-        // 设置翻转
-        if (item.bmParam.isFlipX) {
-          DesignImageUtil.flipX(image);
-        }
-        if (item.bmParam.isFlipY) {
-          DesignImageUtil.flipY(image);
-        }
+        // 设置旋转
+        DesignImageUtil.rotation(image, rotate);
+
+        // 设置缩放
+        image.setAttrs({
+          scaleX: scaleX,
+          scaleY: scaleY,
+        });
+
+        // 设置坐标
+        const { leftTopX, leftTopY } = getPositionCenter(image);
+        image.setAttrs({
+          x: leftTopX + x,
+          y: leftTopY + y,
+        });
+      }
+
+      // 设置翻转
+      if (item.bmParam.isFlipX) {
+        DesignImageUtil.flipX(image);
+      }
+      if (item.bmParam.isFlipY) {
+        DesignImageUtil.flipY(image);
       }
     },
     /**
