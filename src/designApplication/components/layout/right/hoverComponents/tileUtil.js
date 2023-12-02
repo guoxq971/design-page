@@ -1,12 +1,160 @@
 import { Konva } from '@/designApplication/core/canvas/konva';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 import store from '@/store';
+import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
+
+/**
+ * 平铺工具
+ */
+export class TileUtil {
+  /**
+   * 获取平铺图
+   * @returns {*}
+   */
+  static find() {
+    const view = DesignerUtil.getView();
+    const clip = view.canvas.clip;
+    return clip.children.find((e) => e.attrs.name === 'tile');
+  }
+
+  /**
+   * 新增平铺
+   * @param image
+   */
+  static add(image) {
+    onTile(image);
+    const tileParam = store.state.designApplication.tile;
+    image.setAttrs({
+      isTile: true,
+      tileParam,
+    });
+  }
+
+  /**
+   * 更新平铺
+   */
+  static update(image, type = '') {
+    if (!image.attrs.isTile) return;
+    return updateTile(image, type);
+  }
+
+  /**
+   * 移除平铺
+   */
+  static remove(image) {
+    if (!image.attrs.isTile) return;
+    removeTile(image);
+    image.setAttrs({
+      isTile: false,
+      tileParam: null,
+    });
+  }
+}
+
+/**
+ * 移除平铺
+ */
+export function removeTile(image) {
+  let clip = image.attrs.konvaCanvas.clip;
+  // 如果存在平铺图
+  const tile = clip.children.find((e) => e.attrs.name === 'tile');
+  if (tile) {
+    tile?.destroy();
+  }
+}
+
+/**
+ * 平铺
+ * @param image
+ */
+function onTile(image) {
+  const info = getTileInfo(image);
+  const params = store.state.designApplication.tile;
+
+  // img的宽高 (一个小组2x2)
+  const imgWidth = Math.abs(info.imageWidth) + params.gapX; //水平间距
+  const imgHeight = Math.abs(info.imageHeight) + params.gapY; //垂直间距
+  const imgGroupWidth = Math.abs(imgWidth) * 2;
+  const imgGroupHeight = Math.abs(imgHeight) * 2;
+
+  // console.log(info.a / imgWidth, info.a / imgHeight);
+
+  // const n = 1;
+  const n = Math.ceil(Math.max(info.a / imgGroupWidth, info.a / imgGroupHeight)) + 1;
+  const num = 2 * n - 1;
+
+  // const list = [
+  //   [{ index: 0 }, { index: 0 }, { index: 0 }],
+  //   [{ index: 0 }, { index: 0 }, { index: 0 }],
+  //   [{ index: 0 }, { index: 0 }, { index: 0 }],
+  // ];
+
+  // 生成二维数组
+  const list = [];
+  for (let i = 0; i < num; i++) {
+    let arr = [];
+    for (let j = 0; j < num; j++) {
+      arr.push({ rowIndex: i, colIndex: j });
+    }
+    list.push(arr);
+  }
+
+  // 最外层的组
+  const group = createGroup(image);
+
+  // 设置大组的偏移量
+  const baseOffsetX = info.imageWidth / 2;
+  const baseOffsetY = info.imageHeight / 2;
+  group.setAttrs({
+    offsetX: Math.abs(baseOffsetX + imgGroupWidth * (n - 1)),
+    offsetY: Math.abs(baseOffsetY + imgGroupHeight * (n - 1)),
+  });
+
+  // 创建图片
+  list.forEach((rowList, rowIndex) => {
+    rowList.forEach((item, colIndex) => {
+      const img = createImageGroup(info, imgWidth, imgHeight, rowIndex, colIndex, params);
+      group.add(img);
+    });
+  });
+
+  // 添加到clip
+  info.clip.add(group);
+  // 置底
+  group.moveToBottom();
+
+  image.attrs.konvaCanvas.updateTexture('tile', 10);
+}
+
+/**
+ * 更新平铺图
+ */
+function updateTile(image, type = '') {
+  const clip = image.attrs.konvaCanvas.clip;
+  // 如果存在平铺图
+  const tile = clip.children.find((e) => e.attrs.name === 'tile');
+  if (tile) {
+    if (type === '') {
+      tile?.destroy();
+      setTimeout(() => TileUtil.add(image));
+    } else if (type === 'rotation') {
+      tile.rotation(image.attrs.rotation);
+    } else if (type === 'move') {
+      tile.setAttrs({
+        x: image.x(),
+        y: image.y(),
+      });
+    }
+  }
+
+  return tile;
+}
 
 /**
  * 获取平铺需要的信息
  * @param {Konva.Image} image
  */
-export function getTileInfo(image) {
+function getTileInfo(image) {
   const param = image.attrs.param;
 
   // 舞台的宽高
@@ -137,7 +285,7 @@ function createImg(rIndex, cIndex, width, height, info, params, rowIndex, colInd
 /**
  * 创建image组 2*2
  */
-export function createImageGroup(info, width, height, rowIndex, colIndex, params) {
+function createImageGroup(info, width, height, rowIndex, colIndex, params) {
   // 一组会生成 2*2 个图片
   const list = [
     [{ gIndex: 1 }, { gIndex: 2 }],
@@ -173,11 +321,12 @@ export function createImageGroup(info, width, height, rowIndex, colIndex, params
 /**
  * 创建最外层的group
  */
-export function createGroup(image) {
+function createGroup(image) {
   const info = getTileInfo(image);
 
   return new Konva.Group({
     name: 'tile',
+    image,
     x: Math.abs(info.currentX),
     y: Math.abs(info.currentY),
     width: info.a,
@@ -185,84 +334,4 @@ export function createGroup(image) {
     rotation: image.attrs.rotation,
     visible: image.attrs.visible,
   });
-}
-
-export function onTile(image) {
-  const info = getTileInfo(image);
-  const params = store.state.designApplication.tile;
-
-  // img的宽高 (一个小组2x2)
-  const imgWidth = Math.abs(info.imageWidth) + params.gapX; //水平间距
-  const imgHeight = Math.abs(info.imageHeight) + params.gapY; //垂直间距
-  const imgGroupWidth = Math.abs(imgWidth) * 2;
-  const imgGroupHeight = Math.abs(imgHeight) * 2;
-
-  // console.log(info.a / imgWidth, info.a / imgHeight);
-
-  // const n = 1;
-  const n = Math.ceil(Math.max(info.a / imgGroupWidth, info.a / imgGroupHeight)) + 1;
-  const num = 2 * n - 1;
-
-  // const list = [
-  //   [{ index: 0 }, { index: 0 }, { index: 0 }],
-  //   [{ index: 0 }, { index: 0 }, { index: 0 }],
-  //   [{ index: 0 }, { index: 0 }, { index: 0 }],
-  // ];
-
-  // 生成二维数组
-  const list = [];
-  for (let i = 0; i < num; i++) {
-    let arr = [];
-    for (let j = 0; j < num; j++) {
-      arr.push({ rowIndex: i, colIndex: j });
-    }
-    list.push(arr);
-  }
-
-  // 最外层的组
-  const group = createGroup(image);
-
-  // 设置大组的偏移量
-  const baseOffsetX = info.imageWidth / 2;
-  const baseOffsetY = info.imageHeight / 2;
-  group.setAttrs({
-    offsetX: Math.abs(baseOffsetX + imgGroupWidth * (n - 1)),
-    offsetY: Math.abs(baseOffsetY + imgGroupHeight * (n - 1)),
-  });
-
-  // 创建图片
-  list.forEach((rowList, rowIndex) => {
-    rowList.forEach((item, colIndex) => {
-      const img = createImageGroup(info, imgWidth, imgHeight, rowIndex, colIndex, params);
-      group.add(img);
-    });
-  });
-
-  // 添加到clip
-  info.clip.add(group);
-  // 置底
-  group.moveToBottom();
-
-  image.attrs.konvaCanvas.updateTexture('tile', 10);
-}
-
-/**
- * 更新平铺图
- * @param image
- * @param rotation
- */
-export function updateTile(image, rotation = false) {
-  const clip = image.attrs.konvaCanvas.clip;
-  // 如果存在平铺图
-  const tile = clip.children.find((e) => e.attrs.name === 'tile');
-  if (tile) {
-    if (!rotation) {
-      tile?.destroy();
-      setTimeout(() => onTile(image));
-    } else {
-      tile.rotation(image.attrs.rotation);
-    }
-  }
-
-  return tile;
 }

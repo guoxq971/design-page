@@ -114,6 +114,7 @@
       <el-collapse-item title="测试">
         <div>
           <el-button @click="onTextToImg">文字转图</el-button>
+          <el-button @click="onTileToImg">平铺转图</el-button>
         </div>
       </el-collapse-item>
     </el-collapse>
@@ -176,6 +177,8 @@ import { Message } from 'element-ui';
 import { ProdType } from '@/designApplication/interface/prodItem';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
+import { TileToImage } from '@/designApplication/core/utils/toImage/tileToImage';
+import { TileUtil } from '@/designApplication/components/layout/right/hoverComponents/tileUtil';
 
 export default {
   data() {
@@ -271,10 +274,19 @@ export default {
   },
   methods: {
     /**
-     * 文字状图
+     * 平铺转图
+     */
+    onTileToImg() {
+      const tile = TileUtil.find();
+      if (tile) {
+        TileToImage(tile.attrs.image);
+      }
+    },
+    /**
+     * 文字转图
      */
     onTextToImg() {
-      console.log('文字状图');
+      console.log('文字转图');
     },
     /**
      * 文字

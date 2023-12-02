@@ -9,7 +9,7 @@ import { uuid } from '@/designApplication/core/utils/uuid';
  * @param {SubmitParamType} param 参数
  */
 export async function saveTextWord(prodRes, param) {
-  const textList = param.configurations.filter((e) => e.isText);
+  const textList = param.configurations?.filter((e) => e.isText) || [];
   if (textList.length === 0) return;
 
   await saveTextWordApi({
@@ -49,7 +49,7 @@ export async function textToImageUpload(konvaText) {
 
   // 修改图片DPI，转为file，上传到服务器
   const name = `custom_${uuid()}_${viewId}.png`;
-  const { checkRes } = await changeDpiDataUrlWithUpload(base64, { name });
+  const { checkRes } = await changeDpiDataUrlWithUpload(base64, { name: name });
 
   return { checkRes, textParam, imgWidth, imgHeight };
 }

@@ -2,7 +2,7 @@
   <el-popover placement="bottom" width="260" trigger="click">
     <div class="hover-wrap">
       <div class="hover-wrap">
-        <div class="img">不平铺</div>
+        <div class="img" @click="onNotTile">不平铺</div>
         <div class="img" @click="onTile">平铺</div>
         <div class="img">
           <span>交错</span>
@@ -58,9 +58,10 @@
 <script>
 import title from '@/designApplication/core/utils/directives/title/title';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
-import { onTile } from '@/designApplication/components/layout/right/hoverComponents/tileUtil';
+import { TileUtil } from '@/designApplication/components/layout/right/hoverComponents/tileUtil';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 import { mapState } from 'vuex';
+import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 
 export default {
   name: 'hover-setting',
@@ -82,7 +83,17 @@ export default {
     }),
   },
   methods: {
-    // 修改
+    /**
+     * 不平铺
+     */
+    async onNotTile() {
+      const image = await DesignImageUtil.hasActiveImageMessage();
+      TileUtil.remove(image);
+    },
+    /**
+     * 修改
+     * @returns {Promise<void>}
+     */
     async onEdit() {
       const image = await DesignImageUtil.hasActiveImageMessage();
 
@@ -95,9 +106,13 @@ export default {
       group?.destroy();
       setTimeout(() => this.onTile());
     },
+    /**
+     * 平铺
+     * @returns {Promise<void>}
+     */
     async onTile() {
       const image = await DesignImageUtil.hasActiveImageMessage();
-      await onTile(image);
+      await TileUtil.add(image);
     },
   },
 };

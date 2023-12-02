@@ -83,12 +83,9 @@ import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil'
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import { ProdType } from '@/designApplication/interface/prodItem';
 import { buttonBlur } from '@/designApplication/core/utils/buttonBlur';
-import { sleep } from '@/designApplication/core/utils/sleep';
 
 import { saveProdApi, saveProdWithSizeApi } from '@/designApplication/apis/prod';
-import { saveTextWord } from '@/designApplication/core/utils/toImage/textToImage';
 import { getSaveProdParam, refineVerify, saveProd } from '@/designApplication/core/utils/saveProd';
-import { supplementImageList } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
 
 export default {
   name: 'right-design',

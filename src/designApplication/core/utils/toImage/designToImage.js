@@ -12,7 +12,6 @@ export async function designToImageUpload(konvaImage) {
   const viewId = konvaImage.attrs.param.view.id;
 
   // 加载图片
-  // konvaImage.attrs.detail.hdDesignImage;
   const image = await loadImage(konvaImage.attrs.detail.designImg);
 
   const param = {
@@ -27,15 +26,12 @@ export async function designToImageUpload(konvaImage) {
   // 修改图片DPI，转为file，上传到服务器
   const name = `custom_${uuid()}_${viewId}.png`;
   const { checkRes } = await changeDpiDataUrlWithUpload(base64, { name: name });
-  console.log('checkRes', checkRes);
+
   return { checkRes };
 }
 
 /**
  * 设计转png图片
- * @param {import('@/design').TextToImageParam} param
- * @param {number} width
- * @param {number} height
  * @returns {Promise<string>} base64
  */
 export async function _designToImage(param, width, height) {

@@ -7,7 +7,7 @@ import { getDesignImage, getText, setModelBgc, setProxyTransformer, setTextAttrs
 import { initTransformer } from '@/designApplication/core/canvas/selectBorder';
 import { uuid } from '@/designApplication/core/utils/uuid';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
-import { onTile, updateTile } from '@/designApplication/components/layout/right/hoverComponents/tileUtil';
+import { TileUtil } from '@/designApplication/components/layout/right/hoverComponents/tileUtil';
 
 /**
  * KonvaCanvas
@@ -251,14 +251,8 @@ export class KonvaCanvas {
     designImage.image.on('dragmove', function (e) {
       that.updateTexture(3);
 
-      // 如果存在平铺图
-      const tile = that.clip.children.find((e) => e.attrs.name === 'tile');
-      if (tile) {
-        tile.setAttrs({
-          x: this.x(),
-          y: this.y(),
-        });
-      }
+      // 平铺图操作
+      TileUtil.update(this, 'move');
 
       // 设计图的碰撞检测
       DesignImageUtil.isCollide(this);
@@ -291,6 +285,8 @@ export class KonvaCanvas {
       name: canvasDefine.image,
 
       // 特殊属性
+      tileParam: null, //平铺参数
+      isTile: false, //是否平铺
       isFlipX: false, //沿着x轴翻转
       isFlipY: false, //沿着y轴翻转
       detail: param.detail, //设计图的接口信息

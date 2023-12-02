@@ -182,7 +182,7 @@ export default {
         const viewId = item.printArea.id;
         // 将设计图插入到画布
         const image = await this.$store.dispatch('designApplication/setImage', { detail: imageDetail, viewId: viewId });
-        // TODO: 已经成功添加到 view 中了, 还需设置 平铺
+        // TODO: 历史设计记录 平铺
 
         // 解析坐标和角度和缩放
         const transform = item.content.svg.image.transform.replace('rotate(', '').replace(')', '').split(',');

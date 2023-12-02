@@ -47,8 +47,9 @@ export async function changeDpiDataUrlWithUpload(base64, param) {
 export async function designToImage(param) {
   const _param = Object.assign(
     {
-      width: 500, // 宽
-      height: 500, // 高
+      test: false, // ？测试
+      width: 0, // 宽
+      height: 0, // 高
       callback: null, // 回调函数 (必须返回一个Konva.Image | Konva.text)
     },
     param,
@@ -70,9 +71,15 @@ export async function designToImage(param) {
   div.style.width = _param.width + 'px';
   div.style.height = _param.height + 'px';
   div.style.position = 'absolute';
-  div.style.top = '-9999px';
-  div.style.left = '-9999px';
-  div.style.zIndex = '-9999';
+  if (_param.test) {
+    div.style.top = '0';
+    div.style.left = '0';
+    div.style.zIndex = '9999';
+  } else {
+    div.style.top = '-9999px';
+    div.style.left = '-9999px';
+    div.style.zIndex = '-9999';
+  }
   // 背景色为透明
   div.style.backgroundColor = 'transparent';
   document.body.appendChild(div);
@@ -102,8 +109,15 @@ export async function designToImage(param) {
   });
 
   // 销毁
-  stage.destroy();
-  div.remove();
+  if (_param.test) {
+    setTimeout(() => {
+      stage.destroy();
+      div.remove();
+    }, 3000);
+  } else {
+    stage.destroy();
+    div.remove();
+  }
 
   return url;
 }

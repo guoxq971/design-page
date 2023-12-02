@@ -5,9 +5,8 @@ import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import store from '@/store';
 import { Message } from 'element-ui';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
-import { UnsignedIntType } from 'three';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
-import { onTile, updateTile } from '@/designApplication/components/layout/right/hoverComponents/tileUtil';
+import { TileUtil } from '@/designApplication/components/layout/right/hoverComponents/tileUtil';
 
 /**
  * 获取设计图
@@ -199,7 +198,7 @@ export function setProxyTransformer(transformer, image) {
     if (isUp || isDown) {
       // console.log('缩放');
       // 更新平铺图
-      updateTile(image);
+      TileUtil.update(image);
 
       // 最小检测
       if ((isDown && newBox.width < 10) || newBox.height < 10) {
@@ -214,7 +213,7 @@ export function setProxyTransformer(transformer, image) {
       }
     } else {
       // console.log('旋转');
-      updateTile(image, true);
+      TileUtil.update(image, 'rotation');
 
       // 绘制旋转角度
       drawRotation(transformer, oldBox, newBox);
@@ -422,6 +421,7 @@ export function supplementImageList(view = null) {
       // 设计图
       case canvasDefine.image:
         const imageInfo = DesignImageUtil.getImageInfo(image);
+        const tileParam = image.attrs.isTile ? store.state.designApplication.tile : null;
         resultList.push({
           image,
           // 设计属性
@@ -437,6 +437,8 @@ export function supplementImageList(view = null) {
           detail: image.attrs.detail,
           isFlipX: image.attrs.isFlipX, //沿着x轴翻转
           isFlipY: image.attrs.isFlipY, //沿着y轴翻转
+          isTile: image.attrs.isTile, //平铺
+          tileParam: tileParam, //平铺参数
         });
         break;
 
@@ -503,19 +505,34 @@ export async function restoreImageList(view = null) {
       //设计图
       case canvasDefine.image:
         const imgKonva = await store.dispatch('designApplication/setImage', { detail: image.detail, viewId: view.id });
+        // 设置属性
         imgKonva.setAttrs({
+          isTile: image.isTile,
+          tileParam: image.tileParam, //平铺参数
           isFlipX: image.isFlipX,
           isFlipY: image.isFlipY,
           scaleX: image.scaleX,
           scaleY: image.scaleY,
         });
+
+        // 设置旋转
         DesignImageUtil.rotation(imgKonva, image.rotation);
+
+        // 设置坐标
         imgKonva.setAttrs({
           x: image.x + image.width / 2,
           y: image.y + image.height / 2,
         });
+
+        // 设置显示隐藏
         if (!image.visible) {
           DesignImageUtil.setImageVisible(imgKonva);
+        }
+
+        // 设置平铺
+        if (image.isTile) {
+          Object.assign(store.state.designApplication.tile, imgKonva.attrs.tileParam);
+          TileUtil.add(imgKonva);
         }
         break;
 

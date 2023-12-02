@@ -12,6 +12,7 @@ import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
 import { supplementImageList } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
 import { sleep } from '@/designApplication/core/utils/sleep';
+import { TileToImage } from '@/designApplication/core/utils/toImage/tileToImage';
 
 /**
  * 组装保存产品的提交参数
@@ -122,10 +123,10 @@ export async function getSaveProdParam(type = '', prodItem = null) {
       configurationItem.printArea.id = view.id; //当前设计所在的视图id
 
       // 获取设计信息 (设计图、文字用到)
-      const result = DesignImageUtil.getImageInfo(image);
-      const imgWidth = result?.width;
-      const imgHeight = result?.height;
-      const angle = result?.rotation;
+      const imgInfo = DesignImageUtil.getImageInfo(image);
+      let imgWidth = imgInfo?.width;
+      let imgHeight = imgInfo?.height;
+      const angle = imgInfo?.rotation;
 
       switch (image.attrs.name) {
         // 背景色
@@ -178,12 +179,25 @@ export async function getSaveProdParam(type = '', prodItem = null) {
           configurationItem.type = image.attrs.name; //类型
 
           let designId = image.attrs.detail.id;
-          let flipImageDesignId = '';
-          let flipImageCode = '';
+          let flipImageDesignId = ''; // 翻转的designId
+          let flipImageCode = ''; // 翻转的imageCode
+          let tileImageDesignId = ''; // 平铺的designId
+          let tileImageCode = ''; // 平铺的imageCode
 
-          // TODO: 这个要考虑 平铺 的情况
-          // 如果是翻转 or 平铺需要上传到服务器, 得到designId
-          if (image.attrs.isFlipX || image.attrs.isFlipY) {
+          // 如果是平铺
+          if (image.attrs.isTile) {
+            const imageResult = await TileToImage(image);
+            tileImageDesignId = imageResult.checkRes.seqId;
+            tileImageCode = imageResult.checkRes.imageCode;
+            designId = tileImageDesignId;
+
+            imgInfo.x = 1;
+            imgInfo.y = 1;
+            imgWidth = imageResult.width;
+            imgHeight = imageResult.height;
+          }
+          // 如果是翻转需要上传到服务器, 得到designId
+          else if (image.attrs.isFlipX || image.attrs.isFlipY) {
             const imageResult = await designToImageUpload(image);
             flipImageDesignId = imageResult.checkRes.seqId;
             flipImageCode = imageResult.checkRes.imageCode;
@@ -195,14 +209,15 @@ export async function getSaveProdParam(type = '', prodItem = null) {
           configurationItem.bmParam.imageCode = image.attrs.detail.imageCode;
           configurationItem.bmParam.flipImageDesignId = flipImageDesignId;
           configurationItem.bmParam.flipImageCode = flipImageCode;
+          configurationItem.bmParam.tileImageDesignId = tileImageDesignId;
+          configurationItem.bmParam.tileImageCode = tileImageCode;
           configurationItem.bmParam.isFlipX = image.attrs.isFlipX;
           configurationItem.bmParam.isFlipY = image.attrs.isFlipY;
 
           // 设计图 - offset (x,y 的坐标)
-          configurationItem.offset.x = result.x;
-          configurationItem.offset.y = result.y;
+          configurationItem.offset.x = imgInfo.x;
+          configurationItem.offset.y = imgInfo.y;
 
-          // TODO: 这个要考虑 平铺 的情况
           // 设计图 - content (width,height,scale,id等)
           configurationItem.content.svg.image.designId = designId;
           configurationItem.content.svg.image.width = imgWidth;
@@ -260,6 +275,9 @@ export async function saveProd(param) {
 
     // 校验，并组装参数
     const submitParam = await param.verify();
+
+    // let btn = true;
+    // if (btn) return;
 
     // 发送接口
     const res = await param.send(submitParam);

@@ -4621,8 +4621,6 @@ export var Konva;
      * @name Konva.Node#startDrag
      */
     startDrag(evt, bubbleEvent = true) {
-      // TODO: mousemove 的 before 事件（会触发2次）
-      // console.log('开始拖拽', evt.evt.isTrusted);
       if (!DD._dragElements.has(this._id)) {
         this._createDragElement(evt);
       }
@@ -4693,11 +4691,6 @@ export var Konva;
     _listenDrag() {
       this._dragCleanup();
       this.on('mousedown.konva touchstart.konva', function (evt) {
-        // console.log('鼠标按下', evt.evt);
-        // console.log('鼠标按下', evt.evt.isTrusted);
-        // true=节点默认的鼠标按下 false=自定义鼠标按下
-        // TODO: 节点鼠标按下事件, 但是没有触发选中效果 evt.evt.isTrusted=false是自定义鼠标事件
-        // if (evt.evt.isTrusted) return false; //阻止节点默认的鼠标按下
         var shouldCheckButton = evt.evt['button'] !== undefined;
         var canDrag = !shouldCheckButton || Konva$2.dragButtons.indexOf(evt.evt['button']) >= 0;
         if (!canDrag) {
@@ -15558,8 +15551,6 @@ export var Konva;
       });
       var self = this;
       anchor.on('mousedown touchstart', function (e) {
-        // TODO: 锚点旋转和缩放会触发一次;
-        // console.log('鼠标按下', e);
         self._handleMouseDown(e);
       });
       anchor.on('dragstart', (e) => {
@@ -15630,7 +15621,7 @@ export var Konva;
       });
     }
     _handleMouseDown(e) {
-      // TODO: 锚点 的 mousedown 鼠标按下事件;
+      //  锚点 的 mousedown 鼠标按下事件;
       this._movingAnchorName = e.target.name().split(' ')[0];
       var attrs = this._getNodeRect();
       var width = attrs.width;
@@ -15657,7 +15648,7 @@ export var Konva;
       });
     }
     _handleMouseMove(e) {
-      // TODO: 锚点的 mousemove
+      //  锚点的 mousemove
       // console.log('锚点 移动中', e.isTrusted);
       if (isContinue(e)) return false;
       var x, y, newHypotenuse;

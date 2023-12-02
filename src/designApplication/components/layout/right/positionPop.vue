@@ -58,6 +58,7 @@ import { chunkObj, chunkRadiusObj } from '@/designApplication/components/layout/
 import { getPositionCenter, isCollision } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
+import { TileUtil } from '@/designApplication/components/layout/right/hoverComponents/tileUtil';
 
 export default {
   directives: { dragPop, title },
@@ -119,6 +120,7 @@ export default {
           scaleX: scale,
           scaleY: scale,
         });
+      TileUtil.update(image);
     },
     /**
      * 手动输入位置
@@ -143,6 +145,7 @@ export default {
       });
 
       DesignImageUtil.updateTexture(image);
+      TileUtil.update(image, 'move');
     },
     /**
      * 对齐函数
@@ -203,6 +206,7 @@ export default {
       });
 
       DesignImageUtil.updateTexture(image);
+      TileUtil.update(image, 'move');
     },
     /**
      * 关闭弹窗

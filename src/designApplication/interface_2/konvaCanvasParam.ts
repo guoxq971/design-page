@@ -21,6 +21,8 @@ export interface CanvasImage extends Konva.Image {
     type: string;
 
     // 自定义属性
+    tileParam: null | object;
+    isTile: boolean;
     isFlipX: boolean;
     isFlipY: boolean;
     name: string;
