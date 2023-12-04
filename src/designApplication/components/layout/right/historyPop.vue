@@ -232,14 +232,14 @@ export default {
           x: leftTopX + x,
           y: leftTopY + y,
         });
-      }
 
-      // 设置翻转
-      if (item.bmParam.isFlipX) {
-        DesignImageUtil.flipX(image);
-      }
-      if (item.bmParam.isFlipY) {
-        DesignImageUtil.flipY(image);
+        // 设置翻转
+        if (item.bmParam.isFlipX) {
+          DesignImageUtil.flipX(image);
+        }
+        if (item.bmParam.isFlipY) {
+          DesignImageUtil.flipY(image);
+        }
       }
     },
     /**
