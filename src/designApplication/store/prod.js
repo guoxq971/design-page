@@ -210,7 +210,6 @@ export const prod_actions = {
 
       // 清空已有的canvas / three
       state.prodStore.clearAll();
-      // await sleep(0);
 
       // 获取3d配置 - 通用
       const config3d = await getProd3dConfigByCommonApi(detail.templateNo);
@@ -258,12 +257,12 @@ export const prod_actions = {
         if (!isCommonOpen2d) {
           if (refineList.length === 0) {
             Message.warning('该产品的模板已关闭，请联系技术部！');
-            return;
+            state.loading_prod = false;
+          } else {
+            // 切换到精细模板
+            await dispatch('changeProd', { sizeId: refineList[0].sizeId, type: ProdType.refine, force: true });
+            Message.warning('该产品的通用模板已关闭，已切换为精细模板');
           }
-
-          // 切换到精细模板
-          await dispatch('changeProd', { sizeId: refineList[0].sizeId, type: ProdType.refine, force: true });
-          Message.warning('该产品的通用模板已关闭，已切换为精细模板');
         }
 
         // 中间没有切换时，才需要关闭loading

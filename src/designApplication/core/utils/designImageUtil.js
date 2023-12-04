@@ -419,7 +419,6 @@ export class DesignImageUtil {
    * @param type
    */
   static updateTexture(image, type = '') {
-    console.log(image, type);
     let konvaCanvas;
 
     if (image.attrs.type === canvasDefine.image) {

@@ -1,5 +1,5 @@
 import { MyThree } from '@/designApplication/core/three/index';
-import { loadModel } from '@/designApplication/core/utils/loadModel';
+import { loadModel, loadModelByCache } from '@/designApplication/core/utils/loadModel';
 import { MeshItem } from '@/designApplication/interface/meshItem';
 import store from '@/store';
 import * as THREE from 'three';
@@ -46,7 +46,7 @@ export async function loadThree(param = new LoadThreeParam()) {
     }
 
     // 加载模型
-    const result = await loadModel(param.path);
+    const result = await loadModelByCache(param.path);
     t.scene.add(result.model);
     t.model = result.model;
     t.meshList = result.meshList;

@@ -7,6 +7,39 @@ THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
 THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
 THREE.Mesh.prototype.raycast = acceleratedRaycast;
 
+// 缓存模型
+const cacheModel = [
+  {
+    path: '2021/04/28/20210428111204-2.glb',
+    result: null,
+  },
+];
+
+/**
+ * 加载模型(使用缓存)
+ * @param path
+ * @returns {Promise<{model: Group, meshList: Mesh[]}>}
+ */
+export async function loadModelByCache(path) {
+  let result;
+  // 缓存模型
+  const cache = cacheModel.find((e) => e.path === path);
+  if (cache) {
+    // console.log('使用缓存模型');
+    result = cache.result;
+  } else {
+    // console.log('加载模型');
+    // 加载模型
+    result = await loadModel(path);
+    cacheModel.push({
+      result,
+      path: path,
+    });
+  }
+
+  return result;
+}
+
 /**
  * 加载模型
  * @param {string} path 模型路径

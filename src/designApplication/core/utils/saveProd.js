@@ -283,11 +283,11 @@ export async function saveProd(param) {
     // 打开loading
     store.commit('designApplication/setLoadingSave', true);
 
-    // 添加 历史设计记录 loading
-    await store.dispatch('designApplication/addHistoryItem', historyItem);
-
     // 校验，并组装参数
     const submitParam = await param.verify();
+
+    // 添加 历史设计记录 loading
+    await store.dispatch('designApplication/addHistoryItem', historyItem);
 
     // let btn = true;
     // if (btn) return;
