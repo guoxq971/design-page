@@ -1,6 +1,4 @@
 import * as THREE from 'three';
-import store from '@/store';
-import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 
 /**
  * 射线
@@ -48,7 +46,7 @@ export class Raycaster {
         return true;
       },
       afterMouseDown: (uv, object) => {
-        // TODO： 判断是否有选中了设计图，没有的话就退出konva自定义鼠标事件
+        //  判断是否有选中了设计图，没有的话就退出konva自定义鼠标事件
         const meshItem = three.getMeshItemByMaterialName(object.material.name);
 
         // 没有视图 || 没有canvas || 没有选中的设计图

@@ -4,6 +4,7 @@ import { disposeThree } from '@/designApplication/core/utils/clearThree';
 import { Config } from '@/designApplication/core/config';
 import { config3dUtil } from '@/designApplication/interface/Config3d/config3dOfCommonResponse';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
+import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
 
 export class DesignType {
   static bgc = canvasDefine.bgc;
@@ -157,6 +158,7 @@ export class DesignerUtil {
     prodItem = prodItem || this.getActiveProd();
     for (let view of prodItem.viewList) {
       if (view.canvas) {
+        // 移除背景色
         view.canvas.getImageList().forEach((e) => {
           if (e.attrs.name === canvasDefine.bgc) {
             e.attrs.remove();

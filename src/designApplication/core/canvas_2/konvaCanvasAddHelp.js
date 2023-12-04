@@ -123,7 +123,6 @@ export function visibleImage(that, image, transformer = null) {
   if (transformer && visible === false) {
     transformer.visible(visible);
   }
-  // that.layer.draw();
 }
 
 /**
@@ -408,6 +407,7 @@ export function getAngleMultiple(angle, type = 'right') {
 
 /**
  * 补充设计图列表到 view.imageList
+ * - 会在切换精细尺码和保存的时候调用
  * @param {import('@/design').ParseViewItem} view 视图
  */
 export function supplementImageList(view = null) {
@@ -568,6 +568,7 @@ export async function restoreImageList(view = null) {
 
 /**
  * 设置模型背景色 - 将2d canvas的底色设置为配置的颜色
+ * @param {boolean} flag true-设置 false-还原
  */
 export function setModelBgc(flag = true) {
   // 获取当前激活的产品
@@ -582,7 +583,10 @@ export function setModelBgc(flag = true) {
         const bgc = view.canvas.clipBg.children[0];
 
         if (view.canvas && !isGlass) {
-          const color = bgc?.attrs.fill || color3dItem.colorCode;
+          let color = color3dItem.colorCode;
+          if (bgc?.visible()) {
+            color = bgc.attrs.fill;
+          }
           view.canvas.setCanvasFill(color);
           view.canvas.updateTexture('', 50, true);
         }

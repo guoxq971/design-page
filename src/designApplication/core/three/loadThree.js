@@ -132,16 +132,13 @@ function loadCanvasTexture(meshPlusList) {
     // 将canvas绑到 material.map 上
     const targetCanvas = view.canvas.layer.canvas._canvas;
     item.canvas = targetCanvas;
-    // console.log('view', mesh.name, view, [targetCanvas], [canvas[1]]);
 
+    // 设置材质
     const texture = new THREE.CanvasTexture(targetCanvas);
     texture.encoding = THREE.sRGBEncoding; // 设置编码格式
     texture.flipY = false; // 纹理是否沿y轴翻转
-
     mesh.material.map = texture;
     mesh.material.needsUpdate = true;
-
-    // console.log(mesh.name, mesh);
 
     view.texture = texture;
     // 使用节流

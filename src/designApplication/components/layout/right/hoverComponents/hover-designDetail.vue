@@ -88,7 +88,7 @@ export default {
   flex-direction: column;
   align-items: center;
   top: -1px;
-  z-index: 5;
+  z-index: 6;
   left: -281px;
 
   // rect

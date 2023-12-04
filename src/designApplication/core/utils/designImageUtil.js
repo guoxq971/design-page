@@ -415,13 +415,20 @@ export class DesignImageUtil {
 
   /**
    * 更新材质
-   * @param image
+   * @param  image
    * @param type
    */
   static updateTexture(image, type = '') {
+    console.log(image, type);
+    let konvaCanvas;
+
+    if (image.attrs.type === canvasDefine.image) {
+      konvaCanvas = image.attrs.konvaCanvas;
+    }
+
     // 更新材质
-    if (image && image.attrs.konvaCanvas) {
-      image.attrs.konvaCanvas.updateTexture(type, 50);
+    if (konvaCanvas) {
+      konvaCanvas.updateTexture(type, 50);
     }
   }
 }

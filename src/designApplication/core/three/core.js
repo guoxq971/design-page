@@ -37,19 +37,22 @@ export class Core {
     // const axesHelper = new THREE.AxesHelper(50);
     // this.scene.add(axesHelper);
 
-    const animate = () => {
-      TWEEN.update();
-      this.controls.update();
-      this.renderer.render(this.scene, this.camera);
-      this.rafId = requestAnimationFrame(animate);
-    };
-    animate();
+    this.animate();
 
     // 监听窗口变化
     window.addEventListener('resize', this.resize.bind(this));
 
     // 监听双击事件
     this.renderer.domElement.addEventListener('dblclick', this.addEvent_dblclick.bind(this));
+  }
+
+  animate() {
+    if (store.state.designApplication.show3d) {
+      TWEEN.update();
+      this.controls.update();
+      this.renderer.render(this.scene, this.camera);
+    }
+    this.rafId = requestAnimationFrame(this.animate.bind(this));
   }
 
   /**

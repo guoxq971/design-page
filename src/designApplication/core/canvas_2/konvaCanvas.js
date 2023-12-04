@@ -366,11 +366,15 @@ export class KonvaCanvas {
         rect.setAttrs({
           visible: true,
           transformer,
-          visibleFn: () => visibleImage(this, rect),
+          visibleFn: () => {
+            visibleImage(this, rect);
+            this.layerBg.draw();
+            setModelBgc();
+          },
           remove: () => {
             this.clipBg.children = this.clipBg.children.filter((item) => item !== rect);
-            this.updateTexture();
-            this.layer.draw();
+            this.layerBg.draw();
+            setModelBgc();
           },
         });
 
@@ -392,7 +396,7 @@ export class KonvaCanvas {
       setModelBgc();
     } else {
       // 更新材质
-      setTimeout(() => this.updateTexture(), 50);
+      this.updateTexture('setBgc', 50);
     }
 
     return rect;

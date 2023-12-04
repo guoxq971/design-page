@@ -296,6 +296,7 @@ export const prod_actions = {
       const curProdItem = param.prodItem || state.prodStore.get();
       let resultProdItem;
 
+      // 设计图数据补充
       for (let view of curProdItem.viewList) {
         supplementImageList(view);
       }
