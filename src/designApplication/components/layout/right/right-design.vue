@@ -132,11 +132,11 @@ export default {
     },
     // 撤销 disabled
     prevDisabled() {
-      return this.queue.list.length === 0 || this.queue.activeId === 0;
+      return useQueue().prevDisabled();
     },
     // 下一步 disabled
     nextDisabled() {
-      return this.queue.list.length === 0 || this.queue.activeId === this.queue.list.length - 1;
+      return useQueue().nextDisabled();
     },
   },
   watch: {

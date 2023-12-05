@@ -90,33 +90,6 @@ export async function getText(text, layer, hideAllTransformer) {
 }
 
 /**
- * 图层移动
- * */
-export function layerMove(image, type) {
-  //上移
-  if (type === 'up') {
-    image.moveUp();
-  }
-  //下移
-  else if (type === 'down') {
-    image.moveDown();
-  }
-  //置顶
-  else if (type === 'top') {
-    image.moveToTop();
-  }
-  //置底
-  else if (type === 'bottom') {
-    image.moveToBottom();
-  }
-
-  if (['down', 'bottom'].includes(type)) {
-    // 背景色置底
-    DesignerUtil.moveBottomBgc();
-  }
-}
-
-/**
  * 显示隐藏设计图
  * @param that this
  * @param {Object} image 节点
@@ -520,7 +493,7 @@ export async function restoreImageList(view = null) {
     switch (image.type) {
       //设计图
       case canvasDefine.image:
-        const imgKonva = await store.dispatch('designApplication/setImage', { detail: image.detail, viewId: view.id, isQueue: false });
+        const imgKonva = await store.dispatch('designApplication/setImage', { detail: image.detail, viewId: view.id });
         // 设置属性
         imgKonva.setAttrs({
           isTile: image.isTile,

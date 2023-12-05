@@ -59,7 +59,7 @@ import { getPositionCenter, isCollision } from '@/designApplication/core/canvas_
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 import { TileUtil } from '@/designApplication/components/layout/right/hoverComponents/tileUtil';
-import { useQueue } from '@/designApplication/core/utils/useQueue';
+import { queue_define, useQueue } from '@/designApplication/core/utils/useQueue';
 
 export default {
   directives: { dragPop, title },
@@ -123,7 +123,7 @@ export default {
         });
       TileUtil.update(image);
       TileUtil.update(image, 'move');
-      useQueue().add('positionPop-size');
+      useQueue().add(queue_define.position_pop_size);
     },
     /**
      * 手动输入位置
@@ -149,7 +149,7 @@ export default {
 
       DesignImageUtil.updateTexture(image);
       TileUtil.update(image, 'move');
-      useQueue().add('positionPop-xy');
+      useQueue().add(queue_define.position_pop_size);
     },
     /**
      * 对齐函数
@@ -211,7 +211,7 @@ export default {
 
       DesignImageUtil.updateTexture(image);
       TileUtil.update(image, 'move');
-      useQueue().add('positionPop-align');
+      useQueue().add(queue_define.position_pop_align);
     },
     /**
      * 关闭弹窗

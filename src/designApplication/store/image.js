@@ -56,7 +56,7 @@ export const image_actions = {
    * @param {ImageListByMyImage} detail 设计图详情
    * @param {string|number|null} viewId
    * */
-  async setImage({ state, commit, dispatch, getters }, { detail, viewId, isQueue = true }) {
+  async setImage({ state, commit, dispatch, getters }, { detail, viewId }) {
     try {
       // 应用设计图之前的校验 --start
       await dispose_HotStamping(getters.activeProd.detail, detail);
@@ -110,11 +110,6 @@ export const image_actions = {
       };
 
       const image = await view.canvas.addImage(param);
-
-      if (isQueue) {
-        // 操作记录
-        useQueue().add('dragend');
-      }
 
       return image;
     } catch (e) {

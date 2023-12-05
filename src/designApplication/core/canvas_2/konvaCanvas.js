@@ -160,6 +160,11 @@ export class KonvaCanvas {
         DesignImageUtil.setImageVisible(image);
       }
     }
+
+    this.clip.children.forEach((item) => {
+      item.attrs.transformer.destroy();
+    });
+
     this.clip.removeChildren();
     this.clipBg.removeChildren();
     this.layer.draw();

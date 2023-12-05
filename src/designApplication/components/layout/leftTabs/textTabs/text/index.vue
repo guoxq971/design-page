@@ -81,6 +81,7 @@ import { fontFamilyList, presetColors } from '@/designApplication/components/lay
 import { mapGetters } from 'vuex';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 import { setTextAttrs } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
+import { queue_define, useQueue } from '@/designApplication/core/utils/useQueue';
 
 export default {
   directives: { title },
@@ -203,10 +204,13 @@ export default {
      * 选择文字下触发
      */
     onEditText() {
-      this.text && setTextAttrs(this.text, this.param);
+      if (this.text) {
+        setTextAttrs(this.text, this.param);
+        useQueue().add(queue_define.edit_text);
+      }
     },
     /** * 添加文字 * */
-    onAddText() {
+    async onAddText() {
       if (!this.param.text) {
         this.$message.warning('请输入文字');
         return;
@@ -217,7 +221,9 @@ export default {
         return;
       }
 
-      this.$store.dispatch('designApplication/setText', { param: this.param });
+      await this.$store.dispatch('designApplication/setText', { param: this.param });
+
+      useQueue().add(queue_define.create_text);
     },
     // 颜色发生变化
     colorInput(val) {

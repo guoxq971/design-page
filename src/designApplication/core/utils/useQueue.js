@@ -3,6 +3,13 @@ import store from '@/store';
 
 // 操作
 export const queue_define = {
+  init: '初始化',
+  create_image: '创建设计图',
+  create_text: '创建文字',
+  edit_text: '编辑文字|编辑文字样式',
+  position_pop_align: '定位弹窗-快捷对齐',
+  position_pop_xy: '定位弹窗-手动输入 坐标',
+  position_pop_size: '定位弹窗-手动输入 尺寸',
   right_rotate_45: '右旋45°',
   left_rotate_45: '左旋45°',
   flip_x: 'x轴翻转',
@@ -29,6 +36,13 @@ export const queue_define = {
  * 操作队列
  */
 class UseQueue {
+  prevDisabled() {
+    return [0, 1].includes(this.queue.list.length) || this.queue.activeId === 0;
+  }
+  nextDisabled() {
+    return [0, 1].includes(this.queue.list.length) || this.queue.activeId === this.queue.list.length - 1;
+  }
+
   // list = store.state.designApplication.queue.list;
   queue = store.state.designApplication.queue;
 
@@ -72,8 +86,9 @@ class UseQueue {
     this.queue.list.push(result);
     this.queue.activeId = id;
 
-    console.log('当前队列', this.queue.list);
+    console.log('当前操作', type);
     console.log('当前队列id', this.queue.activeId);
+    console.log('当前队列', this.queue.list);
   }
 
   /**
@@ -92,6 +107,10 @@ class UseQueue {
       view.canvas.clear();
       await restoreImageList(view);
     }
+
+    console.log('当前操作', '下一步');
+    console.log('当前队列id', this.queue.activeId);
+    console.log('当前队列', this.queue.list);
   }
 
   /**
@@ -100,7 +119,7 @@ class UseQueue {
   async prev() {
     const targetId = this.queue.activeId - 1;
 
-    if (targetId < 0) return;
+    if (this.queue.list.length === 0) return;
 
     const activeQueue = this.queue.list.find((e) => e.id === targetId);
     this.queue.activeId = targetId;
@@ -110,6 +129,10 @@ class UseQueue {
       view.canvas.clear();
       await restoreImageList(view);
     }
+
+    console.log('当前操作', '上一步');
+    console.log('当前队列id', this.queue.activeId);
+    console.log('当前队列', this.queue.list);
   }
 
   /**
@@ -118,6 +141,8 @@ class UseQueue {
   clear() {
     this.queue.list = [];
     this.queue.activeId = 0;
+
+    useQueue().add(queue_define.init);
   }
 }
 

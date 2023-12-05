@@ -26,6 +26,7 @@
 import { mapState } from 'vuex';
 import dragPop from '@/designApplication/core/utils/directives/drag/drag';
 import { collectImageFn } from '@/designApplication/core/utils/common';
+import { queue_define, useQueue } from '@/designApplication/core/utils/useQueue';
 
 export default {
   name: 'collectList',
@@ -58,15 +59,21 @@ export default {
      * 选择设计图 - 设计图
      * @param {import('@/design').CollectImageListItem} image
      */
-    onClickImage(image) {
-      this.$store.dispatch('designApplication/setImage', { detail: image });
+    async onClickImage(image) {
+      await this.$store.dispatch('designApplication/setImage', { detail: image });
+
+      // 操作记录
+      useQueue().add(queue_define.create_image);
     },
     /**
      * 选择设计图 - 背景图
      * @param {import('@/design').CollectImageListItem} image
      */
-    onClickImageBg(image) {
-      this.$store.dispatch('designApplication/setImage', { detail: image });
+    async onClickImageBg(image) {
+      await this.$store.dispatch('designApplication/setImage', { detail: image });
+
+      // 操作记录
+      useQueue().add(queue_define.create_image);
     },
   },
 };

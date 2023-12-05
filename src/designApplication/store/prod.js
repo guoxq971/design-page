@@ -13,6 +13,7 @@ import { Config } from '@/designApplication/core/config';
 import { ProdStore } from '@/designApplication/store/prodStore';
 import { isTemplateCanUse } from '@/designApplication/store/util';
 import { restoreImageList, supplementImageList } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
+import { useQueue } from '@/designApplication/core/utils/useQueue';
 
 export const prod_state = {
   isSupplement: true, //是否补充
@@ -234,6 +235,7 @@ export const prod_actions = {
       console.log('仓库列表', state.prodStore.list);
     } finally {
       if (isCommonOpen2d) {
+        useQueue().clear();
         state.loading_prod = false;
       }
 
@@ -267,6 +269,7 @@ export const prod_actions = {
 
         // 中间没有切换时，才需要关闭loading
         if (getters.activeProd?.detail.templateNo === prod.detail.templateNo) {
+          useQueue().clear();
           state.loading_prod = false;
         }
       }
@@ -405,6 +408,7 @@ export const prod_actions = {
         }
       }
     } finally {
+      useQueue().clear();
       state.loading_prod = false;
     }
   },

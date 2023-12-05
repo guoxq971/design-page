@@ -26,6 +26,7 @@
 import boxContainer from '@/designApplication/components/boxContainer.vue';
 import hoverDetailImage from '@/designApplication/components/hoverDetailImage.vue';
 import boxAdaptive from '@/designApplication/components/boxAdaptive.vue';
+import { queue_define, useQueue } from '@/designApplication/core/utils/useQueue';
 
 export default {
   components: {
@@ -59,8 +60,11 @@ export default {
       this.$emit('onContextmenu', item);
     },
     // 选中设计图
-    onSetImage(item) {
-      this.$store.dispatch('designApplication/setImage', { detail: item });
+    async onSetImage(item) {
+      await this.$store.dispatch('designApplication/setImage', { detail: item });
+
+      // 操作记录
+      useQueue().add(queue_define.create_image);
     },
     // 鼠标进入
     mouseenter(item) {
