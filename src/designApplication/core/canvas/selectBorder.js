@@ -1,6 +1,7 @@
 // import Konva from 'konva';
 import { Konva } from '@/designApplication/core/canvas/konva';
 import { konvaTransformerConfig } from '@/designApplication/core/canvas/konvaConfig';
+import { queue_define, useQueue } from '@/designApplication/core/utils/useQueue';
 
 class CustomTransformer extends Konva.Transformer {
   customName = 'CustomTransformer';
@@ -55,6 +56,9 @@ export function initTransformer(layer) {
 
     // 更新模型纹理
     transformer.attrs.image.attrs.konvaCanvas.updateTexture('transformend', 50);
+
+    // 操作记录
+    useQueue().add(queue_define.transformer_end);
   }
 
   transformer.setAttrs({

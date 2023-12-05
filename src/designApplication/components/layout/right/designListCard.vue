@@ -87,6 +87,7 @@ import title from '@/designApplication/core/utils/directives/title/title';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
 import { collectImageFn } from '@/designApplication/core/utils/common';
+import { queue_define, useQueue } from '@/designApplication/core/utils/useQueue';
 
 export default {
   name: 'designListCard',
@@ -135,6 +136,7 @@ export default {
     onLayerUp(image) {
       if ([canvasDefine.image, canvasDefine.text].includes(image.attrs.name)) {
         DesignImageUtil.layerMoveUp(image);
+        useQueue().add(queue_define.layer_up);
       }
     },
     /**
@@ -144,6 +146,7 @@ export default {
     onLayerDown(image) {
       if ([canvasDefine.image, canvasDefine.text].includes(image.attrs.name)) {
         DesignImageUtil.layerMoveDown(image);
+        useQueue().add(queue_define.layer_down);
       }
     },
     /**
@@ -153,10 +156,12 @@ export default {
     onLayerDel(image) {
       if ([canvasDefine.image, canvasDefine.text].includes(image.attrs.name)) {
         DesignImageUtil.deleteImage(image);
+        useQueue().add(queue_define.delete);
       }
 
       if (image.attrs.name === canvasDefine.bgc) {
         DesignerUtil.removeBgc();
+        useQueue().add(queue_define.delete_bgc);
       }
     },
     /**
@@ -166,10 +171,12 @@ export default {
     onLayerVisible(image) {
       if ([canvasDefine.image, canvasDefine.text].includes(image.attrs.name)) {
         DesignImageUtil.setImageVisible(image);
+        useQueue().add(queue_define.visible);
       }
 
       if ([canvasDefine.bgc].includes(image.attrs.name)) {
         DesignerUtil.visibleBgc();
+        useQueue().add(queue_define.visible_bgc);
       }
     },
   },

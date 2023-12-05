@@ -7,6 +7,7 @@ import { Message } from 'element-ui';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
 import { TileUtil } from '@/designApplication/components/layout/right/hoverComponents/tileUtil';
+import { queue_define, useQueue } from '@/designApplication/core/utils/useQueue';
 
 /**
  * 获取设计图
@@ -79,6 +80,10 @@ export async function getText(text, layer, hideAllTransformer) {
   konvaText.on('dragstart', function () {
     hideAllTransformer(layer);
     transformer.visible(true);
+  });
+  konvaText.on('dragend', function () {
+    // 操作记录
+    useQueue().add(queue_define.dragend);
   });
 
   return Promise.resolve({ text: konvaText, transformer });
@@ -406,11 +411,11 @@ export function getAngleMultiple(angle, type = 'right') {
 }
 
 /**
- * 补充设计图列表到 view.imageList
- * - 会在切换精细尺码和保存的时候调用
+ * 组装view设计图数据
  * @param {import('@/design').ParseViewItem} view 视图
+ * @returns {Array<{image: import('@/design').CanvasImage, type: string, x: number, y: number, scaleX: number, scaleY: number, rotation: number, width: number, height: number, visible: boolean, detail: object}>}
  */
-export function supplementImageList(view = null) {
+export function getViewDesign(view = null) {
   view = view || DesignerUtil.getView();
   const imageList = view.canvas?.getImageList() || [];
 
@@ -491,7 +496,18 @@ export function supplementImageList(view = null) {
     }
   }
 
-  view.imageList = resultList;
+  return resultList;
+}
+
+/**
+ * 补充设计图列表到 view.imageList
+ * - 会在切换精细尺码和保存的时候调用
+ * @param {import('@/design').ParseViewItem} view 视图
+ */
+export function supplementImageList(view = null) {
+  view = view || DesignerUtil.getView();
+
+  view.imageList = getViewDesign(view);
 }
 
 /**
@@ -504,7 +520,7 @@ export async function restoreImageList(view = null) {
     switch (image.type) {
       //设计图
       case canvasDefine.image:
-        const imgKonva = await store.dispatch('designApplication/setImage', { detail: image.detail, viewId: view.id });
+        const imgKonva = await store.dispatch('designApplication/setImage', { detail: image.detail, viewId: view.id, isQueue: false });
         // 设置属性
         imgKonva.setAttrs({
           isTile: image.isTile,
@@ -545,14 +561,17 @@ export async function restoreImageList(view = null) {
           scaleX: image.scaleX,
           scaleY: image.scaleY,
         });
+
+        if (!image.visible) {
+          DesignImageUtil.setImageVisible(textKonva);
+        }
+
         DesignImageUtil.rotation(textKonva, image.rotation);
+
         textKonva.setAttrs({
           x: image.x + image.width / 2,
           y: image.y + image.height / 2,
         });
-        if (!image.visible) {
-          DesignImageUtil.setImageVisible(textKonva);
-        }
         break;
 
       //背景色

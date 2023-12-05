@@ -137,14 +137,18 @@ export default {
         };
         const text = await view.canvas.addText(param);
 
-        // text.setAttrs(item.bmParam.textParam);
+        // 设置坐标
         text.setAttrs({
           scaleX: item.bmParam.textParam.scaleX,
           scaleY: item.bmParam.textParam.scaleY,
           x: item.bmParam.textParam.x,
           y: item.bmParam.textParam.y,
         });
+
+        // 设置字体样式
         setTextAttrs(text, item.bmParam.textParam);
+
+        // 设置旋转
         DesignImageUtil.rotation(text, item.bmParam.textParam.rotation);
       }
     },

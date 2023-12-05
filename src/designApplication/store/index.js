@@ -24,6 +24,11 @@ const state = {
   visible_position: false,
   // 推荐参数
   visible_recommend: false,
+  // 操作记录
+  queue: {
+    list: [],
+    activeId: 0,
+  },
 };
 
 /**

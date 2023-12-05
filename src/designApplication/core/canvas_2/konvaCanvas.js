@@ -8,6 +8,7 @@ import { initTransformer } from '@/designApplication/core/canvas/selectBorder';
 import { uuid } from '@/designApplication/core/utils/uuid';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
 import { TileUtil } from '@/designApplication/components/layout/right/hoverComponents/tileUtil';
+import { queue_define, useQueue } from '@/designApplication/core/utils/useQueue';
 
 /**
  * KonvaCanvas
@@ -258,7 +259,11 @@ export class KonvaCanvas {
       DesignImageUtil.isCollide(this);
     });
     designImage.image.on('dragend', function (e) {
+      // 更新模型材质
       that.updateTexture(33);
+
+      // 操作记录
+      useQueue().add(queue_define.dragend);
     });
     designImage.image.on('mousedown', function (e) {
       DesignerUtil.hideAllTransformer(null, this);

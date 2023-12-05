@@ -26,10 +26,10 @@
     <!--操作区域-2-->
     <el-card class="one-handle" shadow="never">
       <!--撤销-->
-      <img src="../img/后退.png" class="right-design-img" v-title="'撤销'" />
+      <img src="../img/后退.png" class="right-design-img" v-title="'撤销'" @click="onPrev" :class="{ 'disabled-bgc': prevDisabled }" />
 
       <!--前进-->
-      <img src="../img/前进.png" class="right-design-img" v-title="'前进'" />
+      <img src="../img/前进.png" class="right-design-img" v-title="'前进'" @click="onNext" :class="{ 'disabled-bgc': nextDisabled }" />
 
       <!--清空设计-->
       <hoverClear class="btn4" />
@@ -86,6 +86,7 @@ import { buttonBlur } from '@/designApplication/core/utils/buttonBlur';
 
 import { saveProdApi, saveProdWithSizeApi } from '@/designApplication/apis/prod';
 import { getSaveProdParam, refineVerify, saveProd } from '@/designApplication/core/utils/saveProd';
+import { useQueue } from '@/designApplication/core/utils/useQueue';
 
 export default {
   name: 'right-design',
@@ -116,6 +117,7 @@ export default {
       activeProdStatic: 'designApplication/activeProdStatic',
     }),
     ...mapState({
+      queue: (state) => state.designApplication.queue,
       visible_layer: (state) => state.designApplication.visible_layer,
       isInit_image_collect: (state) => state.designApplication.isInit_image_collect,
       visible_history: (state) => state.designApplication.visible_history,
@@ -128,8 +130,37 @@ export default {
     saveAllBtnDisabled() {
       return !this.activeProd || this.activeProd.detail.isCanSynthesis === false;
     },
+    // 撤销 disabled
+    prevDisabled() {
+      return this.queue.list.length === 0 || this.queue.activeId === 0;
+    },
+    // 下一步 disabled
+    nextDisabled() {
+      return this.queue.list.length === 0 || this.queue.activeId === this.queue.list.length - 1;
+    },
+  },
+  watch: {
+    'queue.activeId': {
+      handler(val) {
+        console.log(val, this.queue);
+      },
+      immediate: true,
+      // deep: true,
+    },
   },
   methods: {
+    /**
+     * 下一步
+     */
+    onNext() {
+      useQueue().next();
+    },
+    /**
+     * 撤销
+     */
+    onPrev() {
+      useQueue().prev();
+    },
     /**
      * 保存产品
      * @param {Event} e
@@ -211,6 +242,11 @@ export default {
 
 <style scoped lang="less">
 @import url('./commonStyle');
+
+.disabled-bgc {
+  cursor: default !important;
+  background: #f4f7fa !important;
+}
 
 /deep/ .el-card__body {
   padding: 4px;

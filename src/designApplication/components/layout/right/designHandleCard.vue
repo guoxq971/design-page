@@ -57,6 +57,7 @@ import { uuid } from '@/designApplication/core/utils/uuid';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
 import { DesignerUtil } from '@/designApplication/core/utils/designerUtil';
+import { queue_define, useQueue } from '@/designApplication/core/utils/useQueue';
 
 export default {
   name: 'designHandleCard',
@@ -120,6 +121,7 @@ export default {
 
         // 碰撞检测
         DesignImageUtil.isCollide(copyImage);
+        useQueue().add(queue_define.copy);
       }
     },
     /**
@@ -132,6 +134,7 @@ export default {
       await this.$nextTick();
       // 碰撞检测
       DesignImageUtil.isCollide(image);
+      useQueue().add(queue_define.left_rotate_45);
     },
     /**
      * 设计图操作 - 右旋转
@@ -143,6 +146,7 @@ export default {
       await this.$nextTick();
       // 碰撞检测
       DesignImageUtil.isCollide(image);
+      useQueue().add(queue_define.right_rotate_45);
     },
     /**
      * 设计图操作 - x轴翻转
@@ -150,6 +154,7 @@ export default {
     async onFlipX() {
       const image = await DesignImageUtil.hasActiveImageMessage();
       DesignImageUtil.flipX(image);
+      useQueue().add(queue_define.flip_x);
     },
     /**
      * 设计图操作 - y轴翻转
@@ -157,6 +162,7 @@ export default {
     async onFlipY() {
       const image = await DesignImageUtil.hasActiveImageMessage();
       DesignImageUtil.flipY(image);
+      useQueue().add(queue_define.flip_y);
     },
     /**
      * 设计图操作 - 缩放 放大
@@ -168,6 +174,7 @@ export default {
       await this.$nextTick();
       // 碰撞检测
       DesignImageUtil.isCollide(image);
+      useQueue().add(queue_define.scale_up);
     },
     /**
      * 设计图操作 - 缩放 缩小
@@ -179,6 +186,7 @@ export default {
       await this.$nextTick();
       // 碰撞检测
       DesignImageUtil.isCollide(image);
+      useQueue().add(queue_define.scale_down);
     },
     /**
      * 设计图操作 - 水平居中
@@ -190,6 +198,7 @@ export default {
       await this.$nextTick();
       // 碰撞检测
       DesignImageUtil.isCollide(image);
+      useQueue().add(queue_define.align_x);
     },
     /**
      * 设计图操作 - 垂直居中
@@ -201,6 +210,7 @@ export default {
       await this.$nextTick();
       // 碰撞检测
       DesignImageUtil.isCollide(image);
+      useQueue().add(queue_define.align_y);
     },
     /**
      * 设计图操作 - 移除
@@ -208,6 +218,7 @@ export default {
     async onImageDelete() {
       const image = await DesignImageUtil.hasActiveImageMessage();
       DesignImageUtil.deleteImage(image);
+      useQueue().add(queue_define.delete);
     },
     /**
      * 设计图操作 - 上移动
@@ -215,6 +226,7 @@ export default {
     async onImageUp() {
       const image = await DesignImageUtil.hasActiveImageMessage();
       DesignImageUtil.layerMoveUp(image);
+      useQueue().add(queue_define.layer_up);
     },
     /**
      * 设计图操作 - 下移动
@@ -222,6 +234,7 @@ export default {
     async onImageDown() {
       const image = await DesignImageUtil.hasActiveImageMessage();
       DesignImageUtil.layerMoveDown(image);
+      useQueue().add(queue_define.layer_down);
     },
     /**
      * 设计图操作 - 置底
@@ -229,6 +242,7 @@ export default {
     async onImageBottom() {
       const image = await DesignImageUtil.hasActiveImageMessage();
       DesignImageUtil.layerMoveBottom(image);
+      useQueue().add(queue_define.layer_bottom);
     },
     /**
      * 设计图操作 - 置顶
@@ -236,6 +250,7 @@ export default {
     async onImageTop() {
       const image = await DesignImageUtil.hasActiveImageMessage();
       DesignImageUtil.layerMoveTop(image);
+      useQueue().add(queue_define.layer_top);
     },
   },
 };
