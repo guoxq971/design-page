@@ -18,6 +18,8 @@ const state = {
   isInit_image_collect: false,
   isInit_image_admin: false,
 
+  // 快捷键
+  visible_hotkeys: false,
   // 图层
   visible_layer: true,
   // 位置和变换
@@ -67,6 +69,10 @@ export default {
     },
   },
   mutations: {
+    // 快捷键
+    setVisibleHotkeys(state, visible) {
+      state.visible_hotkeys = visible;
+    },
     // 设置初始化
     setInit(state, { type }) {
       state[`isInit_${type}`] = true;

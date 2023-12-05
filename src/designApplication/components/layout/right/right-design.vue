@@ -9,7 +9,7 @@
       </el-button>
 
       <!--设置-->
-      <hoverSetting />
+      <hoverSetting @onHotkeys="onHotkeys" />
 
       <!--历史记录-->
       <el-button class="btn" @click="onHistory" v-title="'历史记录'">
@@ -47,15 +47,15 @@
 
     <!--设计图操作-->
     <designHandleCard />
-
     <!--设计图列表-->
     <designListCard />
-
     <!--多角度 渲染-->
     <multiAngleCard />
 
+    <!--快捷键-->
+    <hotkeysPop v-show="visible_hotkeys" />
     <!--历史设计记录-->
-    <historyPop ref="historyPop" v-show="visible_history" />
+    <historyPop v-show="visible_history" />
     <!--设计说明-->
     <hoverDesignDetail ref="hoverDesignDetail" @mouseenter.native="enter()" @mouseleave.native="leave()" />
     <!--收藏列表-->
@@ -73,10 +73,11 @@ import hoverClear from './hoverComponents/hover-clear.vue';
 import hoverScale from './hoverComponents/hover-scale.vue';
 import hoverTile from './hoverComponents/hover-tile.vue';
 import collectPop from './collectPop.vue';
-import multiAngleCard from './multiAngleCard.vue';
+import multiAngleCard from './multiAngleCard/multiAngleCard.vue';
 import designHandleCard from './designHandleCard.vue';
-import designListCard from './designListCard.vue';
+import designListCard from './multiAngleCard/designListCard.vue';
 import historyPop from '@/designApplication/components/layout/right/historyPop.vue';
+import hotkeysPop from '@/designApplication/components/layout/right/hotkeysPop/hotkeysPop.vue';
 
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
@@ -103,6 +104,7 @@ export default {
     hoverClear,
     hoverScale,
     hoverTile,
+    hotkeysPop,
   },
   data() {
     return {
@@ -120,6 +122,7 @@ export default {
       queue: (state) => state.designApplication.queue,
       visible_layer: (state) => state.designApplication.visible_layer,
       isInit_image_collect: (state) => state.designApplication.isInit_image_collect,
+      visible_hotkeys: (state) => state.designApplication.visible_hotkeys,
       visible_history: (state) => state.designApplication.visible_history,
       visible_collect: (state) => state.designApplication.visible_collect,
       loadingSave: (state) => state.designApplication.loading_save,
@@ -149,6 +152,12 @@ export default {
     },
   },
   methods: {
+    /**
+     * 快捷键
+     */
+    onHotkeys() {
+      this.$store.commit('designApplication/setVisibleHotkeys', !this.visible_hotkeys);
+    },
     /**
      * 下一步
      */

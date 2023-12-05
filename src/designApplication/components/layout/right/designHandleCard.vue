@@ -48,7 +48,7 @@ import { mapGetters, mapState } from 'vuex';
 import title from '@/designApplication/core/utils/directives/title/title';
 
 import hoverScale from '@/designApplication/components/layout/right/hoverComponents/hover-scale.vue';
-import positionPop from './positionPop.vue';
+import positionPop from './positionPop/positionPop.vue';
 import hoverTile from '@/designApplication/components/layout/right/hoverComponents/hover-tile.vue';
 
 import { getAngleMultiple, setProxyTransformer } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';

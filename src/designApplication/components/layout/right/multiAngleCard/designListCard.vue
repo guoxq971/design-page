@@ -51,17 +51,17 @@
             <template v-if="[canvasDefine.image, canvasDefine.text].includes(item.attrs.name)">
               <!--图层-上移-->
               <div class="layer-btn" v-title="'图层-上移'" @click="onLayerUp(item)">
-                <img src="../img/图层上移.png" />
+                <img src="../../img/图层上移.png" />
               </div>
               <!--图层-下移-->
               <div class="layer-btn" v-title="'图层-下移'" @click="onLayerDown(item)">
-                <img src="../img/图层下移.png" />
+                <img src="../../img/图层下移.png" />
               </div>
             </template>
 
             <!--图层-删除-->
             <div class="layer-btn" v-title="'图层-删除'" @click="onLayerDel(item)">
-              <img src="../img/删除图层.png" />
+              <img src="../../img/删除图层.png" />
             </div>
             <!--图层-显示隐藏-->
             <div class="layer-btn" v-title="'图层显示隐藏'" @click="onLayerVisible(item)">
@@ -184,5 +184,5 @@ export default {
 </script>
 
 <style scoped lang="less">
-@import url('./commonStyle');
+@import url('../commonStyle');
 </style>

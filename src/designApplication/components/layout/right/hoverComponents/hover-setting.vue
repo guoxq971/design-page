@@ -29,7 +29,9 @@ export default {
     /**
      * 快捷键
      */
-    onKeyCode() {},
+    onKeyCode() {
+      this.$emit('onHotkeys');
+    },
     /**
      * 失焦
      */

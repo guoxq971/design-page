@@ -90,9 +90,9 @@ class UseQueue {
     this.queue.list.push(result);
     this.queue.activeId = id;
 
-    console.log('当前操作', type);
-    console.log('当前队列id', this.queue.activeId);
-    console.log('当前队列', this.queue.list);
+    // console.log('当前操作', type);
+    // console.log('当前队列id', this.queue.activeId);
+    // console.log('当前队列', this.queue.list);
   }
 
   /**
@@ -112,9 +112,9 @@ class UseQueue {
       await restoreImageList(view);
     }
 
-    console.log('当前操作', '下一步');
-    console.log('当前队列id', this.queue.activeId);
-    console.log('当前队列', this.queue.list);
+    // console.log('当前操作', '下一步');
+    // console.log('当前队列id', this.queue.activeId);
+    // console.log('当前队列', this.queue.list);
   }
 
   /**
@@ -134,9 +134,9 @@ class UseQueue {
       await restoreImageList(view);
     }
 
-    console.log('当前操作', '上一步');
-    console.log('当前队列id', this.queue.activeId);
-    console.log('当前队列', this.queue.list);
+    // console.log('当前操作', '上一步');
+    // console.log('当前队列id', this.queue.activeId);
+    // console.log('当前队列', this.queue.list);
   }
 
   /**

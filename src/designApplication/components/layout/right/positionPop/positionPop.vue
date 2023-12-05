@@ -54,7 +54,7 @@ import { mapGetters, mapState } from 'vuex';
 import dragPop from '@/designApplication/core/utils/directives/drag/drag';
 import mapChunk from './positionChunk.vue';
 import title from '@/designApplication/core/utils/directives/title/title';
-import { chunkObj, chunkRadiusObj } from '@/designApplication/components/layout/right/position';
+import { chunkObj, chunkRadiusObj } from '@/designApplication/components/layout/right/positionPop/position';
 import { getPositionCenter, isCollision } from '@/designApplication/core/canvas_2/konvaCanvasAddHelp';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';

@@ -161,7 +161,7 @@ export default {
 </script>
 
 <style scoped lang="less">
-@import url('./commonStyle');
+@import url('../commonStyle');
 
 /*多角度-start*/
 ::v-deep .el-carousel__indicators--outside {
