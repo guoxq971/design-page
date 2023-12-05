@@ -162,7 +162,7 @@ export class KonvaCanvas {
     }
 
     this.clip.children.forEach((item) => {
-      item.attrs.transformer.destroy();
+      item.attrs.transformer?.destroy();
     });
 
     this.clip.removeChildren();

@@ -61,6 +61,7 @@ import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil'
 import { TileUtil } from '@/designApplication/components/layout/right/hoverComponents/tileUtil';
 import { canvasDefine } from '@/designApplication/core/canvas_2/define';
 import { mapState } from 'vuex';
+import { queue_define, useQueue } from '@/designApplication/core/utils/useQueue';
 
 export default {
   name: 'hover-setting',
@@ -80,6 +81,8 @@ export default {
     async onNotTile() {
       const image = await DesignImageUtil.hasActiveImageMessage();
       TileUtil.remove(image);
+
+      useQueue().add(queue_define.tile);
     },
     /**
      * 修改
@@ -96,6 +99,8 @@ export default {
       const group = TileUtil.find(image);
       group?.destroy();
       setTimeout(() => this.onTile());
+
+      useQueue().add(queue_define.tile);
     },
     /**
      * 平铺
@@ -104,6 +109,8 @@ export default {
     async onTile() {
       const image = await DesignImageUtil.hasActiveImageMessage();
       await TileUtil.add(image);
+
+      useQueue().add(queue_define.tile);
     },
   },
 };

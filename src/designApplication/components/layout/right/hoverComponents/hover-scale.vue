@@ -19,6 +19,7 @@
 import { buttonBlur } from '@/designApplication/core/utils/buttonBlur';
 import title from '@/designApplication/core/utils/directives/title/title';
 import { DesignImageUtil } from '@/designApplication/core/utils/designImageUtil';
+import { queue_define, useQueue } from '@/designApplication/core/utils/useQueue';
 
 export default {
   name: 'hover-setting',
@@ -40,6 +41,8 @@ export default {
       DesignImageUtil.positionVerticalCenter(image);
       // 碰撞检测
       DesignImageUtil.isCollide(image);
+
+      useQueue().add(queue_define.max);
     },
     /**
      * 设计图操作 - 宽度最大化
@@ -51,6 +54,8 @@ export default {
       DesignImageUtil.positionVerticalCenter(image);
       // 碰撞检测
       DesignImageUtil.isCollide(image);
+
+      useQueue().add(queue_define.max_width);
     },
     /**
      * 设计图操作 - 高度度最大化
@@ -62,6 +67,8 @@ export default {
       DesignImageUtil.positionVerticalCenter(image);
       // 碰撞检测
       DesignImageUtil.isCollide(image);
+
+      useQueue()().add(queue_define.max_height);
     },
   },
 };

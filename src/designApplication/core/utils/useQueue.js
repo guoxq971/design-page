@@ -3,6 +3,10 @@ import store from '@/store';
 
 // 操作
 export const queue_define = {
+  tile: '平铺',
+  max: '最大化',
+  max_width: '最大化-宽度',
+  max_height: '最大化-高度',
   init: '初始化',
   create_image: '创建设计图',
   create_text: '创建文字',
