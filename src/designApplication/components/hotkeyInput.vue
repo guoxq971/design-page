@@ -12,6 +12,8 @@
 </template>
 
 <script>
+import { hotkeysFormat } from '@/designApplication/core/utils/hotkeys';
+
 // 数字键盘
 const CODE_NUMBER = Array.from({ length: 10 }, (v, k) => `Digit${k + 1}`);
 // 数字键盘
@@ -90,7 +92,10 @@ export default {
   watch: {
     hotkey: {
       handler: function (val) {
-        if (val === '') return;
+        if (val === '') {
+          this.detail.text = '';
+          return;
+        }
 
         const arr = val.split('+');
         const controlKey = {
@@ -112,24 +117,7 @@ export default {
         };
 
         // 转换
-        // UP,ArrowUp -> ↑
-        if (['UP', 'ArrowUp'].includes(item.text)) {
-          item.text = item.text.replace('UP', '↑').replace('ArrowUp', '↑');
-        }
-        // DOWN,ArrowDown -> ↓
-        if (['DOWN', 'ArrowDown'].includes(item.text)) {
-          item.text = item.text.replace('DOWN', '↓').replace('ArrowDown', '↓');
-        }
-        // LEFT,ArrowLeft -> ←
-        if (['LEFT', 'ArrowLeft'].includes(item.text)) {
-          item.text = item.text.replace('LEFT', '←').replace('ArrowLeft', '←');
-        }
-        // RIGHT,ArrowRight -> →
-        if (['RIGHT', 'ArrowRight'].includes(item.text)) {
-          item.text = item.text.replace('RIGHT', '→').replace('ArrowRight', '→');
-        }
-        // 首字母 ctrl -> Ctrl, alt -> Alt, shift -> Shift
-        item.text = item.text.replace('ctrl', 'Ctrl').replace('alt', 'Alt').replace('shift', 'Shift');
+        item.text = hotkeysFormat(item.text);
 
         this.detail.text = item.text;
       },
@@ -231,17 +219,16 @@ export default {
      * @param data
      */
     addHotkey(data) {
-      console.log('addHotkey');
       // 是否已存在
       // if (this.detail.text && data.text === this.detail.text) {
       //   return;
       // }
       // 是否允许添加
       if (!this.verify(data)) {
-        console.log('校验失败');
+        // console.log('校验失败');
         return;
       }
-      console.log('校验通过');
+      // console.log('校验通过');
 
       this.$emit('update:hotkey', data.text);
     },

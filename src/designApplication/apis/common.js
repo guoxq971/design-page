@@ -11,6 +11,7 @@ import { ProdItemDetail } from '@/designApplication/interface/commonProd';
 import { fetchRefineProdConfig3dByTemplateNoWithSize } from '@/designApplication/mock/prod/refineProdConfig3dByTemplateNoWithSize';
 import { fetchHotkeys } from '@/designApplication/mock/user/fetchHotkeys';
 import { disposeHotkeys } from '@/designApplication/core/utils/hotkeys';
+import { fetchSaveHotkeys } from '@/designApplication/mock/user/fetchSaveHotkeys';
 
 /**
  * 获取通用产品列表
@@ -118,9 +119,21 @@ export async function getHotkeysApi() {
     return Promise.reject('获取快捷键列表失败');
   }
 
-  console.log('快捷键', JSON.parse(res.data));
+  // console.log('快捷键', JSON.parse(res.data));
 
   disposeHotkeys(JSON.parse(res.data));
+
+  return Promise.resolve(res.data);
+}
+
+/**
+ * 保存快捷键
+ */
+export async function saveHotkeysApi(obj) {
+  const res = await fetchSaveHotkeys(obj);
+  if (res.code !== 0) {
+    return Promise.reject('保存快捷键失败');
+  }
 
   return Promise.resolve(res.data);
 }
