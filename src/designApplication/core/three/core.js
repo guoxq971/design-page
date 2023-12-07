@@ -90,9 +90,9 @@ export class Core {
     const targetDom = document.getElementById(id);
     const width = targetDom.offsetWidth;
     const height = targetDom.offsetHeight;
-    this.camera.aspect = width / height;
+    this.camera.aspect = height / height;
     this.camera.updateProjectionMatrix();
-    this.renderer.setSize(width, height);
+    this.renderer.setSize(height, height);
     this.renderer.render(this.scene, this.camera);
   }
 

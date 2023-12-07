@@ -207,7 +207,7 @@ export class DesignerUtil {
    * @param {string} colorCode 颜色编码
    * */
   static hasGlass(colorCode) {
-    return colorCode === '';
+    return ['', undefined, null].includes(colorCode);
   }
 
   /**

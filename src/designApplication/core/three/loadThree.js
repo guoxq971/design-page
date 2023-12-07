@@ -104,6 +104,12 @@ function loadCanvasTexture(meshPlusList) {
   }
   meshPlusList.forEach((item) => {
     const { mesh, view } = item;
+    // console.log(mesh.material.name, mesh);
+
+    if (mesh.material.opacity === 0) {
+      mesh.material.opacity = 1;
+    }
+
     const color3dItem = config.get3dColorItemByMaterialName(mesh.name);
 
     if (!color3dItem) {
@@ -113,7 +119,7 @@ function loadCanvasTexture(meshPlusList) {
 
     // 如果是玻璃材质，不需要处理
     if (DesignerUtil.hasGlass(color3dItem.colorCode)) {
-      console.log('玻璃材质', mesh.name);
+      // console.log('玻璃材质', mesh.name);
       return;
     }
     // 这是没有canvas的mesh, 要设置底色

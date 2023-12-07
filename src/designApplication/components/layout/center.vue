@@ -1,7 +1,9 @@
 <template>
   <div class="center-work-container" :id="config.workerContainerId" v-loading="loading_prod || loading_save">
     <!--3d容器-->
-    <div v-loading="loading_3d" class="three-container" :id="config.threeContainerId" :style="{ left: show3d ? '0' : '-10000px' }"></div>
+    <div class="three-container" style="width: 100%; height: 100%; display: flex; justify-content: center" :style="{ left: show3d ? '0' : '-10000px' }">
+      <div v-loading="loading_3d" :id="config.threeContainerId" style="border: 1px dashed #ccccccad" :style="{ width: '800px', height: '800px' }"></div>
+    </div>
 
     <template v-if="activeProdStatic">
       <!--标题-->
