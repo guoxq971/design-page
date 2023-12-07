@@ -1,13 +1,11 @@
 <!--录制快捷键-->
 <template>
   <div class="shortcut-key-input" :class="{ cursor: focus }" :style="$props.style" tabindex="0" @focus="handleFocus" @blur="onBlur" @keydown="handleKeydown">
-    <template v-if="list.length">
-      <template v-for="(item, index) in list">
-        <span :key="`${item.text}_${index}`">
-          {{ item.text }}
-          <i @click="handleDeleteKey(index)"></i>
-        </span>
-      </template>
+    <template v-if="detail.text">
+      <span>
+        {{ detail.text }}
+        <i @click="handleDeleteKey()"></i>
+      </span>
     </template>
     <div v-else class="placeholder">{{ placeholder }}</div>
   </div>
@@ -61,7 +59,7 @@ export default {
     // 默认绑定值
     // 传入 ['Ctrl+d'] 格式时会自动处理成 [{ text: 'Ctrl+d', controlKey: { altKey: false, ctrlKey: true, shiftKey: false, key: 'd', code: 'KeyD } }]
     hotkey: {
-      type: Array,
+      type: String,
       required: true,
     },
     // 校验函数 判断是否允许显示快捷键
@@ -74,11 +72,6 @@ export default {
       type: String,
       default: '',
     },
-    // 限制最大数量
-    max: {
-      type: [String, Number],
-      default: 0,
-    },
     // 快捷键使用范围
     range: {
       type: Array,
@@ -88,39 +81,57 @@ export default {
   data() {
     return {
       focus: false,
-      list: [],
+      detail: {
+        text: '',
+      },
       keyRange: [],
     };
   },
   watch: {
-    list: function (list) {
-      if (list.length) this.focus = false;
-      // this.$emit('update:hotkey', this.list);
-    },
     hotkey: {
       handler: function (val) {
-        if (!val.length) return;
-        const list = [];
-        val.forEach((item) => {
-          const arr = item.split('+');
-          const controlKey = {
-            altKey: arr.includes('Alt'),
-            ctrlKey: arr.includes('Control'),
-            shiftKey: arr.includes('Shift'),
-            key: arr[arr.length - 1],
-            code: `Key${arr[arr.length - 1].toUpperCase()}`,
-          };
-          list.push({
-            text: arr.reduce((text, cur, i) => {
-              if (i) text += '+';
-              if (controlKey.key === cur) text += cur.toUpperCase();
-              else text += cur;
-              return text;
-            }, ''),
-            controlKey,
-          });
-        });
-        this.list = list;
+        if (val === '') return;
+
+        const arr = val.split('+');
+        const controlKey = {
+          altKey: arr.includes('Alt'),
+          ctrlKey: arr.includes('Control'),
+          shiftKey: arr.includes('Shift'),
+          key: arr[arr.length - 1],
+          code: `Key${arr[arr.length - 1].toUpperCase()}`,
+        };
+
+        const item = {
+          text: arr.reduce((text, cur, i) => {
+            if (i) text += '+';
+            if (controlKey.key === cur) text += cur.toUpperCase();
+            else text += cur;
+            return text;
+          }, ''),
+          controlKey,
+        };
+
+        // 转换
+        // UP,ArrowUp -> ↑
+        if (['UP', 'ArrowUp'].includes(item.text)) {
+          item.text = item.text.replace('UP', '↑').replace('ArrowUp', '↑');
+        }
+        // DOWN,ArrowDown -> ↓
+        if (['DOWN', 'ArrowDown'].includes(item.text)) {
+          item.text = item.text.replace('DOWN', '↓').replace('ArrowDown', '↓');
+        }
+        // LEFT,ArrowLeft -> ←
+        if (['LEFT', 'ArrowLeft'].includes(item.text)) {
+          item.text = item.text.replace('LEFT', '←').replace('ArrowLeft', '←');
+        }
+        // RIGHT,ArrowRight -> →
+        if (['RIGHT', 'ArrowRight'].includes(item.text)) {
+          item.text = item.text.replace('RIGHT', '→').replace('ArrowRight', '→');
+        }
+        // 首字母 ctrl -> Ctrl, alt -> Alt, shift -> Shift
+        item.text = item.text.replace('ctrl', 'Ctrl').replace('alt', 'Alt').replace('shift', 'Shift');
+
+        this.detail.text = item.text;
       },
       immediate: true,
     },
@@ -165,16 +176,14 @@ export default {
      * 聚焦
      */
     handleFocus() {
-      if (!this.list.length) {
-        this.focus = true;
-      }
+      this.focus = true;
     },
     /**
      * 删除快捷键
-     * @param index
      */
-    handleDeleteKey(index) {
-      this.list.splice(index, 1);
+    handleDeleteKey() {
+      this.$emit('update:hotkey', '');
+      this.detail.text = '';
     },
     /**
      * 键盘按下
@@ -184,7 +193,7 @@ export default {
       this.banHotkeys();
       const { altKey, ctrlKey, shiftKey, key, code } = e;
 
-      console.log(key, code);
+      // console.log(key, code);
 
       // ctrl，alt，shift
       if (!CODE_CONTROL.flat().includes(key)) {
@@ -222,26 +231,25 @@ export default {
      * @param data
      */
     addHotkey(data) {
+      console.log('addHotkey');
       // 是否已存在
-      if (this.list.length && this.list.some((item) => data.text === item.text)) {
-        return;
-      }
-      // 是否超过最大数量
-      if (this.list.length && this.list.length.toString() === this.max.toString()) {
-        return;
-      }
+      // if (this.detail.text && data.text === this.detail.text) {
+      //   return;
+      // }
       // 是否允许添加
       if (!this.verify(data)) {
+        console.log('校验失败');
         return;
       }
+      console.log('校验通过');
 
-      this.list.push(data);
+      this.$emit('update:hotkey', data.text);
     },
   },
 };
 </script>
 
-<style scoped>
+<style scoped lang="less">
 @keyframes Blink {
   0% {
     opacity: 0;
@@ -258,10 +266,9 @@ export default {
   background-color: #fff;
   color: #333;
   width: 100%;
-  height: 40px;
-  //padding: 2px 0;
   cursor: text;
   transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+  height: 90%;
 }
 
 .shortcut-key-input:focus {
@@ -274,7 +281,7 @@ export default {
   animation: Blink 1.2s ease 0s infinite;
   font-size: 18px;
   position: absolute;
-  top: 7px;
+  //top: 7px;
   left: 8px;
 }
 
@@ -282,25 +289,27 @@ export default {
   position: relative;
   display: inline-block;
   box-sizing: border-box;
-  background-color: #f4f4f5;
+  //background-color: #f4f4f5;
   border-color: #e9e9eb;
-  color: #909399;
+  color: #222;
   padding: 0 22px 0 8px;
   height: 28px;
   font-size: 13px;
   line-height: 28px;
   border-radius: 4px;
-  margin: 5px;
+  width: 100%;
 }
 
 .shortcut-key-input .placeholder {
   position: absolute;
-  top: 12px;
-  left: 11px;
+  left: 7px;
   color: #c0c4cc;
-  font-size: 13px;
   text-indent: 4px;
   font: 400 13.3333px Arial;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
 }
 
 .shortcut-key-input span i {
@@ -312,13 +321,14 @@ export default {
     no-repeat center;
   background-size: contain;
   width: 14px;
-  height: 14px;
   transform: scale(0.9);
   opacity: 0.6;
+  height: 17px;
 }
 
 .shortcut-key-input span i:hover {
   cursor: pointer;
   opacity: 1;
+  color: #409eff;
 }
 </style>

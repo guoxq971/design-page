@@ -10,11 +10,15 @@
 import AppLeft from './components/layout/left.vue';
 import AppCenter from './components/layout/center.vue';
 import AppRight from './components/layout/right.vue';
+import { getHotkeysApi } from '@/designApplication/apis/common';
 export default {
   components: {
     AppLeft,
     AppCenter,
     AppRight,
+  },
+  mounted() {
+    getHotkeysApi();
   },
 };
 </script>

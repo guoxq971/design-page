@@ -9,6 +9,8 @@ import { fetchRefineProdDetailByTemplateNoWithSize } from '@/designApplication/m
 import { refineProdDetailByTemplateNoWithSizeMock } from '@/designApplication/mock/prod/refineProdDetailByTemplateNoWithSizeMock';
 import { ProdItemDetail } from '@/designApplication/interface/commonProd';
 import { fetchRefineProdConfig3dByTemplateNoWithSize } from '@/designApplication/mock/prod/refineProdConfig3dByTemplateNoWithSize';
+import { fetchHotkeys } from '@/designApplication/mock/user/fetchHotkeys';
+import { disposeHotkeys } from '@/designApplication/core/utils/hotkeys';
 
 /**
  * 获取通用产品列表
@@ -105,4 +107,20 @@ export async function gerRefineProdConfig3dByTemplateNoWithSizeApi(templateNo, s
   // console.log('根据模板号获取3d配置', result);
 
   return Promise.resolve(result);
+}
+
+/**
+ * 获取快捷键列表
+ */
+export async function getHotkeysApi() {
+  const res = await fetchHotkeys();
+  if (res.code !== 0) {
+    return Promise.reject('获取快捷键列表失败');
+  }
+
+  console.log('快捷键', JSON.parse(res.data));
+
+  disposeHotkeys(JSON.parse(res.data));
+
+  return Promise.resolve(res.data);
 }

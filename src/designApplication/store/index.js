@@ -18,6 +18,8 @@ const state = {
   isInit_image_collect: false,
   isInit_image_admin: false,
 
+  // 快捷键列表
+  hotkeysList: [],
   // 快捷键
   visible_hotkeys: false,
   // 图层
@@ -69,7 +71,7 @@ export default {
     },
   },
   mutations: {
-    // 快捷键
+    // 快捷键弹窗
     setVisibleHotkeys(state, visible) {
       state.visible_hotkeys = visible;
     },

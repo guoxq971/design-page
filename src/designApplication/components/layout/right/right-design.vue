@@ -142,15 +142,6 @@ export default {
       return useQueue().nextDisabled();
     },
   },
-  watch: {
-    'queue.activeId': {
-      handler(val) {
-        console.log(val, this.queue);
-      },
-      immediate: true,
-      // deep: true,
-    },
-  },
   methods: {
     /**
      * 快捷键
